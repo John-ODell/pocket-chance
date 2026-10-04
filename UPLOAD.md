@@ -66,7 +66,7 @@ On the Mac, from the repo folder:
 python3 tools/convert_assets.py
 ```
 
-It writes `assets/out/c_AS.565`, `c_back.565`, `chip_5.565`, `table.565` and prints a line per file, or a clear error if a file is the wrong size or name.
+It writes `assets/out/c_AS.565`, `c_back.565`, `chip_5.565`, `table.565` and prints a line per file, or a clear error if a file is the wrong size or name. For the table it also prints a WARNING if any text area is too light or busy (see `assets/ASSETS.md`, Readability). **The table on its own is fine:** upload just `assets/out/table.565` to `/assets/table.565` and the game uses it at the next start, with code-drawn cards on top. No code changes are needed.
 
 | # | From this repo | To the board |
 |---|---|---|
