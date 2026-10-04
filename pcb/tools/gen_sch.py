@@ -265,7 +265,7 @@ add("Q1", ("pcb_custom", "FS8205A"), "FS8205A", "Package_SO:TSSOP-8_4.4x3mm_P0.6
 # one protected LiPo pouch cell on a JST-PH socket (owner's choice 2026-10-04, no 18650 holder).
 # Reverse-polarity guard: P-MOSFET in the positive lead (body diode conducts at power-up, FET then turns on;
 # a reversed cell holds it off). Drain to the cell, source to BAT+, gate to the cell's negative.  VERIFY pinout.
-add("J3", ("Connector", "Conn_01x02_Socket"), "LiPo JST-PH 2.0mm (+ pin 1)", "Connector_JST:JST_PH_S2B-PH-SM4-TB_1x02-1MP_P2.00mm_Horizontal",
+add("J3", ("Connector", "Conn_01x02_Socket"), "LiPo JST-PH 2.0mm (pin 1 = + RED WIRE)", "Connector_JST:JST_PH_S2B-PH-SM4-TB_1x02-1MP_P2.00mm_Horizontal",
     (300, 400), {"1": "CELL_P", "2": "BAT-"})
 add("Q2", ("Transistor_FET", "AO3401A"), "DMG2305UX", "Package_TO_SOT_SMD:SOT-23", (340, 400),
     {"1": "BAT-", "2": "CELL_P", "3": "CELL_G"})   # G, S, D order checked below from the library pin names
