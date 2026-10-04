@@ -144,7 +144,20 @@ Seven files: the poker hand evaluator (new on the board; `stud_rules.py` imports
 
 **Test line:** menu, Caribbean, A deals: your five cards face up, the dealer's first card up and four face down, "Dealer shows K" and "You: pair of 9s" lines. A raises (the top line shows "ante 10 + 20"): the dealer's cards turn over one at a time about a third of a second apart, then the result banner and a line like "+30: ante + raise 20 x 1". B folds (all dealer cards shown at once, "-10: ante lost"). X shows the pays and the basic strategy. Copy the `RESULT` lines to the PM.
 
-## Step 2: art (any time after step 1j)
+## Step 1k: other players at the Caribbean Stud table (DR-041), 2026-10-05
+Five files. Five chip stacks appear in a thin rail along the bottom of the Stud screen; after each hand a green or red marker shows who won or lost. They play the house with real cards from the same deck and never touch John's odds. `STUD_SEATS` near the top of `pocket.py` sets how many (0 to 5).
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `games/stud_rules.py` | `/games/stud_rules.py` |
+| 2 | `games/stud_seats.py` | `/games/stud_seats.py` (new) |
+| 3 | `games/stud_table.py` | `/games/stud_table.py` |
+| 4 | `games/stud.py` | `/games/stud.py` |
+| 5 | `pocket.py` | `/pocket.py` |
+
+**Test line:** Caribbean: five small coloured stacks of five lines along the bottom edge. Play a hand: after the result every stack gets a green (up) or red (down) square and grows or shrinks by a line per 200 chips; the next deal clears the squares. Copy the `RESULT` lines to the PM.
+
+## Step 2: art (any time after step 1k)
 On the Mac, from the repo folder:
 
 ```bash
@@ -165,18 +178,19 @@ Upload `pocket.py` a second time, named `/main.py` on the board. Unplug and plug
 ## Not run anywhere yet
 All of this has run only on the Mac, against stand-in `machine` and `framebuf` modules (96 tests). Nothing has run under MicroPython or on the board. Timing, colours on the panel and RAM use are what step 1 finds out.
 
-## On the board now (code, after step 1j)
+## On the board now (code, after step 1k)
 _The record of what the board holds. `tools/check_upload.py` reads it: every module a board file imports must be here, every method a board file calls on the shared libraries must exist in the version recorded here, and a repo file that differs from its recorded version is flagged as not yet uploaded. After an upload, run `python3 tools/check_upload.py --record <step> <repo paths...>` to update the rows._
 
 | Board path | Repo file | Step | Version (git blob) |
 |---|---|---|---|
+| `/games/stud_seats.py` | `games/stud_seats.py` | 1k | 5f087aac8cb6 |
 | `/lib/poker.py` | `lib/poker.py` | 1j | 41fea1368c8c |
-| `/games/stud.py` | `games/stud.py` | 1j | 474f431e179b |
+| `/games/stud.py` | `games/stud.py` | 1k | 6ba3de0e8646 |
 | `/games/stud_pay.py` | `games/stud_pay.py` | 1j | 36fde234415a |
-| `/games/stud_table.py` | `games/stud_table.py` | 1j | fe06c8a6ac90 |
-| `/games/stud_rules.py` | `games/stud_rules.py` | 1j | 3aa5af7c4a7e |
+| `/games/stud_table.py` | `games/stud_table.py` | 1k | de994d48a9c8 |
+| `/games/stud_rules.py` | `games/stud_rules.py` | 1k | de79e3cb9287 |
 | `/lib/sheets.py` | `lib/sheets.py` | 1j | e3adeacc4c38 |
-| `/pocket.py` | `pocket.py` | 1j | d72d5918b2fc |
+| `/pocket.py` | `pocket.py` | 1k | 064e73a73b42 |
 | `/lib/pixfmt.py` | `lib/pixfmt.py` | 1 | 03010786bfba |
 | `/lib/clocks.py` | `lib/clocks.py` | 1 | b8c0bbf5c8f0 |
 | `/lib/lcd.py` | `lib/lcd.py` | 1i | 3c6b0dee4cfc |
