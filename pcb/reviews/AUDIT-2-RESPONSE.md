@@ -56,4 +56,4 @@ J3 back to the 2-pin JST-PH socket (S2B-PH-SM4-TB; the TS net now carries only U
 ## Final commit (what the next audit pass reviews)
 - **Schematic to review:** rev 0.9, last changed in commit **eafbde6** (rev 0.8 plus the 2-pin socket and the 1.5 A fuse); content hash **`304da84e427746d2779c4b5a228b10f730f74106`**. Exports from exactly that file are in `pcb/kicad/exports/` (ERC 0 errors, 2 warnings: the IMU's address and auxiliary pins tied to ground, as its datasheet asks).
 - Footprints: `pcb/kicad/lib/pcb_custom.pretty/RM2.kicad_mod` (commit 76949f0) and `AOTA-B201610S.kicad_mod`.
-- Verification by the expert: `pcb/reviews/HR-P05.md`, with the rev 0.7 re-check to follow.
+- Verification by the expert: `pcb/reviews/HR-P05.md` (on the hw-reviews branch). Rev 0.9 verified in the second addendum to Part 9: the semantic netlist diff from 283594a to eafbde6 shows exactly three changes (J3 1x03 to 1x02, F1 MF-MSMF110 to MF-MSMF150 on the same footprint, TS net now U5.1 + R12.1), 132 components on both sides, ERC 0 errors with the 2 expected warnings, R16 untouched.
