@@ -53,6 +53,9 @@ The owner fetched the DW01A datasheet. Its typical-application table requires R1
 ## Revision 0.9 (John's rulings, 2026-10-04)
 J3 back to the 2-pin JST-PH socket (S2B-PH-SM4-TB; the TS net now carries only U5 pin 1 and R12) and F1 changed to MF-MSMF150/16X-2 (1.5 A hold, 3.0 A trip, same footprint). R16 stays 47 kΩ pending the owner's ruling on the timer reconciliation. Nothing else changed from rev 0.8.
 
+## Revision 0.10 (John's ruling, 2026-10-04)
+R16 (BQ24074 TMR) 47 kΩ to 68 kΩ, value only, same footprint and nets. Datasheet p.13 and p.28: t_MAXCHG = 10 x R_TMR x K_TMR (36 / 48 / 60 s/kΩ) = 6.8 / 9.1 / 11.3 h (was 4.7 / 6.3 / 7.8 h), so a 2000 mAh charge at about 494 mA completes even at the low end of K_TMR. Charge current is unchanged (set by R14). Nothing else changed from rev 0.9.
+
 ## Final commit (what the next audit pass reviews)
 - **Schematic to review:** rev 0.9, last changed in commit **eafbde6** (rev 0.8 plus the 2-pin socket and the 1.5 A fuse); content hash **`304da84e427746d2779c4b5a228b10f730f74106`**. Exports from exactly that file are in `pcb/kicad/exports/` (ERC 0 errors, 2 warnings: the IMU's address and auxiliary pins tied to ground, as its datasheet asks).
 - Footprints: `pcb/kicad/lib/pcb_custom.pretty/RM2.kicad_mod` (commit 76949f0) and `AOTA-B201610S.kicad_mod`.
