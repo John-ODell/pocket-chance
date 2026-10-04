@@ -7,7 +7,7 @@ import unittest
 import tests.context  # noqa: F401
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'tools'))
-from convert_assets import to_565, expected_size, convert_file  # noqa: E402
+from convert_assets import to_565, expected_size, convert_file, zone_warnings, TABLE_ZONES  # noqa: E402
 from pixfmt import KEY_BE  # noqa: E402
 
 try:
@@ -42,6 +42,42 @@ class To565(unittest.TestCase):
         self.assertEqual(expected_size('icon_slots'), (48, 48))
         self.assertEqual(expected_size('sym_cherry'), (56, 56))
         self.assertIsNone(expected_size('whatever'))
+
+
+class ZoneWarnings(unittest.TestCase):
+    def img(self, colour, w=240, h=240):
+        return [colour] * (w * h)
+
+    def test_dark_felt_is_fine(self):
+        self.assertEqual(zone_warnings(self.img((0, 90, 40)), 240, 240), [])
+
+    def test_light_table_warns_for_every_zone(self):
+        w = zone_warnings(self.img((200, 200, 200)), 240, 240)
+        self.assertEqual(len(w), len(TABLE_ZONES))
+        self.assertIn('too light', w[0])
+
+    def test_only_the_light_zone_warns(self):
+        px = self.img((0, 90, 40))
+        for y in range(0, 24):
+            for x in range(240):
+                px[y * 240 + x] = (230, 220, 200)
+        w = zone_warnings(px, 240, 240)
+        self.assertEqual(len(w), 1)
+        self.assertIn('top line', w[0])
+
+    def test_busy_zone_warns(self):
+        px = self.img((0, 90, 40))
+        for y in range(168, 240):
+            for x in range(16, 224):
+                if (x + y) % 3 == 0:
+                    px[y * 240 + x] = (160, 160, 160)   # a third of the pixels bright, mean still under 100
+        w = zone_warnings(px, 240, 240)
+        self.assertEqual(len(w), 1)
+        self.assertIn('calm', w[0])
+
+    def test_zones_inside_screen(self):
+        for name, (x, y, w, h) in TABLE_ZONES:
+            self.assertTrue(0 <= x and x + w <= 240 and 0 <= y and y + h <= 240, name)
 
 
 @unittest.skipIf(Image is None, 'Pillow not installed')

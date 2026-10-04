@@ -62,6 +62,50 @@ def to_565(pixels, w, h):
     return bytes(out), nudged
 
 
+# Text zones on the blackjack table (games/blackjack.py bands), as (x, y, w, h). Text is gold, white
+# or grey, so the art under these boxes must be dark and calm. See assets/ASSETS.md "Readability".
+TABLE_ZONES = (
+    ('top line (chips and bet)', (0, 0, 240, 24)),
+    ('dealer total', (0, 84, 100, 12)),
+    ('player totals', (0, 156, 240, 12)),
+    ('banner and prompts', (16, 168, 208, 72)),
+)
+MAX_MEAN_LUMA = 100        # 0..255; the text colours are 160..255
+MAX_BRIGHT_SHARE = 0.25    # share of pixels brighter than 128 behind the text
+
+
+def luma(r, g, b):
+    return (299 * r + 587 * g + 114 * b) // 1000
+
+
+def zone_warnings(pixels, w, h, zones=TABLE_ZONES):
+    """pixels: list of (r, g, b) in row order. Returns a list of plain-language warnings."""
+    out = []
+    for name, (zx, zy, zw, zh) in zones:
+        total = 0
+        bright = 0
+        n = 0
+        for y in range(zy, min(zy + zh, h)):
+            row = y * w
+            for x in range(zx, min(zx + zw, w)):
+                r, g, b = pixels[row + x]
+                l = luma(r, g, b)
+                total += l
+                if l > 128:
+                    bright += 1
+                n += 1
+        if not n:
+            continue
+        mean = total // n
+        share = bright / float(n)
+        if mean > MAX_MEAN_LUMA:
+            out.append('%s: too light (average brightness %d of 255, keep it under %d) so gold and white text will be hard to read'
+                       % (name, mean, MAX_MEAN_LUMA))
+        elif share > MAX_BRIGHT_SHARE:
+            out.append('%s: %d%% of the pixels are bright; keep this area calm and dark' % (name, int(share * 100)))
+    return out
+
+
 def convert_file(src, out_dir, resize=False, any_size=False):
     from PIL import Image
     name = os.path.splitext(os.path.basename(src))[0]
@@ -84,7 +128,11 @@ def convert_file(src, out_dir, resize=False, any_size=False):
             raise ValueError('%s: is %dx%d, must be %dx%d' % (name, img.size[0], img.size[1], want[0], want[1]))
     w, h = img.size
     get = getattr(img, 'get_flattened_data', None) or img.getdata   # Pillow 12.3 renamed it
-    data, nudged = to_565(get(), w, h)
+    pixels = list(get())
+    data, nudged = to_565(pixels, w, h)
+    if name == 'table':
+        for warning in zone_warnings(pixels, w, h):
+            print('  WARNING %s: %s' % (name, warning))
     os.makedirs(out_dir, exist_ok=True)
     dst = os.path.join(out_dir, name + '.565')
     with open(dst, 'wb') as f:
