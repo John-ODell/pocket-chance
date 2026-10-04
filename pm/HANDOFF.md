@@ -3,7 +3,7 @@
 Written by the PM so tomorrow starts from the repo, not from memory. Read this first, then `pm/STATUS.md`.
 
 ## What exists
-- **Team:** John (owner), the PM, a senior dev session and a microcontroller expert session. Rules are in `CLAUDE.md`, `hw/ROLE.md` and `pm/README.md`.
+- **Team:** John (owner), the PM, a senior dev session and a microcontroller expert session. Rules are in `CLAUDE.md`, `docs/roles/ENGINEER.md` and `pm/README.md`.
 - **Dev work:** a tested blackjack rules engine, bankroll and table logic (58 tests, `python3 -m unittest discover -s tests`), a house-edge simulator (`tools/bj_edge.py`) and 14 decision requests (`pm/inbox/`).
 - **Expert work:** measurement scripts in `hwtest/`, measured numbers in `hw/BUDGET.md`, and hardware reviews HR-001, 002, 003, 005, 006, 007, 008 and HR-F01 in `hw/reviews/`.
 - **Nothing new runs on the board yet.** The board runs the old program, restored from backup.

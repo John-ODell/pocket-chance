@@ -4,7 +4,7 @@ _Maintained by the microcontroller expert. State what is on the desk and how you
 
 | Item | Value | How verified |
 |---|---|---|
-| Board | Waveshare RP2040-Plus, 16 MB flash | USB VID:PID 2e8a:0005, unique id `e46320366357502c`. Flash reads at 2, 4, 8 and 15 MB offsets return erased 0xFFFFFFFF and do not mirror the start, so the chip is larger than 2 MB (`hwtest/flash_probe.py`, 2026-10-03). 16 MB exactly is from the box; the probe cannot distinguish 8 from 16 |
+| Board | Waveshare RP2040-Plus, 16 MB flash | USB VID:PID 2e8a:0005. Flash reads at 2, 4, 8 and 15 MB offsets return erased 0xFFFFFFFF and do not mirror the start, so the chip is larger than 2 MB (`hwtest/flash_probe.py`, 2026-10-03). 16 MB exactly is from the box; the probe cannot distinguish 8 from 16 |
 | Display HAT | Waveshare Pico LCD 1.3", ST7789, 240x240 | John; driver init from `main_monolith.py` produced timed frames at 62.5 MHz (`hwtest/frame_full.py`); John's visual check of the colour pattern pending |
 | Firmware | **MicroPython v1.29.0 (2026-08-24), build `WAVESHARE_RP2040_PLUS-FLASH_16M`**, `machine='Waveshare RP2040-Plus 16MB with RP2040'`, mpy 4870, `_thread='unsafe'`. John flashed it 2026-10-03 (HR-F01). Before that: stock Pico build v1.22.2 | `os.uname()`, `sys.implementation` (`hwtest/board_info.py`, 2026-10-03) |
 | CPU clock | 125 MHz on both firmwares (not the 133 MHz in README) | `machine.freq()` |
