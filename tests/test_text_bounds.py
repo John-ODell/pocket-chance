@@ -161,6 +161,41 @@ class TextBounds(unittest.TestCase):
             self.full(s, 'broke')
         self.check()
 
+    def test_slots_screens(self):
+        import slots
+        from slots_table import RESULT as S_RESULT, BROKE as S_BROKE
+        for balance in (5, 1000, 999999):
+            ctx = self.ctx(balance)
+            s = slots.Screen(ctx)
+            self.bounds.reset()
+            s.draw_all()
+            self.bounds.verify('slots idle %d' % balance)
+            if s.table.state == S_BROKE:
+                continue
+            s.table.adjust_bet(1000)
+            self.bounds.reset()
+            s.draw_all()
+            self.bounds.verify('slots max bet')
+            for win, label in ((0, None), (300, '2 cherries'), (100000, 'three star'), (8, '1 cherry')):
+                s.table.state = S_RESULT
+                s.table.last = (win, label)
+                self.bounds.reset()
+                s.draw_all()
+                self.bounds.verify('slots result %s' % label)
+            s.table.state = S_BROKE
+            self.bounds.reset()
+            s.draw_all()
+            self.bounds.verify('slots broke')
+            # paytable screen: draw without waiting for a key
+            self.bounds.reset()
+            real_wait, real_draw = s.buttons.wait_any, s.draw_all
+            s.buttons.wait_any = lambda: 'A'
+            s.draw_all = lambda: None                 # keep the paytable on screen for the check
+            s.paytable()
+            s.buttons.wait_any, s.draw_all = real_wait, real_draw
+            self.bounds.verify('slots paytable')
+        self.check()
+
     def test_menu_and_messages(self):
         with open(os.path.join(ROOT, 'pocket.py')) as f:
             src = f.read().replace('\nmain()\n', '\n')
