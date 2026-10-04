@@ -79,6 +79,14 @@ MENU_ZONES = (
     ('menu row 3', (16, 166, 208, 48)),
     ('footer', (16, 222, 208, 16)),
 )
+# Text zones on the slots cabinet (DR-023). The three reel windows (x 18/92/166, y 92-147) are
+# covered by symbols and are not checked.
+CABINET_ZONES = (
+    ('top line (chips and bet)', (0, 0, 240, 24)),
+    ('win line', (20, 156, 200, 12)),
+    ('banner and prompts', (16, 168, 208, 72)),
+)
+SYMBOL_NAMES = ('cherry', 'lemon', 'orange', 'bell', 'bar', 'seven', 'diamond', 'star')
 MAX_MEAN_LUMA = 100        # 0..255; the text colours are 160..255
 MAX_BRIGHT_SHARE = 0.25    # share of pixels brighter than 128 behind the text
 
@@ -139,10 +147,13 @@ def convert_file(src, out_dir, resize=False, any_size=False):
     get = getattr(img, 'get_flattened_data', None) or img.getdata   # Pillow 12.3 renamed it
     pixels = list(get())
     data, nudged = to_565(pixels, w, h)
-    zones = {'table': TABLE_ZONES, 'menu_background': MENU_ZONES}.get(name)
+    zones = {'table': TABLE_ZONES, 'menu_background': MENU_ZONES, 'cabinet': CABINET_ZONES}.get(name)
     if zones:
         for warning in zone_warnings(pixels, w, h, zones):
             print('  WARNING %s: %s' % (name, warning))
+    if name.startswith('sym_') and name[4:] not in SYMBOL_NAMES:
+        print('  WARNING %s: not one of the eight slot symbols (%s); the game will not use it'
+              % (name, ', '.join(SYMBOL_NAMES)))
     os.makedirs(out_dir, exist_ok=True)
     dst = os.path.join(out_dir, name + '.565')
     with open(dst, 'wb') as f:
