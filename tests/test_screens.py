@@ -269,7 +269,7 @@ class Entry(unittest.TestCase):
             ns['message']('hello\nworld', 0)
             ns['draw_menu'](ctx, 0)
             ns['draw_menu'](ctx, 2)
-            ns['menu_select'](ctx, 2, 1)
+            self.assertEqual(ns['menu_select'](ctx, 2, 1, 0), 0)
             self.assertTrue(clocks.is_fast())
             lcd = ns['lcd']
             # no background art: plain colour in the margin, selected row is the panel colour
@@ -285,32 +285,57 @@ class Entry(unittest.TestCase):
             self.assertEqual(lcd.pixel(2, 100), photo)
             self.assertEqual(lcd.pixel(ns['ROW_X'] + 2, ns['ROW_Y'][0] + 2), ns['PANEL'])
             self.assertEqual(lcd.pixel(ns['ROW_X'] + 2, ns['ROW_Y'][1] + 2), photo)
-            bx, by, bw, bh = ns['label_box'](1)
+            bx, by, bw, bh = ns['label_box'](1, 1)
             self.assertEqual(lcd.pixel(bx, by), ns['PLATE'])
-            ns['menu_select'](ctx, 0, 1)
+            ns['menu_select'](ctx, 0, 1, 0)
             self.assertEqual(lcd.pixel(ns['ROW_X'] + 2, ns['ROW_Y'][0] + 2), photo)
             self.assertEqual(lcd.pixel(ns['ROW_X'] + 2, ns['ROW_Y'][1] + 2), ns['PANEL'])
             self.assertEqual(lcd.pixel(2, 100), photo)
             for i in range(len(ns['MENU'])):
-                bx, by, bw, bh = ns['label_box'](i)
+                slot = i % ns['VISIBLE']
+                bx, by, bw, bh = ns['label_box'](i, slot)
                 lx = ns['label_x'](i)
                 self.assertTrue(bx <= lx and lx + ns['label_width'](i) <= bx + bw, i)     # plate holds the label
                 self.assertTrue(ns['ROW_X'] <= bx and bx + bw <= ns['ROW_X'] + ns['ROW_W'], i)
-                self.assertTrue(ns['ROW_Y'][i] <= by and by + bh <= ns['ROW_Y'][i] + ns['ROW_H'], i)
+                self.assertTrue(ns['ROW_Y'][slot] <= by and by + bh <= ns['ROW_Y'][slot] + ns['ROW_H'], i)
+            # scrolling (DR-022): walk down the whole list and back up; the window follows the selection
+            n = len(ns['MENU'])
+            self.assertGreater(n, ns['VISIBLE'])
+            top = 0
+            ns['draw_menu'](ctx, 0, top)
+            for sel in range(1, n):
+                top = ns['menu_select'](ctx, sel - 1, sel, top)
+                self.assertTrue(top <= sel < top + ns['VISIBLE'], (sel, top))
+            self.assertEqual(top, n - ns['VISIBLE'])
+            # down arrow gone at the end, up arrow present: the gold glyph sits in the margin column
+            ax = ns['ROW_X'] + ns['ROW_W'] + 4
+            self.assertEqual(lcd.pixel(ax, ns['ROW_Y'][0] + 2), ns['GOLD'])
+            self.assertNotEqual(lcd.pixel(ax, ns['ROW_Y'][2] + ns['ROW_H'] - 10), ns['GOLD'])
+            for sel in range(n - 2, -1, -1):
+                top = ns['menu_select'](ctx, sel + 1, sel, top)
+            self.assertEqual(top, 0)
+            self.assertEqual(lcd.pixel(ax, ns['ROW_Y'][2] + ns['ROW_H'] - 10), ns['GOLD'])   # down arrow back
+            self.assertNotEqual(lcd.pixel(ax, ns['ROW_Y'][0] + 2), ns['GOLD'])
+            self.assertEqual(ns['top_for'](4, 0), 2)
+            self.assertEqual(ns['top_for'](0, 2), 0)
+            self.assertEqual(ns['top_for'](3, 2), 2)
             # menu geometry: labels end inside the row box, rows do not overlap, footer is clear
             rows = ns['ROW_Y']
             box_l, box_r = ns['ROW_X'], ns['ROW_X'] + ns['ROW_W']
             self.assertGreaterEqual(box_l, 0)
             self.assertLessEqual(box_r, 240)
+            self.assertLessEqual(box_r + 4 + 8, 240)                          # scroll arrow column fits
             area_centre = (ns['LABEL_X0'] + box_r) // 2
             for i, (label, mod, icon) in enumerate(ns['MENU']):
                 lx = ns['label_x'](i)
-                w = font.width(label, 2) + (8 + font.width('soon', 1) if mod is None else 0)
+                w = font.width(label, 2)
+                self.assertLessEqual(len(label), 9, label)                   # 9 x 16 px fits the 152 px label area
                 self.assertGreaterEqual(lx, ns['LABEL_X0'], label)          # clear of the icon slot
                 self.assertLessEqual(lx + w, box_r, label)                   # inside the box
                 self.assertLessEqual(abs((lx + w // 2) - area_centre), 1, label)   # centred in the box
-                if i:
-                    self.assertGreaterEqual(rows[i], rows[i - 1] + ns['ROW_H'])
+            for i in range(1, len(rows)):
+                self.assertGreaterEqual(rows[i], rows[i - 1] + ns['ROW_H'])
+            self.assertEqual(len(rows), ns['VISIBLE'])
             self.assertGreaterEqual(rows[0], 40 + 16 + 8)          # below the balance line
             self.assertLessEqual(rows[-1] + ns['ROW_H'], 226 - 4)   # above the footer
             self.assertLessEqual(font.width('Pocket Chance', 2), 240)

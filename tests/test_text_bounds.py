@@ -173,13 +173,19 @@ class TextBounds(unittest.TestCase):
                     f.write(data)
             for balance in (0, 1000, 999999):
                 ctx = self.ctx(balance)
-                for sel in range(len(ns['MENU'])):
+                n = len(ns['MENU'])
+                top = 0
+                self.bounds.reset()
+                ns['draw_menu'](ctx, 0, top)
+                self.bounds.verify('menu entry art=%s' % art)
+                for sel in list(range(1, n)) + list(range(n - 2, -1, -1)):
                     self.bounds.reset()
-                    ns['draw_menu'](ctx, sel)
-                    self.bounds.verify('menu sel=%d art=%s' % (sel, art))
+                    top = ns['menu_select'](ctx, sel + (1 if sel < top else -1) if False else sel, sel, top)
+                    self.bounds.verify('menu sel=%d top=%d art=%s' % (sel, top, art))
+                for t in range(n - ns['VISIBLE'] + 1):
                     self.bounds.reset()
-                    ns['menu_select'](ctx, sel, (sel + 1) % len(ns['MENU']))
-                    self.bounds.verify('menu select art=%s' % art)
+                    ns['draw_menu'](ctx, t, t)
+                    self.bounds.verify('menu full top=%d art=%s' % (t, art))
         from save import MSG_RESTORED, MSG_FRESH
         for m in (MSG_RESTORED, MSG_FRESH):
             self.bounds.reset()

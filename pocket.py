@@ -35,9 +35,14 @@ WHITE = rgb(255, 255, 255)
 GOLD = rgb(240, 200, 60)
 GREY = rgb(140, 140, 140)
 
+# (label, module or None for "soon" or 'off', icon). Labels must fit the label area at size 2:
+# 9 characters at most (tests/test_screens.py checks). Full game names are used inside the games.
 MENU = (('Blackjack', 'blackjack', 'icon_blackjack'),
         ('Slots', None, 'icon_slots'),
+        ('Caribbean', None, 'icon_stud'),
+        ("Hold'em", None, 'icon_holdem'),
         ('Off', 'off', None))
+VISIBLE = 3                                  # rows on screen (DR-022: scrolling list)
 
 
 class Ctx:
@@ -76,8 +81,7 @@ def label_text(i):
 
 
 def label_width(i):
-    label, suffix = label_text(i)
-    return font.width(label, 2) + (8 + font.width(suffix, 1) if suffix else 0)
+    return font.width(label_text(i)[0], 2)      # the small "soon" tag sits under the label
 
 
 def label_x(i):
@@ -85,9 +89,19 @@ def label_x(i):
     return LABEL_X0 + (ROW_X + ROW_W - LABEL_X0 - label_width(i)) // 2
 
 
-def label_box(i):
-    """Dark plate under row i's label: (x, y, w, h), inside the row box."""
-    return label_x(i) - 4, ROW_Y[i] + 12, label_width(i) + 8, 24
+def label_box(i, slot):
+    """Dark plate under item i's label drawn in row `slot`: (x, y, w, h), inside the row box."""
+    h = 34 if label_text(i)[1] else 24          # taller when the "soon" tag is under the label
+    return label_x(i) - 4, ROW_Y[slot] + 12, label_width(i) + 8, h
+
+
+def top_for(sel, top):
+    """First visible item so that `sel` is on screen, moving the window as little as possible."""
+    if sel < top:
+        return sel
+    if sel >= top + VISIBLE:
+        return sel - VISIBLE + 1
+    return top
 
 
 def has_menu_art(ctx):
@@ -111,25 +125,32 @@ def plate_text(s, y, size, col):
     font.text(lcd, s, x, y, col, size)
 
 
-def draw_row(ctx, i, sel):
-    y = ROW_Y[i]
+def draw_row(ctx, slot, top, sel):
+    """Draw menu item top+slot in screen row `slot`, plus the scroll arrow on the edge rows."""
+    i = top + slot
+    y = ROW_Y[slot]
     label, mod, icon = MENU[i]
     col = GOLD if i == sel else (GREY if mod is None else WHITE)
     if i == sel:
         lcd.fill_rect(ROW_X, y, ROW_W, ROW_H, PANEL)
         lcd.rect(ROW_X, y, ROW_W, ROW_H, GOLD)
     else:
-        px, py, pw, ph = label_box(i)
+        px, py, pw, ph = label_box(i, slot)
         lcd.fill_rect(px, py, pw, ph, PLATE)
     if not (icon and ctx.assets.blit(lcd, icon, ROW_X + 4, y)):
         lcd.rect(ROW_X + 12, y + 8, 32, 32, col)       # placeholder until icon art exists
     lx = label_x(i)
     font.text(lcd, label, lx, y + 16, col, 2)
     if mod is None:
-        font.text(lcd, 'soon', lx + font.width(label, 2) + 8, y + 20, GREY, 1)
+        font.text(lcd, 'soon', lx + (label_width(i) - font.width('soon', 1)) // 2, y + 35, GREY, 1)
+    # gold arrows in the right margin when the list continues (DR-022)
+    if slot == 0 and top > 0:
+        font.text(lcd, '^', ROW_X + ROW_W + 4, y + 2, GOLD, 1)
+    if slot == VISIBLE - 1 and top + VISIBLE < len(MENU):
+        font.text(lcd, 'v', ROW_X + ROW_W + 4, y + ROW_H - 10, GOLD, 1)
 
 
-def draw_menu(ctx, sel):
+def draw_menu(ctx, sel, top=0):
     """Menu entry: one full background read, everything drawn, one show() (DR-005)."""
     if not (has_menu_art(ctx) and ctx.assets.background(lcd, BACKGROUND)):
         lcd.fill(BG)
@@ -138,18 +159,28 @@ def draw_menu(ctx, sel):
     else:
         plate_text('Pocket Chance', TITLE_Y, 2, GOLD)
         plate_text('$%d' % ctx.bankroll.balance, BALANCE_Y, 2, WHITE)
-    for i in range(len(MENU)):
-        draw_row(ctx, i, sel)
+    for slot in range(VISIBLE):
+        draw_row(ctx, slot, top, sel)
     plate_text('joystick: move   A: pick', FOOTER_Y, 1, GREY)
     lcd.show()
 
 
-def menu_select(ctx, old, new):
-    """Selection change: restore and redraw only the two rows that changed, push their bands."""
-    for i in (old, new):
-        menu_background(ctx, ROW_Y[i], ROW_H)
-        draw_row(ctx, i, new)
-        lcd.show_band(ROW_Y[i], ROW_H)
+def menu_select(ctx, old, new, top):
+    """Selection change. If `new` is on screen, restore and redraw only the two rows that changed
+    and push their bands; otherwise scroll: redraw all visible rows as one band. Returns the new top."""
+    new_top = top_for(new, top)
+    if new_top == top:
+        for i in (old, new):
+            slot = i - top
+            menu_background(ctx, ROW_Y[slot], ROW_H)
+            draw_row(ctx, slot, top, new)
+            lcd.show_band(ROW_Y[slot], ROW_H)
+    else:
+        menu_background(ctx, ROW_Y[0], ROW_H * VISIBLE)
+        for slot in range(VISIBLE):
+            draw_row(ctx, slot, new_top, new)
+        lcd.show_band(ROW_Y[0], ROW_H * VISIBLE)
+    return new_top
 
 
 def play(ctx, modname):
@@ -193,22 +224,23 @@ def main():
     if msg:
         message(msg)
     sel = 0
-    draw_menu(ctx, sel)
+    top = 0
+    draw_menu(ctx, sel, top)
     while True:
         for key in ctx.buttons.poll():
             if key == 'UP' and sel > 0:
                 sel -= 1
-                menu_select(ctx, sel + 1, sel)
+                top = menu_select(ctx, sel + 1, sel, top)
             elif key == 'DOWN' and sel < len(MENU) - 1:
                 sel += 1
-                menu_select(ctx, sel - 1, sel)
+                top = menu_select(ctx, sel - 1, sel, top)
             elif key in ('A', 'PRESS'):
                 mod = MENU[sel][1]
                 if mod == 'off':
                     off()
                 elif mod:
                     play(ctx, mod)
-                    draw_menu(ctx, sel)
+                    draw_menu(ctx, sel, top)
         utime.sleep_ms(15)
 
 
