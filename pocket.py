@@ -7,9 +7,9 @@ FAST_SPI = True          # DR-050: peripheral clock from the 125 MHz system PLL 
                          # False = the firmware's 48 MHz source (24 MHz SPI, 46 ms a frame), else identical.
 SPI_BAUD = 62_500_000    # honest with DR-050: the repr says what it gets. Fallback 31_250_000.
 SAVE_PATH = '/save.json'
-STUD_SEATS = 5           # other players at the Caribbean Stud table, 0 to 5 (DR-041)
-UTH_SEATS = 4            # other players at the Hold'em table, 0 to 4 (DR-044)
-UTH_HINT = True          # river dealer-outs count on the Hold'em prompt (DR-042 addendum)
+CAR_SEATS = 4            # other players at the Caribbean table, 0 to 4 (DR-069)
+UTH_SEATS = 4            # other players at the Ultimate table, 0 to 4 (DR-044)
+UTH_HINT = True          # river dealer-outs count on the Ultimate prompt (DR-042 addendum)
 
 import sys
 import gc
@@ -47,8 +47,8 @@ GREY = rgb(140, 140, 140)
 # (label, module or None for "soon" or 'off', icon). Labels must fit the label area at size 2:
 # 9 characters at most (tests/test_screens.py checks). Full game names are used inside the games.
 MENU = (('Blackjack', 'blackjack', 'icon_blackjack'),
-        ('Caribbean', 'stud', 'icon_stud'),
-        ("Hold'em", 'holdem', 'icon_holdem'),
+        ('Ultimate', 'holdem', 'icon_holdem'),       # DR-061: Ultimate Texas Hold'em
+        ('Caribbean', 'caribbean', 'icon_stud'),     # DR-062: the flop game John described; Stud is archived
         ('Off', 'off', None))                        # slots was dropped (D-009)
 VISIBLE = 3                                  # rows on screen (DR-022: scrolling list)
 
@@ -224,7 +224,7 @@ def main():
     ctx.buttons = Buttons()
     ctx.assets = Assets('/assets')
     ctx.store = Store(SAVE_PATH)
-    ctx.stud_seats = STUD_SEATS
+    ctx.car_seats = CAR_SEATS
     ctx.uth_seats = UTH_SEATS
     ctx.uth_hint = UTH_HINT
     try:

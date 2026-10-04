@@ -33,7 +33,7 @@ If you don't want to draw these, say so. The dev can generate simple versions in
 | `ui/table.bmp` (optional: the game draws plain felt without it) | 1 | **240 x 240** | 115,204 | Felt table background. Dark green, a quiet border or edge line. **No text and no card shapes baked in.** Keep the top 24 px and bottom 40 px calm, since the dev draws the bankroll and bet there |
 | `ui/menu_background.bmp` (optional) | 1 | **240 x 240** | 115,204 | Behind the main menu. Blurred or dark photos work best. Menu text sits on small dark plates so it stays readable, but keep the three row boxes (x 16–224, y 70–214) and the title area (y 8–60) from being very bright; the converter warns if they are. Supplied by John 2026-10-04 (D-007) |
 | `ui/logo.bmp` | 1 | **200 x 40** | 16,004 | "Pocket Chance" title, magenta background |
-| `ui/icon_blackjack.bmp`, `icon_stud.bmp`, `icon_holdem.bmp` | 3 | **48 x 48** | 4,612 each | Menu icons (packed into `icons.565`) |
+| `ui/icon_blackjack.bmp`, `icon_stud.bmp`, `icon_holdem.bmp` | 3 | **48 x 48** | 4,612 each | Menu icons (packed into `icons.565`). `icon_holdem` is the Ultimate row, `icon_stud` the Caribbean row (the flop game inherited the slot when Caribbean Stud was archived) |
 | `ui/banner_win.bmp`, `banner_lose`, `banner_push`, `banner_bust`, `banner_blackjack`, `banner_noqualify` | 6 | **160 x 32** | 10,244 each | Short result banners drawn over the table, magenta background. `banner_noqualify` ("dealer does not qualify") is for Caribbean Stud (DR-032), optional |
 
 Phase 1 total: 67 files, roughly 0.54 MB (each file carries a 4-byte size header). The card set is 237 KB of that.
@@ -73,8 +73,8 @@ Good: a plain dark green felt with a slightly lighter border in the outer 12 px,
 ## Phase 2: slots (shelved, D-009, 2026-10-04)
 
 Slots was dropped: John does not need to draw any slot art. The old spec is in git history and
-`archive/slots/`. The next games are Caribbean Stud and Ultimate Texas Hold'em; their art needs
-are small: Caribbean Stud reuses the cards, chips, table and result banners and adds only the optional `banner_noqualify` and `icon_stud` (DR-032).
+`archive/slots/`, and Caribbean Stud in `archive/stud/` (John's ruling, 2026-10-06). Ultimate and the
+new Caribbean flop game reuse the cards, chips and table; `banner_noqualify` stays in the sheet (member order never changes) but no game shows it now.
 
 ## How your files reach the board: sheets (DR-024)
 
