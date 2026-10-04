@@ -101,31 +101,33 @@ Four files: three new game modules and the menu with Slots switched on. Runs wit
 
 **Test line:** menu, Slots, A. The three reels scroll for about two seconds and stop left to right; the chips line shows the stake taken while they spin and the result after; a win shows "WIN +n" and the line name and blinks the gold frames three times. Joystick changes the bet (5 to 100), X shows the paytable, B returns to the menu. The first spin prints `RESULT slots mem_free mid-spin=...` (DR-020: expected about 45 to 50 KB; under 20 KB means fallback B is not enough and I need to know).
 
-## Step 1h: slots memory trims, 2026-10-05
-One file. Same game; it builds stand-in symbol rows only for symbols without art, cleans up memory after start, and prints `RESULT slots mem_free after init=...` as well as the mid-spin line.
+## Step 1h: sprite sheets (DR-024) and slots memory trims, 2026-10-05
+Five files. The image loader learns sheets (one file per family of pictures, `assets/ASSETS.md`); blackjack and the menu open their sheets once per scene; the slot reels read rows from one open symbols file (no file opens during a spin). Slots also builds stand-in rows only for symbols without art, cleans up after start and prints `RESULT slots mem_free after init=...` beside the mid-spin line. With no sheet files in `/assets` everything behaves exactly as before (single files, then code-drawn).
 
 | # | From this repo | To the board |
 |---|---|---|
-| 1 | `games/slots.py` | `/games/slots.py` |
+| 1 | `lib/sheets.py` | `/lib/sheets.py` (new; `art.py` imports it, so upload it first) |
+| 2 | `lib/art.py` | `/lib/art.py` |
+| 3 | `games/blackjack.py` | `/games/blackjack.py` |
+| 4 | `games/slots.py` | `/games/slots.py` |
+| 5 | `pocket.py` | `/pocket.py` |
 
-**Test line:** as step 1g. Copy both `RESULT slots mem_free` lines to the PM.
+**Test line:** menu, blackjack hand, slots spin all as before. Copy the `RESULT` lines to the PM, including both `slots mem_free` lines.
 
-## Step 2: pilot image test (after you have made the 4 pilot images)
+## Step 2: art (any time after step 1h)
 On the Mac, from the repo folder:
 
 ```bash
 python3 tools/convert_assets.py
 ```
 
-It writes `assets/out/c_AS.565`, `c_back.565`, `chip_5.565`, `table.565` and prints a line per file, or a clear error if a file is the wrong size or name. For the table it also prints a WARNING if any text area is too light or busy (see `assets/ASSETS.md`, Readability). **The table on its own is fine:** upload just `assets/out/table.565` to `/assets/table.565` and the game uses it at the next start, with code-drawn cards on top. No code changes are needed.
+It converts every BMP/PNG under `assets/src/`: single pictures (`table`, `menu_background`, `cabinet`, `logo`, `banner_jackpot`) to `assets/out/<name>.565`, and packs each family (cards, chips, banners, icons, symbols) into one sheet file (`assets/out/cards.565` etc., see `assets/ASSETS.md`). Pictures not drawn yet become transparent placeholders inside their sheet and are listed. Wrong sizes or names are errors. Light or busy text zones on `table`, `cabinet` and `menu_background` print a WARNING.
 
 | # | From this repo | To the board |
 |---|---|---|
-| 1 | `assets/out/*.565` (each file) | `/assets/<same name>.565` |
+| 1 | `assets/out/<name>.565` (each file the converter wrote or re-wrote) | `/assets/<same name>.565` |
 
-Then open `tools/pilot_test.py` in Viper IDE and **Run it without saving it to the board**.
-
-**Test line:** the table background, an ace of spades and a card back side by side, a red chip below them, "PILOT TEST" at the top, "TOP-LEFT" small at bottom-left. Everything the right way up and the right colours. Copy the `RESULT` lines to the PM. After this, `pocket.py` uses the same images automatically.
+**Test line:** start `/pocket.py`; blackjack shows the drawn cards and chips where they exist, slots shows the drawn symbols. Nothing to change in the code. (`tools/pilot_test.py` still works for the single table image and prints timings; it reads `c_AS`, `c_back` and `chip_5` as single files only, so with sheets it will report them as missing: that is expected.)
 
 ## Step 3: start at boot (only when you are happy with step 1)
 Upload `pocket.py` a second time, named `/main.py` on the board. Unplug and plug in: the menu should appear by itself. This overwrites the boot file, so it is your call, not mine.
@@ -138,22 +140,23 @@ _The record of what the board holds. `tools/check_upload.py` reads it: every mod
 
 | Board path | Repo file | Step | Version (git blob) |
 |---|---|---|---|
-| `/pocket.py` | `pocket.py` | 1g | 43ca9e2aff7f |
+| `/lib/sheets.py` | `lib/sheets.py` | 1h | 1a2bb03f10f7 |
+| `/pocket.py` | `pocket.py` | 1h | a85af6632a95 |
 | `/lib/pixfmt.py` | `lib/pixfmt.py` | 1 | 03010786bfba |
 | `/lib/clocks.py` | `lib/clocks.py` | 1 | b8c0bbf5c8f0 |
 | `/lib/lcd.py` | `lib/lcd.py` | 1f | 58efcaf88d03 |
 | `/lib/font.py` | `lib/font.py` | 1 | 7b1a40a2df70 |
 | `/lib/buttons.py` | `lib/buttons.py` | 1 | 7dd47cbb1e2e |
-| `/lib/art.py` | `lib/art.py` | 1g | 97b2a637219d |
+| `/lib/art.py` | `lib/art.py` | 1h | bfc498921b58 |
 | `/lib/save.py` | `lib/save.py` | 1 | 4abeb7ea2133 |
 | `/lib/bankroll.py` | `lib/bankroll.py` | 1 | be0756d4beef |
 | `/lib/cards.py` | `lib/cards.py` | 1 | 117c3004184b |
 | `/games/blackjack_rules.py` | `games/blackjack_rules.py` | 1c | 6000c8ab25fd |
 | `/games/blackjack_table.py` | `games/blackjack_table.py` | 1c | 47214b7e2d74 |
-| `/games/blackjack.py` | `games/blackjack.py` | 1c | 3332b24fb43b |
+| `/games/blackjack.py` | `games/blackjack.py` | 1h | b9ee6035a735 |
 | `/games/slots_rules.py` | `games/slots_rules.py` | 1g | 9e701c39f6f4 |
 | `/games/slots_table.py` | `games/slots_table.py` | 1g | ac57f582b8be |
-| `/games/slots.py` | `games/slots.py` | 1h | 5aca5b6cd35c |
+| `/games/slots.py` | `games/slots.py` | 1h | c7d9027054f4 |
 
 Also on the board: `/assets/menu_background.565` (step 1d), `/save.json` and `/save.bak` (written by the game). The old `main.py` is gone (D-003).
 
