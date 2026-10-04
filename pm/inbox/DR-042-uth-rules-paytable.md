@@ -1,6 +1,6 @@
 # DR-042: Ultimate Texas Hold'em: rules, Blind paytable and house edge
 
-- **Status:** pending
+- **Status:** pending, **revision 2** (2026-10-05): the simulator bug is found and fixed; the measured edge now agrees with the published figure.
 - **Filed by:** senior dev
 - **Date:** 2026-10-05
 - **Blocks:** The Hold'em engine
@@ -12,10 +12,10 @@ The rules of Ultimate Texas Hold'em as this device plays it, and the Blind payta
 ## Why it matters
 This sets the house edge. Figures: the published reference (Wizard of Odds) is **2.185% of the Ante with optimal play** and **2.43% with the Wizard's "simple strategy"**. Our simulator (`tools/uth_edge.py`) currently measures the published simple strategy at about 6.9% of the Ante (1.6% of all chips staked, since the Play bet is large), which does not match the published 2.43%; see the next section. Raising 3x instead of 4x before the flop costs about 9 more points: always 4x.
 
-## The help screen and the house edge: a product decision for John
-The published figures are 2.185% of the Ante with optimal play and 2.43% with the Wizard's "simple strategy". Our simulator implements that simple strategy from the published text and measures **about 6.9% of the Ante** (400,000 hands, 8 seeds), both with and without the river "fewer than 21 dealer outs" rule; the two differ only in fold rate (10.8% vs 14.7%), not in result. So either my reading of the outs rule is wrong or another part of my strategy code is, because the published figure is well established. **I have not resolved this yet** and will not build the help screen until the simulator reproduces a figure I can defend. Two honest statements stand: 4x is always the better pre-flop raise (3x costs about 9 more points), and the player's edge depends heavily on the river decision.
+## The help screen and the house edge (revision 2)
+The simulator's earlier 6.9% came from a bug: a board pair with a better kicker counted as a "hidden pair" at the river, which triggered 1x raises on hopeless hands. Fixed (`tools/uth_edge.py`, 800,000 hands, 8 seeds): **the full published simple strategy measures 2.8% of the Ante** (0.7% of all chips staked, folds 18%), consistent with the published 2.43% within the run's noise of about half a point. **Without the river outs count** it measures **6.8%** (folds 28%). **Raising 3x instead of 4x** costs about 8 more points.
 
-The decision for John: a help screen that teaches a strategy losing 6 to 7% of the Ante when a published one loses 2.4% makes the player lose faster than necessary. My recommendation is to **teach the full published simple strategy**, including the river rule in plain words, and, if the expert finds it affordable, show the dealer-outs count on the river prompt (45 unseen cards, each checked against the board: about 45 seven-card evaluations, estimated 0.5 to 1 s on this board, run during the turn-and-river pause). If that is too slow, the help text teaches the rule and the player counts for themselves. I will report the corrected measurement in a revision before the Hold'em build starts.
+So the product decision for John stands and is now quantified: the help screen should teach the **full** simple strategy, including the river rule ("raise 1x if fewer than 21 of the unseen cards could give the dealer a hand that beats yours; otherwise fold"), because the version without it loses the Ante 2.5 times faster. Recommended: the game shows the dealer-outs count on the river prompt as a hint ("dealer outs: 17"), since counting 45 cards in the head is not realistic. **Measured by the expert** (`hwtest/outs_bench.py`, real `lib/poker.py`): the player's seven-card value 16.6 ms once, then 45 six-card evaluations at 5.1 ms each, **228 ms in total**, so the hint fits inside the river read: it runs after the river band is pushed and before the prompt appears (after a garbage collection, 25 ms in this scene), and the prompt shows the count. The full two-unknown-card reading (990 seven-card evaluations, 17.7 s) is not viable and is not proposed. The hint is a setting John can switch off.
 
 ## Options
 ### A. Standard rules (recommended)

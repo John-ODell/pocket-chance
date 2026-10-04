@@ -21,7 +21,7 @@ from multiprocessing import Pool
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 import tests.context  # noqa: E402,F401
-from poker import evaluate, evaluate5, rank_value, PAIR, STRAIGHT, FLUSH, FULL_HOUSE, QUADS, STRAIGHT_FLUSH, ROYAL_FLUSH, HIGH_CARD  # noqa: E402
+from poker import evaluate, evaluate5, rank_value, PAIR, TWO_PAIR, STRAIGHT, FLUSH, FULL_HOUSE, QUADS, STRAIGHT_FLUSH, ROYAL_FLUSH, HIGH_CARD  # noqa: E402
 
 BLIND_PAY = {STRAIGHT: (1, 1), FLUSH: (3, 2), FULL_HOUSE: (3, 1), QUADS: (10, 1), STRAIGHT_FLUSH: (50, 1), ROYAL_FLUSH: (500, 1)}
 
@@ -49,19 +49,23 @@ def preflop_raise(hole):
 
 
 def hidden_pair_or_better(hole, board):
-    """Best hand uses at least one hole card and is a pair or better (a pair on the board alone
-    does not count)."""
+    """Wizard: "any pair with at least one card in your hole cards". With five board cards the
+    player's best hand must beat what the board makes on its own in CATEGORY (or, for a pair / two
+    pair, be a different pair), so a board pair with a better kicker does not count."""
     v = evaluate(hole + board)
     if v[0] < PAIR:
         return False
-    bv = evaluate5(board) if len(board) == 5 else (evaluate(board) if len(board) >= 5 else None)
     if len(board) == 3:
-        # with three board cards a pair must involve a hole card unless the board itself pairs
         board_pair = len(set(c % 13 for c in board)) < 3
-        if v[0] == PAIR and board_pair:
-            return False
+        return not (v[0] == PAIR and board_pair)
+    bv = evaluate5(board)
+    if v[0] > bv[0]:
         return True
-    return v > bv
+    if v[0] == PAIR and bv[0] == PAIR:
+        return v[1] != bv[1]
+    if v[0] == TWO_PAIR and bv[0] == TWO_PAIR:
+        return (v[1], v[2]) != (bv[1], bv[2])
+    return False
 
 
 def flop_raise(hole, board):
