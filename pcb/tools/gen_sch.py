@@ -158,8 +158,8 @@ TP = ("Connector", "TestPoint"); TPFP = "TestPoint:TestPoint_Pad_D1.5mm"
 comps = []
 
 
-def add(ref, sym, value, fp, pos, pins):
-    comps.append(dict(ref=ref, sym=sym, value=value, fp=fp, pos=pos, pins=pins))
+def add(ref, sym, value, fp, pos, pins, dnp=False):
+    comps.append(dict(ref=ref, sym=sym, value=value, fp=fp, pos=pos, pins=pins, dnp=dnp))
 
 
 # ---- Block 1: core -----------------------------------------------------------------
@@ -189,6 +189,7 @@ add("C13", C, "4.7uF", C0402, (145, 110), {"1": "+3V3", "2": "GND"})        # C6
 add("C14", C, "4.7uF", C0402, (160, 110), {"1": "1V1", "2": "GND"})         # C7 regulator output
 add("R2", R, "33R", R0402, (175, 110), {"1": "+3V3", "2": "VREG_AVDD"})     # R3 AVDD filter
 add("C15", C, "4.7uF", C0402, (190, 110), {"1": "VREG_AVDD", "2": "GND"})   # C9
+add("C40", C, "4.7uF", C0402, (205, 110), {"1": "1V1", "2": "GND"})        # RP2350 ds: second 4.7 uF on the VOUT net at DVDD pin 23, not near LX/COUT (AUDIT-2 #11)
 # crystal: design guide 4.1 (ABM8-272-T3, 15 pF, 1 k series)
 add("Y1", ("Device", "Crystal_GND24"), "12MHz ABM8-272-T3", "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm", (130, 140),
     {"1": "XIN", "3": "XOUT_X", "2": "GND", "4": "GND"})
@@ -236,8 +237,8 @@ add("C21", C, "10uF", C0603, (355, 160), {"1": "VSYS", "2": "GND"})
 add("C22", C, "10uF", C0603, (370, 160), {"1": "BAT+", "2": "GND"})
 add("R12", R, "10k", R0402, (340, 185), {"1": "TS", "2": "GND"})            # BQ24074 ds Table 7-1: "connect a 10-kΩ fixed resistor from TS to VSS" when TS is unused
 add("R13", R, "10k", R0402, (355, 185), {"1": "VBUS", "2": "CHG_EN1"})      # BQ24074 ds Table 7-2: EN2=0, EN1=1 = USB500 (500 mA input limit); EN pins have ~285k internal pull-downs
-add("R14", R, "1.8k", R0402, (370, 185), {"1": "ISET", "2": "GND"})         # I_CHG = K_ISET/R_ISET, K_ISET 890 AΩ typ (797-975): 494 mA. 3.6k for a 500 mAh cell (247 mA)
-add("R15", R, "3.0k", R0402, (340, 210), {"1": "ILIM", "2": "GND"})         # only used in ILIM mode (EN2=1, EN1=0); ds allows 1.1k to 8k
+add("R14", R, "1.8k", R0402, (370, 185), {"1": "ISET", "2": "GND"})         # I_CHG = K_ISET/R_ISET, K_ISET 890 AΩ typ (797-975): 443-542 mA. Assumed cell: protected pouch >= 1000 mAh rated >= 0.5 C. 3.6k for 500 mAh (AUDIT-2 #7)
+add("R15", R, "3.0k DNP", R0402, (340, 210), {"1": "ILIM", "2": "GND"}, dnp=True)   # NOT FITTED: the active limit is USB500 (EN2=0, EN1=1); ILIM only counts with EN2 high (AUDIT-2 #13)
 add("R16", R, "47k", R0402, (355, 210), {"1": "TMR", "2": "GND"})           # ds: 18k to 72k programs the timers; t_MAXCHG = 10 x R x K_TMR(48 s/kΩ) = about 6.3 h
 add("R18", R, "1k", R0402, (340, 235), {"1": "VSYS", "2": "CHG_LED"})
 add("D1", ("Device", "LED"), "CHG", "LED_SMD:LED_0603_1608Metric", (355, 235), {"2": "CHG_LED", "1": "CHG_STAT"})
@@ -245,11 +246,11 @@ add("D1", ("Device", "LED"), "CHG", "LED_SMD:LED_0603_1608Metric", (355, 235), {
 add("U6", ("Regulator_Switching", "TPS63001"), "TPS63001DRCR", "Package_SON:Texas_DRC0010J_ThermalVias", (300, 290), {
     "5": "VSYS", "8": "VSYS", "6": "PWR_EN", "7": "GND", "4": "BB_L1", "2": "BB_L2", "1": "+3V3", "10": "+3V3",
     "3": "GND", "11": "GND", "9": "GND"})
-add("L2", L, "2.2uH", "Inductor_SMD:L_1210_3225Metric", (340, 270), {"1": "BB_L1", "2": "BB_L2"})   # TPS63001 ds typical application: 2.2 uH, 10 uF in and out
-add("C23", C, "10uF", C0603, (355, 270), {"1": "VSYS", "2": "GND"})
+add("L2", L, "2.2uH ASPIAIG-F4020-2R2M", "Inductor_SMD:L_Abracon_ASPIAIG-F4020", (340, 270), {"1": "BB_L1", "2": "BB_L2"})   # TPS63001 ds: 2.2 uH; Abracon 4x4x2 mm shielded, Isat and DCR to confirm from its datasheet (AUDIT-2 #10)
+add("C23", C, "10uF 16V X5R", C0805, (355, 270), {"1": "VSYS", "2": "GND"})
 add("C24", C, "100nF", C0402, (370, 270), {"1": "VSYS", "2": "GND"})        # VINA
-add("C25", C, "10uF", C0603, (385, 270), {"1": "+3V3", "2": "GND"})
-add("C26", C, "10uF", C0603, (400, 270), {"1": "+3V3", "2": "GND"})
+add("C25", C, "10uF 10V X5R", C0805, (385, 270), {"1": "+3V3", "2": "GND"})
+add("C26", C, "10uF 10V X5R", C0805, (400, 270), {"1": "+3V3", "2": "GND"})
 add("SW3", ("Switch", "SW_SPDT"), "POWER PCM12", "Button_Switch_SMD:SW_SPDT_PCM12", (340, 300),
     {"2": "PWR_EN", "1": "VSYS", "3": "GND"})
 add("R19", R, "100k", R0402, (360, 300), {"1": "PWR_EN", "2": "GND"})       # off with no switch fitted (HR-033)
@@ -266,13 +267,28 @@ add("Q1", ("pcb_custom", "FS8205A"), "FS8205A", "Package_SO:TSSOP-8_4.4x3mm_P0.6
 # one protected LiPo pouch cell on a JST-PH socket (owner's choice 2026-10-04, no 18650 holder).
 # Reverse-polarity guard: P-MOSFET in the positive lead (body diode conducts at power-up, FET then turns on;
 # a reversed cell holds it off). Drain to the cell, source to BAT+, gate to the cell's negative.  VERIFY pinout.
-add("J3", ("Connector", "Conn_01x02_Socket"), "LiPo JST-PH 2.0mm (pin 1 = + RED WIRE)", "Connector_JST:JST_PH_S2B-PH-SM4-TB_1x02-1MP_P2.00mm_Horizontal",
-    (300, 400), {"1": "CELL_P", "2": "BAT-"})
-add("Q2", ("Transistor_FET", "AO3401A"), "DMG2305UX", "Package_TO_SOT_SMD:SOT-23", (340, 400),
-    {"1": "BAT-", "2": "CELL_P", "3": "CELL_G"})   # G, S, D order checked below from the library pin names
+# AUDIT-2 findings 7/8: a 3-pin JST-PH socket; a plain 2-wire cell uses pins 1-2, a cell with a thermistor lead adds pin 3 to
+# TS. R12 (10 k fixed on TS) is FITTED by default, which bypasses the cell temperature check: the design then relies on the
+# cell's own protection board and the charger's junction-temperature regulation. With an NTC cell, remove R12. PCB-001 states
+# the assumed cell (protected 1000 mAh+ pouch, 0.5 C charge, 0 to 45 C charging) and the owner warning.
+add("J3", ("Connector", "Conn_01x03_Socket"), "LiPo JST-PH 2.0mm (1 = + RED, 2 = -, 3 = NTC)", "Connector_JST:JST_PH_S3B-PH-SM4-TB_1x03-1MP_P2.00mm_Horizontal",
+    (300, 400), {"1": "CELL_P", "2": "BAT-", "3": "TS"})
+add("Q2", ("Transistor_FET", "AO3401A"), "AO3401A", "Package_TO_SOT_SMD:SOT-23", (340, 400),
+    {"1": "BAT-", "2": "CELL_G", "3": "CELL_P"})   # 1 G = cell negative, 2 S = board side (BAT+ via R22), 3 D = cell positive
+# AUDIT-2 finding 1 (fixed): the P-FET's body diode conducts drain -> source, i.e. from the cell's + into the board.
+# Correct cell: the diode conducts at power-up, then Vgs = -Vcell turns the channel on (about 25 mV drop at 0.5 A);
+#   charging current from the BQ24074 BAT pin flows board -> cell through the ON channel. Reversed cell: the diode is
+#   reverse-biased, Vgs is positive so the channel stays off, and the cell's other lead (on BAT-) has no return path
+#   because the DW01A is unpowered and the FS8205A pair is off: no current in either direction, USB present or not.
 add("R22", R, "0R", "Resistor_SMD:R_0603_1608Metric", (395, 400), {"1": "CELL_G", "2": "BAT+"})   # ammeter link (HR-P03)
 # battery voltage divider to GP28 (HR-P01: >= 100k total)
-add("R23", R, "100k", R0402, (300, 430), {"1": "BAT+", "2": "VBAT_SENSE"})
+# AUDIT-2 finding 2 (fixed): the divider is connected only while the 3.3 V rail is up. Q3 (N-FET, gate on +3V3) pulls the
+# P-FET's gate low; with the board off, R39 holds Q4's gate at BAT+, Q4 is off, and R24 holds the ADC pin at 0 V, so GPIO28
+# never sees voltage with IOVDD at 0 V (RP2350 ds: IO limit IOVDD + 0.5 V). Same idea as the Pico W's WL_CS-gated VSYS divider.
+add("Q4", ("Transistor_FET", "AO3401A"), "AO3401A", "Package_TO_SOT_SMD:SOT-23", (300, 455), {"1": "DIV_PG", "2": "BAT+", "3": "DIV_TOP"})
+add("R39", R, "100k", R0402, (315, 455), {"1": "BAT+", "2": "DIV_PG"})
+add("Q3", ("Transistor_FET", "2N7002"), "2N7002", "Package_TO_SOT_SMD:SOT-23", (330, 455), {"1": "+3V3", "2": "GND", "3": "DIV_PG"})
+add("R23", R, "100k", R0402, (300, 430), {"1": "DIV_TOP", "2": "VBAT_SENSE"})
 add("R24", R, "100k", R0402, (315, 430), {"1": "VBAT_SENSE", "2": "GND"})
 add("C28", C, "100nF", C0402, (330, 430), {"1": "VBAT_SENSE", "2": "GND"})
 
@@ -294,7 +310,10 @@ for i, (ref, net) in enumerate([("SW8", "JOY_UP"), ("SW9", "JOY_DOWN"), ("SW10",
 # ---- Block 5: audio --------------------------------------------------------------------
 # PAM8302A ds ordering table: PAM8302AASCR = MSOP-8, PAM8302AADCR = SO-8. SO-8 chosen (larger, easier to inspect).
 add("U8", ("Amplifier_Audio", "PAM8302AAD"), "PAM8302AADCR", "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm", (480, 220), {
-    "1": "+3V3", "2": "NC", "3": "AUDIO_INP", "4": "AUDIO_INN", "5": "SPK+", "8": "SPK-", "6": "+3V3", "7": "GND"})
+    "1": "AMP_SD", "2": "NC", "3": "AUDIO_INP", "4": "AUDIO_INN", "5": "SPK+", "8": "SPK-", "6": "+3V3", "7": "GND"})
+add("R44", R, "47k", R0402, (595, 200), {"1": "+3V3", "2": "AMP_SD"})       # SD released about 30 ms after 3.3 V (ds: 1 to 100 ms) (AUDIT-2 #12)
+add("C42", C, "1uF", C0603, (610, 200), {"1": "AMP_SD", "2": "GND"})
+add("C41", C, "1uF", C0603, (625, 200), {"1": "+3V3", "2": "GND"})        # local 1 uF at the amplifier VDD, next to C32 10 uF (ds p.8)
 add("R25", R, "1k", R0402, (520, 200), {"1": "AUDIO_PWM", "2": "AUDIO_FILT"})
 add("C29", C, "10nF", C0402, (535, 200), {"1": "AUDIO_FILT", "2": "GND"})
 add("C30", C, "1uF", C0603, (550, 200), {"1": "AUDIO_FILT", "2": "AUDIO_INP"})
@@ -316,8 +335,10 @@ add("U9", ("Timer_RTC", "DS3231MZ"), "DS3231MZ+", "Package_SO:SOIC-8_3.9x4.9mm_P
     "2": "+3V3", "5": "GND", "6": "RTC_VBAT", "7": "SDA", "8": "SCL", "3": "RTC_INT", "4": "NC", "1": "NC"})
 add("C35", C, "100nF", C0402, (520, 365), {"1": "+3V3", "2": "GND"})
 add("BT2", ("Device", "Battery_Cell"), "CR1220", "Battery:BatteryHolder_Keystone_3001_1x12mm", (535, 380), {"1": "RTC_VBAT", "2": "GND"})
-add("JP2", ("Jumper", "SolderJumper_2_Open"), "RTC INT to GP14", "Jumper:SolderJumper-2_P1.3mm_Open_Pad1.0x1.5mm", (560, 380),
-    {"1": "RTC_INT", "2": "IMU_INT"})
+add("R42", R, "10k", R0402, (575, 365), {"1": "+3V3", "2": "RTC_INT"})      # DS3231M INT/SQW is open-drain (AUDIT-2 #9)
+add("R43", R, "1k", R0402, (590, 365), {"1": "RTC_INT", "2": "RTC_INT_R"})  # limits contention to 3 mA if the IMU is still push-pull when JP2 is closed
+add("JP2", ("Jumper", "SolderJumper_2_Open"), "RTC INT to GP14 (open; close only after firmware sets IMU INT1 open-drain, active-low)", "Jumper:SolderJumper-2_P1.3mm_Open_Pad1.0x1.5mm", (560, 380),
+    {"1": "RTC_INT_R", "2": "IMU_INT"})
 add("U10", ("Sensor_Motion", "LSM6DSM"), "LSM6DSOXTR", "Package_LGA:LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y", (480, 440), {
     "1": "GND", "2": "GND", "3": "GND", "4": "IMU_INT", "5": "+3V3", "6": "GND", "7": "GND", "8": "+3V3", "9": "NC",
     "10": "NC", "11": "NC", "12": "+3V3", "13": "SCL", "14": "SDA"})
@@ -330,7 +351,7 @@ add("R31", R, "4.7k", R0402, (555, 430), {"1": "+3V3", "2": "SDA"})
 add("R32", R, "4.7k", R0402, (570, 430), {"1": "+3V3", "2": "SCL"})
 add("J7", ("Connector", "Conn_01x04_Socket"), "STEMMA QT", "Connector_JST:JST_SH_SM04B-SRSS-TB_1x04-1MP_P1.00mm_Horizontal",
     (520, 465), {"1": "GND", "2": "+3V3", "3": "SDA", "4": "SCL"})
-add("J8", ("Connector", "Conn_01x06_Pin"), "Expansion", "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical",
+add("J8", ("Connector", "Conn_01x06_Pin"), "Expansion (6 = VBAT_SENSE ADC node, not free GPIO)", "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical",
     (560, 465), {"1": "+3V3", "2": "GND", "3": "SDA", "4": "SCL", "5": "EXP_GP1", "6": "VBAT_SENSE"})
 
 # ---- Block 8: wireless (RM2 datasheet Table 2; Pico 2 W pins) ------------------------------
@@ -384,7 +405,7 @@ def build():
         assert c["ref"] not in refs, c["ref"]
         refs.add(c["ref"])
         sym = ["symbol", ["lib_id", Q(f"{key[0]}:{key[1]}")], ["at", x0, y0, 0], ["unit", 1],
-               ["exclude_from_sim", "no"], ["in_bom", "yes"], ["on_board", "yes"], ["dnp", "no"], ["uuid", U()],
+               ["exclude_from_sim", "no"], ["in_bom", "yes"], ["on_board", "yes"], ["dnp", "yes" if c.get("dnp") else "no"], ["uuid", U()],
                prop("Reference", c["ref"], x0 + 2.54, y0 - 2.54),
                prop("Value", c["value"], x0 + 2.54, y0 + 2.54),
                prop("Footprint", c["fp"], x0, y0, hide=True),
@@ -440,7 +461,7 @@ def build():
                           ["effects", ["font", ["size", 1.27, 1.27]], ["justify", "left"]], ["uuid", U()]])
     sch = ["kicad_sch", ["version", 20250114], ["generator", Q("eeschema")], ["generator_version", Q("9.0")],
            ["uuid", root_uuid], ["paper", Q("A1")],
-           ["title_block", ["title", Q("Pocket Chance board, spin 1")], ["date", Q("2026-10-04")], ["rev", Q("0.2")],
+           ["title_block", ["title", Q("Pocket Chance board, spin 1")], ["date", Q("2026-10-04")], ["rev", Q("0.3")],
             ["company", Q("Pocket Chance")],
             ["comment", 1, Q("Generated by pcb/tools/gen_sch.py from the connection table. Label-based: every pin carries its net name.")],
             ["comment", 2, Q("Blocks left to right: core | USB, power | screen, input, audio, card, sensors | wireless.")]],
