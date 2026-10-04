@@ -49,7 +49,7 @@ def rm2():
     """RM2: 14.5 x 16.5 mm module, 21 castellated pads at 1.5 mm pitch (rm2-datasheet.pdf Figure 6, Table 2).
     Origin: module centre. Module top edge at y = -8.25 (antenna end), bottom edge at y = +8.25.
     Reading of Figure 6 (corrected after AUDIT-3 and HR-P05 part 4): side pads 1.0 wide, 2.0 long in total (1.5 inside,
-    0.5 outside), first pad's top on the keep-out line; bottom pads 1.0 wide, 1.8 long (1.3 inside, 0.5 outside), centred
+    0.5 outside), first pad's top on the keep-out line (measured 5.2 mm below the body top on a 400 dpi render of Figure 6; 5.0 by the dimension chain); bottom pads 1.0 wide, 1.8 long (1.3 inside, 0.5 outside), centred
     2.75 + 1.5k from the left edge. Left column pins 1..7 top down, bottom row 8..14 left to right, right column 15..21
     bottom up. Keep-out: 35.5 x 18.5 mm centred on the module, 13.5 mm beyond the antenna edge and
     5.0 mm into the module. VERIFY on the 1:1 print and against the figure before ordering."""
@@ -63,7 +63,7 @@ def rm2():
     # long centred 2.75 mm from the left edge, 1.5 mm pitch; every pad reaches 0.5 mm outside the module edge.
     keepout_y = T + 5.0
     side_len = 2.0
-    ys = [keepout_y + 0.5 + pw / 2 + pitch * k for k in range(7)]          # pin 1 at the top: -2.75, ..., +6.25
+    ys = [keepout_y + pw / 2 + pitch * k for k in range(7)]                # pin 1 at the top: -2.75, ..., +6.25 (first pad's top on the keep-out line)
     for k, y in enumerate(ys):
         items.append(pad(k + 1, L + side_len / 2 - ext, y, side_len, pw))     # x centre -6.75, spans -7.75 .. -5.75 (2.0 total, 0.5 outside)
     bot_len = 1.8
