@@ -112,10 +112,13 @@ Scripts: `hwtest/pocket_bench.py` (8 scripted hands), plus a per-module import r
 | `draw_all` (full redraw + show), code-drawn felt and cards | 39–43 ms, of which ~18 ms is the wire and ~25 ms Python drawing, mostly size-2 text (`font.text` draws each lit glyph pixel as a `fill_rect`) |
 | Bet change: `draw_top` + 24-row band | 15 ms (band push ≈ 3.6 ms, drawing ≈ 12 ms) |
 | Hit/stand: `draw_player` + `draw_bottom` + 142-row band | 29 ms |
-| `finish_round`: save then `draw_all` | **121 ms mean, 177 ms max** |
-| Save with `.bak` (write tmp, rename old → bak, rename tmp → json) | **54 ms mean, 102 ms max** (the plain tmp+rename was 22–26 ms mean; the extra rename doubles it) |
+| `finish_round`, first build: save then `draw_all` | 121 ms mean, 177 ms max |
+| `finish_round`, fixed build (`draw_all` then save), whole call | 131 ms mean, 225 ms max |
+| **Key press → result banner on screen** (fixed build) | **82 ms mean, 97 ms max.** A result scene draws 6+ cards; each code-drawn card is ~5 ms of size-2 text. With card art, a blit is ~1 ms, so this drops to ~45 ms by itself |
+| Save with `.bak` (write tmp, rename old → bak, rename tmp → json) | 54 ms mean / 102 ms max on a near-empty filesystem; **77 ms mean / 151 ms max** once `save.json`, `save.bak` and bench files exist. LittleFS housekeeping varies; budget **up to ~250 ms** for the whole end-of-round, once per round |
+| `Double`: bet doubles, one card, round resolves, balance moves by exactly the doubled bet | correct in 8 of 8 hands (bench pressed X whenever allowed) |
 
-Everything fits the budget. Notes for the dev: redraw before saving in `finish_round` so the result appears within ~45 ms instead of up to 177 ms; size-2 text is the main Python cost, so avoid redrawing it per frame (the code already only draws on input).
+Everything fits the budget. Notes for the dev: size-2 text is the main Python cost (~1 ms per character), so the menu, card faces and banners are where art pays off; the menu label `Slots (soon)` at size 2 is 192 px wide from x=92 and runs 44 px off the right edge, which is what John saw as "messy".
 
 ## Rules of thumb for the dev
 - **Until the `clk_peri` fix is ruled on, design for 24 MHz SPI: 46 ms per full push, 20 fps full redraw, 79 fps for a 48-row band.** With the fix: 18.5 ms, 44 fps, 138 fps. Design so the game is fine at the slow numbers and looks better at the fast ones.
