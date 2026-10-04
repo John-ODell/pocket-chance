@@ -2,6 +2,9 @@
 
 Written for John, 2026-10-04. The decisions behind it are in `pm/inbox/PCB-001-battery-and-power-path.md` and the audit response in `pcb/reviews/AUDIT-2-RESPONSE.md`.
 
+## The fuse
+The board has a self-resetting fuse in the battery lead (rev 0.7, your decision). It trips if a battery lead, a protection transistor or the board shorts, and it limits the heat after a wiring mistake. It does not save the two chips a reversed battery destroys: the wire check above is still the protection. It costs a few tens of millivolts, so a charge finishes a few minutes later. To reset it, **unplug the battery**: a tripped fuse stays warm and keeps passing a small current as long as the battery is connected; it resets within a minute of being unplugged, once it has cooled. Then find the fault before plugging the battery back in.
+
 ## Approved cell listing
 To be filled in before purchase: seller, listing name, capacity, protection board (yes), plug type (JST-PH 2.0 mm), and **which pin the red wire is on in the listing's photo**. One listing only; a different listing is a new check.
 
@@ -13,8 +16,8 @@ To be filled in before purchase: seller, listing name, capacity, protection boar
 - Optional, better: a cell with a **third wire, a thermistor**. It plugs into pin 3 of the board's socket and lets the charger stop when the cell is too hot or too cold. If you fit one, the resistor R12 is removed (tell the PCB maker).
 
 ## Before plugging in, every time
-0. **Unplug USB first.** With USB plugged in the socket is live from the charger. So: USB out, swap the battery, USB back in.
-1. Look at the socket's silkscreen: **+ RED WIRE** on pin 1, **-** on pin 2. Hold the plug next to it and check that the red wire goes to the + side. Cells from different sellers are wired both ways. **There is no electronic guard on this board** (decided after the audit: none can be made safe with a two-wire plug), so a reversed cell can destroy the protection chip and the charger. This check is the protection. Buy from the one approved listing below, which has its wire colours recorded.
+0. **Unplug USB first.** With USB plugged in the socket's + pin is live at about 4.2 V from the charger even with no battery in it. So: USB out, swap the battery, USB back in.
+1. Look at the socket's silkscreen: **+ RED WIRE** on pin 1, **-** on pin 2. Hold the plug next to it and check that the red wire goes to the + side. Cells from different sellers are wired both ways. **There is no electronic guard on this board** (decided after the audit: none can be made safe with a two-wire plug). A reversed cell puts a wrong-way voltage on the protection chip and the charger the instant the plug seats, and with USB connected the cell then drives current through the damaged chips, limited only by the cell's own protection board (the charger's limit does not apply in that loop). This check, and a protected cell from the approved listing, are the protection. Buy from the one approved listing below, which has its wire colours recorded.
 2. Make sure the cell is not swollen, dented or warm.
 
 ## First power-ups, in order (with the expert on the line)
