@@ -2,7 +2,9 @@
 
 Written 2026-10-04 (phase 2 of `pcb/STAGE2.md`). One line per part or group. Columns: what it is, the manufacturer part number (MPN), package, the KiCad symbol and footprint we will use (`library:name`; "custom" means we draw it from the datasheet), where its facts come from, and what is still to check. **Stock** is checked on PCBWay's quote page and the distributors (Digi-Key, Mouser) at phase 9; until then every line says "stock: to check".
 
-Design rules behind the list: surface-mount only except the 18650 holder; nothing smaller than 0402 (PCBWay's 0201 lines carry a 100-piece minimum); every optional block in its own group so spin 2 can drop it.
+Design rules behind the list: surface-mount only (the 18650 holder was dropped 2026-10-04, John's choice: flat board, JST LiPo); nothing smaller than 0402 (PCBWay's 0201 lines carry a 100-piece minimum); every optional block in its own group so spin 2 can drop it. **Owner's rule (2026-10-04): standard, common, stocked parts with standard footprints wherever possible; anything unusual carries its reason in its row.** "Custom" in the KiCad column means only that KiCad's bundled library lacks the drawing and we draw it from the datasheet; the part itself is still a standard catalogue part.
+
+Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts the Raspberry Pi design guide says to use, with its warning that others are at your own risk); U-RF (the RM2 is the standard pre-certified way to add this radio; a bare radio chip would be the unusual choice); SW-JOY (a 5-way navigation switch is a standard part, but KiCad has no footprint for it; the zero-custom alternative is five ordinary tactile buttons as a direction pad, which John said he would accept).
 
 ## Block 1: core (RP2350A, flash, PSRAM, crystal, regulator parts)
 
@@ -45,9 +47,8 @@ Design rules behind the list: surface-mount only except the 18650 holder; nothin
 | L-BB | buck-boost inductor | 2.2 µH, 2 A class, 3 x 3 mm | | `Device:L` / `Inductor_SMD:L_1210_3225Metric` or vendor | TPS63001 datasheet | pick after datasheet |
 | U-PROT | cell protection | DW01A (Fortune) | SOT-23-6 | `Battery_Management:DW01A` / `Package_TO_SOT_SMD:SOT-23-6` | HR-033, HR-P01 | datasheet (official); stock |
 | Q-PROT | protection dual MOSFET | FS8205A | TSSOP-8 or SOT-23-6 per vendor | `Transistor_FET_Dual:` generic dual N-MOSFET / per package | HR-033 | datasheet; package; stock |
-| J-BAT | pouch cell socket | S2B-PH-SM4-TB (JST PH, 2 mm, SMD) | SMD | `Connector:Conn_01x02_Socket` / `Connector_JST:JST_PH_S2B-PH-SM4-TB_1x02-1MP_P2.00mm_Horizontal` | PCB-001 | stock |
-| BT-18650 | 18650 holder | 1042 (Keystone) | through-hole | `Device:Battery_Cell` / `Battery:BatteryHolder_Keystone_1042_1x18650` | PCB-001; PCBWay places through-hole | stock; board thickness |
-| JP-CELL | cell select, one of two | 3-pad solder jumper | | `Jumper:SolderJumper_3_Bridged12` / `Jumper:SolderJumper-3_P1.3mm_Bridged12_Pad1.0x1.5mm` | PCB-001 | |
+| J-BAT | pouch cell socket, pin 1 = +, polarity on the silkscreen | S2B-PH-SM4-TB (JST PH, 2 mm, SMD) | SMD | `Connector:Conn_01x02_Socket` / `Connector_JST:JST_PH_S2B-PH-SM4-TB_1x02-1MP_P2.00mm_Horizontal` | PCB-001 | stock |
+| Q-RPP | reverse-polarity guard, P-MOSFET in the cell's positive lead | AO3401A (Alpha & Omega; -30 V, 4 A, about 50 mΩ; the most common hobby P-FET) | SOT-23 | `Transistor_FET:AO3401A` / `Package_TO_SOT_SMD:SOT-23` | PCB-001 revised (JST-only, John 2026-10-04) | datasheet (official Diodes); pin order; stock |
 | SW-PWR | power switch on the regulator enable | PCM12SMTR (C&K) slide | SMD | `Switch:SW_SPDT` / `Button_Switch_SMD:SW_SPDT_PCM12` | HR-033 | stock |
 | R-DIV | battery divider to GP28 | 100 kΩ + 100 kΩ, 100 nF | 0402 | `Device:R`, `Device:C` | HR-P01: 100 kΩ or more total | |
 | R-TS | thermistor-pin resistor | 10 kΩ (or a 10 k NTC footprint) | 0402 | `Device:R` | PCB-001 | |
@@ -57,9 +58,9 @@ Design rules behind the list: surface-mount only except the 18650 holder; nothin
 
 | Ref | Part | MPN | Package | KiCad symbol / footprint | Source | To check |
 |---|---|---|---|---|---|---|
-| J-LCD | socket for the 1.54" 240 x 240 ST7789 module (8 pins: VCC, GND, DIN, CLK, CS, DC, RST, BL) | 1 x 8 socket, 2.54 mm, SMD | | `Connector:Conn_01x08_Socket` / `Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical_SMD_Pin1Left` | Waveshare 1.54inch LCD Module wiki (pin order **to verify** on the module page, not from memory) | pin order; whether BL needs a transistor (the module has its own); module stock |
-| SW-A..Y | four game buttons | PTS645SM43SMTR92 (6 mm) default; a 12 mm SMD tactile as the "bigger button" option | SMD | `Switch:SW_Push` / `Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92` | ruling: button size is John's | John's choice of size before footprints (phase 5) |
-| SW-JOY | 5-way joystick switch | SKRHABE010 (Alps) or SKQUCAA010 | SMD | `Switch:SW_Push` x5 or custom 5-way symbol / **custom footprint** from the Alps drawing | today's HAT has a similar part | datasheet (official Alps); footprint; stock |
+| J-LCD | socket for the 1.54" 240 x 240 ST7789 module. **The module has a PH2.0 8-pin cable** (Waveshare wiki, 2026-10-04), so the board gets the matching JST-PH 2.0 mm 8-pin surface-mount socket; pin order VCC, GND, DIN, CLK, CS, DC, RST, BL | S8B-PH-SM4-TB (JST) | SMD | `Connector:Conn_01x08_Socket` / `Connector_JST:JST_PH_S8B-PH-SM4-TB_1x08-1MP_P2.00mm_Horizontal` | Waveshare 1.54inch LCD Module wiki (pin table read 2026-10-04) | whether the module ships the cable; BL drive (module has its own transistor: Unverified); stock |
+| SW-A..Y | four game buttons, **12 x 12 mm** (John asked for about 10 mm; tactile switches are made in 6 and 12 mm standard sizes, nothing stocked in between, so 12 mm is the nearest standard size; a 6 mm switch with a 10 mm cap is the in-between fallback below) | PTS125SM43SMTR2LFS (C&K, 12 x 12 x 4.3 mm SMD) | SMD | `Switch:SW_Push` / `Button_Switch_SMD:SW_Push_1P1T_NO_CK_PTS125Sx43SMTR` | John 2026-10-04 via the PM | stock; cap height vs the screen |
+| SW-JOY | 5-way joystick switch | SKRHABE010 (Alps) | SMD | `Switch:SW_Push` x5 / **footprint drawn from the Alps datasheet** (reason: KiCad ships none; the part is a standard stocked item). Alternative with no custom work: five PTS645 tactile buttons as a direction pad | today's HAT has a similar part; John accepts buttons instead of a joystick | datasheet (official Alps); footprint; stock; John's preference |
 
 ## Block 5: audio
 
@@ -95,6 +96,34 @@ Design rules behind the list: surface-mount only except the 18650 holder; nothin
 | Ref | Part | MPN | Package | KiCad symbol / footprint | Source | To check |
 |---|---|---|---|---|---|---|
 | U-RF | Raspberry Pi Radio Module 2 | RM2 (SC1169) | 21 castellated pads, 1.5 mm pitch, 14.5 x 16.5 mm | **custom symbol and footprint** from `refs/rm2-datasheet.pdf` | ruling item 3; HR-033 pins GP23/24/25/29 | pad map and antenna keep-out from the datasheet; stock (about 4 USD) |
+
+## Fallbacks (John, 2026-10-04: "if there are units we are close to that are cheaper, have those as fallbacks")
+
+Each row: the cheaper or easier-to-source near-equivalent, whether it is a **drop-in** (same footprint and pinout, swap in the BOM only) or needs a **layout change**, and what to re-verify. Price tiers come from PCBWay's quote page at phase 9; until then "cheaper" is from general market knowledge and is **Unverified**.
+
+| For | Fallback MPN | Drop-in? | Why cheaper or easier | Re-verify |
+|---|---|---|---|---|
+| Buttons PTS125 (12 mm) | XKB TS-1187A (12 x 12 x 4.3 mm SMD, the Shenzhen-stock standard) | same size class, **own KiCad footprint** (`SW_Push_1P1T_XKB_TS-1187A`): choose before layout, then drop-in | cents each, always in Asian stock | actuation force, pad drawing |
+| Buttons, in-between size | PTS645 (6 mm) + a 10 mm round tactile cap (for 3.1 mm plungers) | layout change (6 mm footprint) | cheapest; gives a 10 mm button face | cap fit on the plunger; the cap is a hand-fitted part |
+| Joystick SKRHABE010 | five PTS645 6 mm tactiles as a direction pad | layout change (zero custom footprints) | no custom footprint, cheapest | feel; John accepted buttons instead of a joystick |
+| Joystick SKRHABE010 | Alps SKQUCAA010 (through-hole 5-way) | layout change | often cheaper and easier to find; PCBWay places through-hole | footprint from the Alps drawing |
+| Screen socket S8B-PH-SM4-TB | JST S8B-PH-K-S (through-hole, horizontal) | layout change (through-hole footprint, in KiCad) | cheaper; sturdier for repeated plugging | PCBWay through-hole fee |
+| Screen socket | generic "PH2.0 8P SMD" (unbranded JST-PH clones) | drop-in | cents | plating, retention |
+| Charger BQ24074RGT | BQ24072RGT (same family: same footprint, different timer and current defaults) | **drop-in** | similar price, second source within the family | EN/ISET table of the variant |
+| Charger BQ24074RGT | MCP73871 (Microchip) | layout change (QFN-20 4 x 4) | the other common power-path part | full re-review of the power sheet |
+| Regulator TPS63001 | TPS63000 (adjustable; same footprint, two feedback resistors) | drop-in plus 2 resistors (place footprints now) | often better stocked | feedback divider values |
+| Regulator TPS63001 | MP28164 (what Waveshare uses) | layout change | cheap, proven on the Plus | its datasheet layout; John said no Waveshare-specific parts, but this is a generic MPS part |
+| Speaker amp PAM8302AAS | PAM8302AAD (same chip, MSOP-8) | layout change (MSOP-8 footprint) | whichever package PCBWay stocks | package |
+| Speaker amp PAM8302AAS | PAM8403 (stereo, SOP-16; use one channel) | layout change | the most-stocked cheap class-D part | pinout, shutdown pin |
+| Battery socket S2B-PH-SM4-TB | JST S2B-PH-K-S (through-hole) | layout change | cheaper, stronger | through-hole fee |
+| Battery socket | generic "PH2.0 2P SMD" clones | drop-in | cents | polarity marking is on our silkscreen, not the part |
+| RTC DS3231MZ | DS3231M+ (same die, same SOIC-8) | drop-in | whichever is stocked | package marking |
+| RTC DS3231MZ | PCF8523 (NXP) | layout change (SOIC-8 but different pinout; needs a crystal) | cheaper | its trickle charger register must stay off (HR-P02) |
+| IMU LSM6DSOX | LSM6DSO or LSM6DS3TR-C (ST, same LGA-14 2.5 x 3 mm, pin-compatible per ST) | drop-in (ST states pin compatibility; **verify**) | cheaper; both have micropython-lib drivers (lsm6dsox covers the DSO) | pin map, pedometer feature on the DS3 |
+| USB-C USB4085 | HRO TYPE-C-31-M-12 (16-pin, USB 2.0) | layout change (own KiCad footprint) | the cheapest widely stocked USB-C receptacle | drawing, through-board pegs |
+| Flash W25Q128JVSIQ | GD25Q128E (GigaDevice) or W25Q128JVSIM | drop-in (SOIC-8 208 mil; the guide says any 25-series part with 03h read and the listed commands works) | second source | continuous-read mode behaviour (guide 3.3) |
+| PSRAM APS6404L-3SQR-SN | ESP-PSRAM64H (Espressif, same SOIC-8 pinout) | drop-in (**verify** pinout) | often cheaper and stocked | pinout, speed grade |
+| Crystal ABM8-272-T3 | none recommended | | the design guide insists on this part | |
 
 ## Custom library work (phase 5)
 RM2 (symbol + footprint), LSM6DSOX (symbol + footprint), Alps 5-way joystick (footprint), MAX17048 (symbol, if kept), RP2350A land pattern check. All drawn from the official datasheets, saved in `pcb/kicad/lib/`.
