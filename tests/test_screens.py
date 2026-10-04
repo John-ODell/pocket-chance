@@ -38,6 +38,19 @@ def write_565(path, w, h, colour):
         f.write(data)
 
 
+def write_sheet(adir, sheet, colours):
+    """A sheet whose member i is the solid colour colours[i] (magenta where None)."""
+    import sheets as sh
+    w, h, names = sh.SHEETS[sheet]
+    px = []
+    for i in range(len(names)):
+        c = colours.get(i) if isinstance(colours, dict) else colours[i]
+        px.extend([c or (255, 0, 255)] * (w * h))
+    data, _ = to_565(px, w, h * len(names))
+    with open(os.path.join(adir, sheet + '.565'), 'wb') as f:
+        f.write(data)
+
+
 class Ctx:
     pass
 
@@ -178,6 +191,46 @@ class AssetsTests(unittest.TestCase):
         self.assertIsNone(a.load('sym_star', bytearray(10)))    # too small
         self.assertIsNone(a.load('nope', buf))
 
+    def test_sheet_blit_load_rows_and_fallbacks(self):
+        write_sheet(self.dir, 'cards', {0: (200, 10, 10), 52: (10, 10, 200)})     # AS and the back, rest magenta
+        a = Assets(self.dir)
+        s = a.sheet('cards')
+        self.assertIsNotNone(s)
+        self.assertEqual((s.w, s.h, len(s.names)), (40, 56, 53))
+        self.lcd.fill(rgb(0, 90, 40))
+        self.assertTrue(s.blit(self.lcd, 0, 10, 10))
+        self.assertEqual(self.lcd.pixel(15, 15), rgb(200, 10, 10))
+        self.assertTrue(s.blit(self.lcd, 5, 100, 10))                 # a placeholder: all key, nothing drawn
+        self.assertEqual(self.lcd.pixel(105, 15), rgb(0, 90, 40))
+        buf = bytearray(4480)
+        self.assertTrue(s.read(52, buf))
+        self.assertEqual(buf[0], 0x08)                                  # (10,10,200) -> 0x0859 big-endian, high byte first
+        rows = bytearray(80 * 3)
+        self.assertTrue(s.rows(0, 10, 3, rows))
+        self.assertEqual(rows[0], 0xC8 & 0xF8 | 0x00)                 # red high byte of (200,10,10)
+        s.close()
+        # through Assets: use_sheets makes blit()/load() read members from the open sheet
+        a.use_sheets(('cards', 'chips'))                               # chips sheet absent: ignored
+        self.assertIn('cards', a.open_sheets)
+        self.assertNotIn('chips', a.open_sheets)
+        self.lcd.fill(0)
+        self.assertTrue(a.blit(self.lcd, 'c_AS', 0, 0))
+        self.assertEqual(self.lcd.pixel(5, 5), rgb(200, 10, 10))
+        self.assertTrue(a.blit(self.lcd, 'c_7C', 50, 0))               # placeholder member: drawn (nothing visible)
+        self.assertEqual(a.load('c_back', buf), (40, 56))
+        self.assertIsNone(a.load('c_back', bytearray(10)))
+        a.release_sheets()
+        self.assertEqual(a.open_sheets, {})
+        self.assertFalse(a.blit(self.lcd, 'c_AS', 0, 0))                # no sheet open, no single file: False
+
+    def test_bad_sheet_rejected(self):
+        write_565(os.path.join(self.dir, 'cards.565'), 40, 56 * 52, (1, 2, 3))   # one member short
+        a = Assets(self.dir)
+        self.assertIsNone(a.sheet('cards'))
+        self.assertIsNone(a.sheet('not_a_sheet'))
+        write_565(os.path.join(self.dir, 'icons.565'), 48, 48 * 4, (1, 2, 3))
+        self.assertIsNotNone(a.sheet('icons'))
+
     def test_wrong_size_background_rejected(self):
         write_565(os.path.join(self.dir, 'table.565'), 120, 120, (0, 90, 40))
         a = Assets(self.dir)
@@ -230,13 +283,24 @@ class BlackjackScreen(unittest.TestCase):
 
     def test_with_art_and_double_and_broke(self):
         write_565(os.path.join(self.adir, 'table.565'), 240, 240, (0, 90, 40))
-        write_565(os.path.join(self.adir, 'c_AS.565'), 40, 56, (240, 232, 200))
-        write_565(os.path.join(self.adir, 'c_back.565'), 40, 56, (30, 60, 160))
-        write_565(os.path.join(self.adir, 'chip_5.565'), 24, 24, (200, 20, 20))
-        write_565(os.path.join(self.adir, 'banner_win.565'), 160, 32, (240, 200, 60))
+        write_sheet(self.adir, 'cards', {card_from_name('5S'): (240, 232, 200), 52: (30, 60, 160)})
+        write_sheet(self.adir, 'chips', {1: (200, 20, 20)})
+        write_sheet(self.adir, 'banners', {0: (240, 200, 60)})
         ctx = make_ctx(self.adir, self.sdir, balance=20)
         s = blackjack.Screen(ctx)
         self.assertTrue(s.has_table_art)
+        self.assertEqual(set(ctx.assets.open_sheets), {'cards', 'chips', 'banners'})
+        s.draw_all()
+        # the player's first card (5S) comes from the cards sheet
+        px = s.lcd.pixel(12 + 20, blackjack.PLAYER_Y + 30)
+        s.table.shoe = Shoe(6, random.Random(0), stacked=[card_from_name(n) for n in ['5S', 'TD', '6H', '8C', 'TH']])
+        s.table.deal()
+        s.draw_all()
+        found = any(s.lcd.pixel(x, blackjack.PLAYER_Y + 30) == rgb(240, 232, 200) for x in range(12, 228))
+        self.assertTrue(found, 'card from sheet not drawn')
+        s.table.round = None
+        s.table.state = BETTING
+        ctx.bankroll.bet = 5
         s.draw_all()
         self.stack(s, ['5S', 'TD', '6H', '8C', 'TH'])
         s.handle('A')                        # deal, bet 5
