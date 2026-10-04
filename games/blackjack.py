@@ -109,10 +109,10 @@ class Screen:
     def draw_top(self):
         lcd = self.lcd
         self.felt(0, TOP_H)
-        bank = self.table.bankroll
-        font.text(lcd, '$%d' % bank.balance, 6, 4, GOLD, 2)
-        self.chip(bank.bet, 150, 0)
-        font.text_right(lcd, '%d' % bank.bet, 234, 4, WHITE, 2)
+        balance, bet = self.table.stakes()     # shows the doubled bet and the stake off the bankroll
+        font.text(lcd, '$%d' % balance, 6, 4, GOLD, 2)
+        self.chip(bet, 150, 0)
+        font.text_right(lcd, '%d' % bet, 234, 4, WHITE, 2)
 
     def draw_dealer(self):
         r = self.table.round
