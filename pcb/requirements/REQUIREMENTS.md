@@ -215,7 +215,7 @@ The owner's wishes for the first custom board: one integrated handheld, more RAM
 | 0 | PSRAM chip-select (XIP_CS1n; the only option not used by the game, the others being 8 and 19) | Documented, pico-sdk function table |
 | 1 | spare | |
 | 2, 3, 16, 18, 20; 15, 17, 19, 21; 8 to 13 | joystick, buttons, screen, exactly as section 5 | Verified |
-| 4, 6, 7, 5, 14 | microSD over SPI0 (MISO, SCK, MOSI), chip-select, card-detect | Documented pin functions; plan Unverified (awaiting HR review) |
+| 4, 6, 7, 5, 14 | microSD over SPI0 (MISO, SCK, MOSI), chip-select, card-detect | Documented pin functions; plan reviewed, `hw/reviews/HR-P01.md` (fits) |
 | 22 | speaker, PWM audio | plan |
 | 23, 24, 25, 29 | RM2 wireless module, as the stock Pico 2 W firmware expects | Documented, pico-sdk `pico2_w.h` (HR-033) |
 | 26, 27 | fuel gauge I2C1 | plan |
