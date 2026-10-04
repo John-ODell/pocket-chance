@@ -22,6 +22,33 @@ class CheckUpload(unittest.TestCase):
         self.assertTrue(check_upload.check_row('lib/lcd.py', '/lib/screen.py'))
         self.assertTrue(check_upload.check_row('games/blackjack.py', '/lib/blackjack.py'))
 
+    def test_record_catches_a_missing_method_and_import(self):
+        # a board file calling a method the recorded library lacks (the step-1g bug), and an
+        # import of a module that is not on the board
+        import tempfile, subprocess
+        root = check_upload.ROOT
+        old_blob = subprocess.check_output(['git', 'hash-object', '-w', '--stdin'], cwd=root,
+                                           input=b'class Assets:\n    def blit(self, fb, name, x, y):\n        pass\n').decode().strip()
+        game_blob = subprocess.check_output(['git', 'hash-object', '-w', '--stdin'], cwd=root,
+                                           input=b'from art import Assets\nimport mystery\nx = assets.open_sprite(1)\ny = lcd.fill(0)\n').decode().strip()
+        text = ('| Board path | Repo file | Step | Version (git blob) |\n|---|---|---|---|\n'
+                '| `/lib/art.py` | `lib/art.py` | 1f | %s |\n'
+                '| `/games/slots.py` | `games/slots.py` | 1g | %s |\n' % (old_blob[:12], game_blob[:12]))
+        problems, warnings = check_upload.check_record(text)
+        joined = '\n'.join(problems)
+        self.assertIn('assets.open_sprite()', joined)
+        self.assertIn("imports 'mystery'", joined)
+        self.assertNotIn('lcd.fill', joined)                   # framebuf method, not ours
+        self.assertTrue(any('differs from the version on the board' in w for w in warnings))
+
+    def test_record_helper_updates_rows(self):
+        text = ('| Board path | Repo file | Step | Version (git blob) |\n|---|---|---|---|\n'
+                '| `/lib/art.py` | `lib/art.py` | 1f | 000000000000 |\n')
+        out = check_upload.update_record(text, '1h', ['lib/art.py', 'games/slots.py'])
+        self.assertIn('| `/lib/art.py` | `lib/art.py` | 1h | %s |' % check_upload.blob_of('lib/art.py')[:12], out)
+        self.assertIn('| `/games/slots.py` | `games/slots.py` | 1h |', out)
+        self.assertNotIn('000000000000', out)
+
     def test_current_upload_md_is_clean(self):
         self.assertEqual(check_upload.main(['--no-tests']), 0)
 
