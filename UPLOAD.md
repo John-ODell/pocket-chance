@@ -59,6 +59,16 @@ Three files changed. Y splits a pair; the two hands sit side by side; the hand i
 
 **Test line:** deal until you get a pair (two of the same rank, e.g. two 8s; a king and a jack do not count). The prompt shows "Y split". Press Y: the bet on the top line doubles, two hands appear side by side with the left one marked, A/B/X play the left hand then the right. The result line shows each hand, e.g. "WIN +10   LOSE -10". Two aces: Y deals one card to each and the round ends at once.
 
+## Step 1d: menu background (D-007), 2026-10-04
+John's casino photo behind the main menu. Two files.
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `pocket.py` | `/pocket.py` |
+| 2 | `assets/out/menu_background.565` | `/assets/menu_background.565` |
+
+**Test line:** start `/pocket.py`: the photo fills the menu, the title, chips and footer sit on small dark plates, the selected row is a solid dark-blue box with a gold border, the other rows show the photo with a dark plate under the word. Joystick up/down moves the box with no flicker elsewhere. Without the `.565` file the menu is plain dark blue as before.
+
 ## Step 2: pilot image test (after you have made the 4 pilot images)
 On the Mac, from the repo folder:
 
