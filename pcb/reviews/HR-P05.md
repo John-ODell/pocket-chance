@@ -239,3 +239,15 @@ No nuisance trip up to 60 °C; at 85 °C the family's derating (~0.6 A) still cl
 
 ## Not verified
 F1's datasheet itself (figures as the designer quoted them); DW01A datasheet (still to be saved); PCM figures (no cell chosen).
+
+## Part 8 addendum: the hold-margin claim withdrawn pending a measured load (2026-10-04, after the auditor's `…160129` answer)
+The auditor is right that "no nuisance trips" rested on an unmeasured 0.40–0.45 A. The 3.3 V rail's draw with every consumer on at once, from the sources in `pcb/refs/`:
+| Consumer | Peak at 3.3 V | Source |
+|---|---|---|
+| RM2 transmit, MCS7 at 16 dBm | 271 mA | rm2-datasheet, features list |
+| PAM8302A at full output (0.7–0.8 W into 8 Ω at 10 % THD, ~85 % efficient) | ≈ 250 mA | pam8302a p.4 (P_O at 3.6 V); the division is mine |
+| RP2350 at 150 MHz with PSRAM and flash active | ≈ 50–80 mA | general practice, unmeasured |
+| LCD module backlight at 100 % | ≈ 40–60 mA | unmeasured (the module's drive is still an open item) |
+| microSD write burst | 100–200 mA | general practice, card-dependent |
+| **Sum of peaks** | **≈ 0.7–0.85 A** at 3.3 V → **≈ 0.9–1.05 A from a 3.0 V cell** at 88 % | the TPS63001 switch limit is 1.6–2.0 A (tps63001 p.5), so the regulator does not cap this |
+Against F1 at 1.10 A (25 °C) / 0.77 A (60 °C) hold, the all-at-once case sits in the hold-to-trip band; a PPTC there does not trip quickly, but whether it trips at all depends on how long the firmware keeps Wi-Fi transmit, full-volume audio and a card write going together. Nothing in the project's software does that today (no radio, no audio, no card use yet), so the bound is genuinely open. Three honest ways out, for the designer and John: (a) keep 1.1 A and measure on the first board before committing to the value (same 1812 footprint for every hold rating in the family); (b) fit 1.5 A hold / 3.0 A trip (MF-MSMF150/16X-2 class) and accept that the second layer trips at 3 A instead of 2.2 A, still far below a cell short and still inside what the DW01A (~3 A) and the JST-PH contacts (2 A continuous, jst-ph p.1) tolerate for the seconds to trip; (c) a firmware rule against Wi-Fi transmit during audio. My preference: (b), because a tripped PPTC that stays hot in a pocket is a worse outcome than containment at 3 A, and the PCM remains the first layer either way. Also conceded: "a 0603 is 0.1 W" is the common thick-film rating, not a universal one; the BOM should state the chosen R20 part's rating. Q4's body diode is a possible negative path to GP28, not a clamp I can certify. F1's trip curve and the DW01A's clamp current remain unsourced until their datasheets are in `pcb/refs/parts/`.
