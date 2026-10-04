@@ -2,7 +2,7 @@
 
 _Updated by the senior dev at the end of each session. Written for John._
 
-**Last updated:** 2026-10-05 (night)
+**Last updated:** 2026-10-06
 
 ## Where we are
 Every decision for Phase 1 is approved (DR-001 to DR-015) and the first full version of the game is written. **It has never run on the board.** I have asked the expert to look it over on the bench first; after that the next step is yours: upload it following `UPLOAD.md` step 1 and tell the PM what you see.
@@ -41,6 +41,8 @@ The expert ran the build on the board. One blocker, now fixed: the image-loader 
 
 ## Slots dropped (D-009): what changed
 As you decided, slots is out. The code is parked in `archive/slots/` with a note; the menu is Blackjack, Caribbean, Hold'em, Off; the art list no longer mentions slot symbols or a cabinet. The sprite sheets stay for cards, chips, banners and icons. I kept the memory fixes the expert's slots bench taught us (no allocations in the screen driver and sheet reader, a slimmer sheet list), which help blackjack too. **Step 1i is on the board (2026-10-05, with your go).** The expert benched it first: 68 KB free at boot (65 before), about 54 KB free while playing blackjack, no leak, verdict fits. A full redraw is about 48 ms and a card from the new sheet format 3.4 to 3.9 ms, so your card art will make the game faster, not slower (key press to result 84 ms with a card sheet, 94 ms without). The sheet code costs about 7.6 KB more RAM than before sheets existed; that is the price of DR-024 and it fits.
+
+**Other players at the Stud table are built (DR-041), `UPLOAD.md` step 1k, five files for the expert.** Five chip stacks along the bottom of the Stud screen, a green or red marker after every hand, stacks growing or shrinking by a line per 200 chips. Each seat gets five real cards from the same deck and plays the standard strategy against the same dealer hand, so what you see is honest and your own odds are untouched. `STUD_SEATS` near the top of `pocket.py` sets 0 to 5. 10 new tests, including one that proves your cards and results are identical with and without seats.
 
 **Caribbean Stud is on the board and you said it is good.** Hold'em and the chip-stack seats wait for your rulings; the expert has measured them all and they fit. The Hold'em help-screen question is settled in DR-042: our simulator now agrees with the published figure (2.8% of the Ante with the full simple strategy, 6.8% without its river rule), so I recommend teaching the full strategy and showing the dealer-outs count as a hint; the expert measured the hint at a quarter of a second on the board, so it fits while you look at the river cards. A small clean-up request, DR-050, replaces the screen-clock register trick with a supported one-line call the expert measured as identical.
 
