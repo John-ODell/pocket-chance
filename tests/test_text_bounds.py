@@ -161,6 +161,52 @@ class TextBounds(unittest.TestCase):
             self.full(s, 'broke')
         self.check()
 
+    def test_stud_screens(self):
+        import stud
+        from stud_rules import WIN, LOSE, PUSH, NOQUALIFY, FOLD, Round, Rules
+        from stud_table import RESULT as S_RESULT, BROKE as S_BROKE, DECIDING as S_DECIDING
+        for balance in (10, 1000, 999999):
+            ctx = self.ctx(balance)
+            s = stud.Screen(ctx)
+            self.bounds.reset()
+            s.draw_all()
+            self.bounds.verify('stud idle %d' % balance)
+            if s.table.state == S_BROKE:
+                continue
+            s.table.adjust_ante(1000)
+            s.table.deal()
+            s.shown = 1
+            self.bounds.reset()
+            s.draw_all()
+            self.bounds.verify('stud deciding')
+            for shown in (2, 3, 4):
+                s.shown = shown
+                self.bounds.reset()
+                s.draw_dealer()
+                self.bounds.verify('stud reveal %d' % shown)
+            s.shown = 5
+            for outcome, net, raise_bet in ((WIN, 100 + 200 * 100, 200), (LOSE, -300, 200), (PUSH, 0, 200),
+                                            (NOQUALIFY, 100, 200), (FOLD, -100, 0)):
+                r = s.table.round
+                r.outcome, r.net, r.raise_bet, r.state = outcome, net, raise_bet, 'done'
+                s.table.state = S_RESULT
+                self.bounds.reset()
+                s.draw_all()
+                self.bounds.verify('stud result %s' % outcome)
+            s.table.round = None
+            s.table.state = S_BROKE
+            self.bounds.reset()
+            s.draw_all()
+            self.bounds.verify('stud broke')
+            self.bounds.reset()
+            real_wait, real_draw = s.buttons.wait_any, s.draw_all
+            s.buttons.wait_any = lambda: 'A'
+            s.draw_all = lambda: None
+            s.paytable()
+            s.buttons.wait_any, s.draw_all = real_wait, real_draw
+            self.bounds.verify('stud paytable')
+        self.check()
+
     def test_menu_and_messages(self):
         with open(os.path.join(ROOT, 'pocket.py')) as f:
             src = f.read().replace('\nmain()\n', '\n')
