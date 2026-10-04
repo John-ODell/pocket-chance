@@ -6,6 +6,8 @@
 FAST_SPI = True          # DR-015 off switch. False = screen link at 24 MHz, everything else the same.
 SPI_BAUD = 62_500_000    # real 62.5 MHz with the fix on; use 12_000_000 for a real 31.25 MHz (HR-015)
 SAVE_PATH = '/save.json'
+UTH_SEATS = 4            # other players at the Hold'em table, 0 to 4 (DR-044)
+UTH_HINT = True          # river dealer-outs count on the Hold'em prompt (DR-042 addendum)
 
 import sys
 import gc
@@ -39,7 +41,7 @@ GREY = rgb(140, 140, 140)
 # 9 characters at most (tests/test_screens.py checks). Full game names are used inside the games.
 MENU = (('Blackjack', 'blackjack', 'icon_blackjack'),
         ('Caribbean', 'stud', 'icon_stud'),
-        ("Hold'em", None, 'icon_holdem'),
+        ("Hold'em", 'holdem', 'icon_holdem'),
         ('Off', 'off', None))                        # slots was dropped (D-009)
 VISIBLE = 3                                  # rows on screen (DR-022: scrolling list)
 
@@ -214,6 +216,8 @@ def main():
     ctx.buttons = Buttons()
     ctx.assets = Assets('/assets')
     ctx.store = Store(SAVE_PATH)
+    ctx.uth_seats = UTH_SEATS
+    ctx.uth_hint = UTH_HINT
     try:
         random.seed()           # hardware RNG on rp2
     except Exception:
