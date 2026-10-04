@@ -26,8 +26,6 @@ Needs approval:
 
 ## Hardware review
 
-**Update 2026-10-04 (ruling D-004):** John decided the project does not need a dedicated hardware reviewer. The `Needs HW review` step is no longer required and the expert session is retired. The measurements in `hw/BUDGET.md` and the reviews in `hw/reviews/` remain the reference, so stay inside that budget. If you are unsure whether something fits the hardware, say so in the decision request and measure it with the scripts in `hwtest/` when John runs them. The rest of this section is kept for history.
-
 Add `Needs HW review: yes` to a decision request, and ask the expert for a review (`hw/reviews/`), whenever it involves any of these:
 - frame rate, redraw strategy, SPI clock, animation timing, or sprite and background streaming
 - RAM use, flash use, file sizes, or how often flash is written
