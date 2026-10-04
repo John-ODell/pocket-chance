@@ -1,8 +1,9 @@
 # Other players at the Caribbean table (DR-069): Ultimate's chip-stack seats. Each seat gets two
 # real cards from the same deck after the player, dealer and board, plays the taught strategy at the
 # flop with the player's Ante, settles against the same dealer hand with the same pays and the same
-# armed multiplier, and keeps a chip count that starts at 1000 and refills silently. Cosmetic: never
-# saved, never affects the player's cards, odds or payout. The seats are also the "everyone" of the
+# armed multiplier (every player at the table has the same chance), and keeps a chip count that
+# starts at 1000 and refills silently. Cosmetic: never saved, never affects the player's cards, odds
+# or payout. The seats are also the "everyone" of the
 # multiplier rule (DR-064): it arms only when the player and every seat beat a qualified dealer.
 
 from poker import evaluate

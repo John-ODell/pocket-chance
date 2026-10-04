@@ -171,11 +171,13 @@ if __name__ == '__main__':
     S = 2
     # (label, seats, (low, high) in Antes, unqualified: 'pay' table / 'even' / 'push', multiplier on
     #  'none' / 'call' / 'all', trigger 'any' / 'qualified', cap on N, strategy (0 = the game's), qualifying pair)
+    # (label, seats, (low, high) in Antes, unqualified: 'pay' table / 'even' / 'push', multiplier on
+    #  'none' / 'call' / 'all', trigger 'any' / 'qualified', cap on N, strategy (0 = the game's), qualifying pair)
     configs = [
-        ("Caribbean as built: low 2x/high 4x, unq. push, x3 call, qualified", 4, (2, 4), 'push', 'call', 'qualified', 3, 0, 4),
-        ("  same with x2", 4, (2, 4), 'push', 'call', 'qualified', 2, 0, 4),
+        ("Caribbean as built: 2x/4x, unq. push, x3 on the WHOLE win, qualified", 4, (2, 4), 'push', 'all', 'qualified', 3, 0, 4),
+        ("  same with x2 on the whole win", 4, (2, 4), 'push', 'all', 'qualified', 2, 0, 4),
+        ("  same with x3 on the call only (previous build)", 4, (2, 4), 'push', 'call', 'qualified', 3, 0, 4),
         ("  same with no multiplier", 4, (2, 4), 'push', 'none', 'any', 9, 0, 4),
-        ("  same with 0 seats (no multiplier possible)", 0, (2, 4), 'push', 'call', 'qualified', 3, 0, 4),
         ("fixed 2x, Ante table vs unqualified (published game), game strategy", 4, (2, 2), 'pay', 'none', 'any', 9, 0, 4),
     ]
     jobs = []

@@ -18,7 +18,7 @@ LINES = (
     'the table. Else FOLD.',
     '',
     'If everyone beats a dealer',
-    'hand, next call win pays x3.',
+    'hand, next hand wins pay x3.',
 )
 
 
@@ -31,7 +31,7 @@ def show(lcd, buttons, bg, gold, white, grey):
             col = gold if text.startswith(('HIGH', 'LOW', 'If')) else white
             font.text(lcd, text, 4, y, col, 1)
         y += 11
-    font.text_centred(lcd, 'Edge about 8% of the Ante', 120, y + 4, grey, 1)
+    font.text_centred(lcd, 'Edge about 5% of the Ante', 120, y + 4, grey, 1)
     font.text_centred(lcd, 'any key: back', 120, 228, grey, 1)
     lcd.show()
     buttons.wait_any()

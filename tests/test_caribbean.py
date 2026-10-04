@@ -39,8 +39,8 @@ class RulesTests(unittest.TestCase):
         pair = evaluate(cards('8S 8H 2D 5C KD 7H 3S'))
         self.assertEqual(resolve(pair, dq, 10, 20, rules), (LOSE, -30, True))
         self.assertEqual(resolve(dq, dq, 10, 20, rules), (PUSH, 0, True))
-        # multiplier on the call only
-        self.assertEqual(resolve(flush, dq, 10, 40, rules, 3), (WIN, 20 + 120, True))
+        # multiplier on the whole win (Ante table pay and call), John's ruling
+        self.assertEqual(resolve(flush, dq, 10, 40, rules, 3), (WIN, (20 + 40) * 3, True))
         # unqualified dealer: everything pushes, even against a royal (John's ruling)
         dn = evaluate(cards('3S 2H 7D 9C KD 5H 8S'))
         self.assertEqual(resolve(royal, dn, 10, 40, rules), (PUSH, 0, False))
@@ -75,7 +75,7 @@ class RulesTests(unittest.TestCase):
         self.assertEqual((r.state, r.outcome, r.net, r.call), (DONE, WIN, 10 + 40, 40))
         r = Round(stacked('9S 9H', '4D 4C', '2S 5H KD 7C 3S'), rules, 10, mult=3).deal()
         r.call_(2)
-        self.assertEqual(r.net, 10 + 20 * 3)
+        self.assertEqual(r.net, (10 + 20) * 3)
         self.assertTrue(r.beat_qualified())
         r = Round(stacked('9S 9H', '4D 4C', '2S 5H KD 7C 3S'), rules, 10).deal()
         r.fold()
@@ -142,7 +142,7 @@ class TableTests(unittest.TestCase):
         t.deal()
         self.assertEqual(t.round.mult, 3)
         t.call(2)
-        self.assertEqual(t.round.net, 5 + 10 * 3)                     # Ante 1:1 (two pair... no: pair of aces 1:1) + call x3
+        self.assertEqual(t.round.net, (5 + 10) * 3)                   # pair of aces: Ante 1:1 + call, all tripled
         self.assertTrue(t.armed)                                      # everyone won again
         t.next_hand()
         # a seat that folds breaks the chain
