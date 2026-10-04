@@ -1,7 +1,7 @@
 # Blackjack screens and input. Thin: all rules live in blackjack_rules.py / blackjack_table.py.
 # Rulings: DR-005 (table background read on scene entry only; bands pushed for small changes;
 # full show() on scene change), DR-006 (code-drawn cards, chips and felt when art is missing),
-# DR-007 (save once per finished round), DR-011 ("Shuffling" moment), DR-012/014 (controls, limits).
+# DR-007 (save once per finished round, after the redraw so the result shows instantly), DR-011 ("Shuffling" moment), DR-012/014 (controls, limits).
 #
 # Controls   Betting: UP/DOWN bet +-5, LEFT/RIGHT +-25, A deal, B back to menu
 #            Playing: A hit, B stand, X double (when allowed)
@@ -179,8 +179,8 @@ class Screen:
 
     # ---- input -------------------------------------------------------------------------------
     def finish_round(self):
-        self.store.save(self.table.bankroll.balance)   # once per finished round (DR-007)
-        self.draw_all()
+        self.draw_all()                                  # show the result first (HR-F02: save is ~50-100 ms)
+        self.store.save(self.table.bankroll.balance)     # once per finished round (DR-007)
 
     def handle(self, key):
         """Return False to leave the game."""
@@ -226,8 +226,8 @@ class Screen:
         elif st == BROKE:
             if key == 'A':
                 t.refill()
-                self.store.save(t.bankroll.balance)
                 self.draw_all()
+                self.store.save(t.bankroll.balance)
             elif key == 'B':
                 return False
         return True
