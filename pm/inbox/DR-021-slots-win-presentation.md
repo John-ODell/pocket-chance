@@ -1,24 +1,24 @@
 # DR-021: Slots: how wins are shown, paytable screen, no auto-spin
 
-- **Status:** pending
+- **Status:** pending, **revision 2** (2026-10-05): the order of save and blink is fixed per the expert's HR-021; the write-rate question is answered (harmless).
 - **Filed by:** senior dev
 - **Date:** 2026-10-04
 - **Blocks:** Slots screen
-- **Needs HW review:** yes
+- **Needs HW review:** yes. Done: HR-021 (fits). Measured: one blink toggle of the three gold frames 58 ms (85 max); one save 54 to 77 ms mean, 102 to 151 ms max; about 1,000 writes per hour of continuous play, which the expert puts at thousands of times below any wear concern.
 
 ## The decision
 What happens after the reels stop, how the jackpot is shown, whether a paytable is visible in the game, and whether the machine can spin by itself.
 
 ## Options
 ### A. Highlight the winning line, show the amount in the bottom band, jackpot banner, paytable on X, no auto-spin (recommended)
-- On a win: the three windows get a gold frame that blinks 3 times (three 56 x 56 window pushes per blink, about 5 ms each) and the bottom band shows "WIN +40" in gold with the line name ("two cherries"). The `$` line updates. On no win: "no win" in grey.
+- **Order after the last reel stops (HR-021 limits):** the three windows are drawn into the framebuffer, the win is evaluated, the `$` line and the bottom band ("WIN +40" in gold with the line name, e.g. "two cherries"; "no win" in grey) are drawn and pushed, **then the bankroll is saved** (54 to 151 ms, while the player reads the result), **then** on a win the gold frames around the three windows blink 3 times (about 58 ms per toggle, measured; pushed as one 240-row band if it ever needs to be faster). The save never runs between reel stops or during the blink, so neither stutters.
 - Three stars: `banner_jackpot` art (200 x 40) in the bottom band for 2 seconds with a longer blink, then the win line.
 - **X** shows a paytable screen (plain text table of the lines and pays from DR-018 at the current bet; any key returns). This is how the player learns the odds.
-- No auto-spin in version 1: every spin is a press of A. The save happens once per spin, after the result is drawn (DR-007 rule, the same as blackjack).
-- Cons: the save once per spin is more writes than blackjack, roughly one every 3 to 4 seconds while playing. The expert's budget calls one write per round harmless (100,000-cycle flash, LittleFS spreads writes); at a spin every 4 seconds that is 900 writes an hour. If the expert prefers, I can save only when the balance changed, which is most spins anyway.
+- No auto-spin in version 1: every spin is a press of A. One save per spin (DR-007 rule). HR-021: about 1,000 writes an hour at the fastest a human plays, against a wear horizon the expert puts at hundreds of thousands of hours; "save only when the balance changed" is not needed, and the balance changes on every spin anyway.
+- Cons: the save adds 54 to 151 ms to the pause after each spin; the player is reading the result then, so it is not felt.
 
 ### B. Also an auto-spin (hold A)
-- Cons: encourages mindless draining of the bankroll and makes the write rate higher. Later, if asked.
+- Cons: encourages mindless draining of the bankroll. The write rate would still be harmless (HR-021). Later, if asked.
 
 ### C. No highlight, just the text
 - Cons: wins are easy to miss.
