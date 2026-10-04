@@ -50,7 +50,8 @@ def parse(text):
 
 def _atom(a):
     if isinstance(a, QStr):
-        return '"' + a + '"'
+        # KiCad quoted strings escape backslash, double quote and newline
+        return '"' + a.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n') + '"'
     if isinstance(a, bool):
         return 'yes' if a else 'no'
     if isinstance(a, float):
