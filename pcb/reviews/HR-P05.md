@@ -139,3 +139,24 @@ From RM2 Datasheet Figure 6 (PDF p.10): the bottom row's first pad is 2.75 mm fr
 
 ## Updated verdict for AUDIT-3
 Two items in Part 2 were wrong and are corrected above: R15 must be fitted (otherwise no charging), and the reversed-cell-with-USB case is NOT protected by the rev 0.3 guard (a design change is needed; proposal above). The RM2 footprint needs its pad centres moved. Everything else in Parts 1–3 stands.
+
+---
+
+# Part 5: verification of rev 0.5 (`fb7f350`, schematic content hash 9c68738622b49c3834cf49c85408a97a0885fea2)
+Read from the committed generator and footprint, 2026-10-04.
+
+## Guard: VERIFIED as walked
+`pcb/tools/gen_sch.py` at `fb7f350`: Q2 AO3401A {1 G: GUARD_G, 2 S: CELL_G, 3 D: CELL_P}; R45 100 kΩ BAT+ → GUARD_G; Q5 AO3400A {1 G: GUARD_C, 2 S: GND, 3 D: GUARD_G}; R46 10 kΩ CELL_P → GUARD_C; R47 47 kΩ GUARD_C → GND (fitted); R48 1 MΩ BAT+ → CELL_P; R22 0 Ω CELL_G → BAT+; Q3 AO3400A; R15 3.0 kΩ fitted with the datasheet reason. Every value is the one agreed in the walk (`pcb/team/…_three-confirmations.md` and the direct exchange). The eight states hold as argued there: correct cell USB off (body-diode bootstrap, Q5 from the cell), correct cell USB on (channel on, charge S→D), insertion with USB (no diode pre-conduction, charger regulation), reversed cell USB on (Q5 off at −3.4 V, Q2 gate = source, diode blocks; 34 µA through R46/R47 only), reversed cell USB off (all floating), no cell USB on (CELL_P ≈ 0.23 V via R48 against 57 kΩ, Q5 off, connector dead; hot leakage 10 µA × 57 kΩ = 0.57 V < 0.65 V), tripped pack (R48 applies the charger voltage at ~4 µA; PCM wake behaviour UNVERIFIED for the chosen cell), cell removed with USB (dead again). AO3400A V_GS(th) 0.65/1.05/1.45 V per the datasheet the designer logged.
+
+## BATTERY.md: VERIFIED
+Carries the ~110 µA standby drain with a cell fitted and the board off, and the charge-rate wording the auditor required: USB500's 500 mA is the total input, so a ≥ 1000 mAh cell gets ≤ 0.50 C with 1.8 kΩ; a 500 mAh cell with 3.6 kΩ is ISET-bound at 247 nominal, up to 271 mA (a hair over 0.5 C).
+
+## RM2 footprint: bottom row and pad geometry VERIFIED; side-column y has a 0.5 mm open discrepancy
+- Bottom pads 8–14: x = −4.50 … +4.50 at 1.5 mm, y = 7.85, 1.0 × 1.8 mm: matches the Figure 6 chain.
+- Side pads: x = ±6.75, 2.0 × 1.0 mm: matches.
+- Keep-out: a footprint rule area on F&B.Cu from y = −21.75 to **−3.25**, x = ±17.75 (35.5 × 18.5): matches the figure, bottom edge 5.0 mm below the body top.
+- **Side-pad centres: committed y = −2.25 … +6.75; my chain gives −2.75 … +6.25.** The chain: keep-out bottom at −3.25 (the designer's own zone uses it), first pad's top edge flush with it (the designer's crop reading too), 1.0 mm pad → centre −2.75. The committed −2.25 puts the first pad's top 0.5 mm below the keep-out line and the last pad's bottom 1.0 mm above the body bottom (my chain: 1.5 mm, matching the figure's spacing to the bottom row). Unresolved; to settle by one measurement on the figure (body top edge to first side-pad top edge: 5.0 mm per the chain) and, finally, by the 1:1 print against a real module. Not a registration hazard of the earlier kind (the earlier error was 1.0 mm; this is 0.5 mm, a third of a pad pitch), but it should be exact.
+- Courtyard +0.25 mm beyond the pads: present. Keep-out enforcement by the footprint rule area is unproven in DRC, as the designer says; a board-level rule area at layout is the safe duplicate.
+
+## Verdict for AUDIT-3 at rev 0.5
+The reversed-cell path with USB present is closed by the polarity sensor, with the tripped-pack wake path added; R15 is fitted; the charge-rate wording is correct. One 0.5 mm question on the RM2 side-pad y remains between the designer and me, with the measurement that settles it named above. Everything else from Parts 1–4 is resolved or carried in the open list (L2 ratings, DW01A/DS3231M datasheets, L1 orientation, module BL drive, coin-cell holder drawing, layout items, board current).
