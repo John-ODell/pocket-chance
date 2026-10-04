@@ -1,6 +1,6 @@
 # PCB-001: Battery, charging and power path for spin 1
 
-- **Status:** pending; **revised 2026-10-04 after John's choice of the JST LiPo over the 18650 holder** (via the PM). HR-P03 reviewed the earlier version; the expert is asked to re-check only the changed items (marked *re-review*).
+- **Status:** **decided by John 2026-10-04** (via the PM, after AUDIT-2): Option A as revised, JST LiPo only, cell temperature handled by the cell's protection board and a 0.5 C charge rate with a third socket pin for a thermistor cell, no on-board sensor. Awaiting the PM's ruling file. HR-P03 reviewed the earlier version; the expert is asked to re-check only the changed items (marked *re-review*).
 - **Filed by:** PCB maker
 - **Date:** 2026-10-04
 - **Blocks:** the power sheet of the schematic (phase 3). The rest of the schematic proceeds.
@@ -45,6 +45,21 @@ A single lithium cell, either a LiPo through a connector or an 18650 holder, cha
 - The board stays flat; the pouch cell lies beside or under it. John buys a protected pouch cell with a JST-PH plug in the size range above and checks its wire colours against the + and - marks before plugging in.
 - Buy **protected** cells only (the listing says "protected" or "with PCM").
 - Before the first battery test: a current-limited bench supply (or the expert's agreed alternative), the first power-up with no cell.
+
+## Cell temperature while charging: the decision and its residual risk (AUDIT-2 findings 7 and 8; John, 2026-10-04)
+- **Assumed cell:** a protected single-cell LiPo pouch, 3.7 V nominal, **1000 mAh or more**, rated for at least **0.5 C** charging, charging temperature window **0 to 45 °C** (the usual pouch-cell rating; the cell's own datasheet rules), 2-wire JST-PH plug, + on pin 1 (red wire).
+- **Charge current:** R14 1.8 kΩ gives 443 to 542 mA (BQ24074 K_ISET 797 to 975 AΩ), nominal 494 mA = 0.49 C for 1000 mAh. For a 500 mAh cell, R14 = 3.6 kΩ (247 mA). The value is printed on the silkscreen. Termination at the charger's 10 % default (about 49 mA), pre-charge handled by the chip, safety timer about 6 h (R16 47 kΩ).
+- **What the charger cannot do with a two-wire cell:** sense the cell's temperature. R12 (10 kΩ on TS) is fitted by default, which tells the charger the cell is always at a safe temperature. The charger's own thermal regulation protects the charger chip, not the cell.
+- **What protects the cell instead:** its own protection board (over-charge, over-discharge, over-current), the conservative 0.5 C rate, the 6 h safety timer, and the on-board DW01A + FS8205A as a second layer.
+- **The better configuration:** a cell with a thermistor lead on socket pin 3 (TS); then R12 is removed and the charger stops charging below 0 °C and above about 45 °C by itself.
+- **Owner warning (also on the schematic and in `pcb/BATTERY.md`):** use only a protected cell; check the wire colours against the + and - marks; charge on a non-flammable surface; never leave the first power-ups unattended; stop if the cell or the charger area gets warm to the touch.
+- Residual risk accepted by John: a damaged or counterfeit cell without a working protection board, charged in a hot or freezing place, is not caught by this board.
+
+## Changes from AUDIT-2 (commit 808ccf1, schematic rev 0.3)
+- Reverse-polarity guard Q2 redrawn with its drain on the cell and source on the board (finding 1).
+- Battery divider gated by the 3.3 V rail through Q3/Q4 so GPIO28 sees nothing while the board is off (finding 2).
+- L2 named (Abracon ASPIAIG-F4020-2R2M, saturation and DCR to confirm from its datasheet) and the three 10 µF capacitors specified as 0805, 10 or 16 V, X5R (finding 10).
+- R15 (ILIM) not fitted; USB500 is the active input limit (finding 13).
 
 ## Appendix
 - Expert input so far: HR-033 section 2 (charger, protection, buck-boost not LDO, switch on enable, fuel gauge optional), HR-P01 (size the buck-boost for 500 mA+, consider a switched card supply), HR-P02 follow-up (protected 18650 only).
