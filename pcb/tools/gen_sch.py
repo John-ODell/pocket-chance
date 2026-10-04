@@ -274,20 +274,33 @@ add("Q1", ("pcb_custom", "FS8205A"), "FS8205A", "Package_SO:TSSOP-8_4.4x3mm_P0.6
 add("J3", ("Connector", "Conn_01x03_Socket"), "LiPo JST-PH 2.0mm (1 = + RED, 2 = -, 3 = NTC)", "Connector_JST:JST_PH_S3B-PH-SM4-TB_1x03-1MP_P2.00mm_Horizontal",
     (300, 400), {"1": "CELL_P", "2": "BAT-", "3": "TS"})
 add("Q2", ("Transistor_FET", "AO3401A"), "AO3401A", "Package_TO_SOT_SMD:SOT-23", (340, 400),
-    {"1": "BAT-", "2": "CELL_G", "3": "CELL_P"})   # 1 G = cell negative, 2 S = board side (BAT+ via R22), 3 D = cell positive
-# AUDIT-2 finding 1 (fixed): the P-FET's body diode conducts drain -> source, i.e. from the cell's + into the board.
-# Correct cell: the diode conducts at power-up, then Vgs = -Vcell turns the channel on (about 25 mV drop at 0.5 A);
-#   charging current from the BQ24074 BAT pin flows board -> cell through the ON channel. Reversed cell: the diode is
-#   reverse-biased, Vgs is positive so the channel stays off, and the cell's other lead (on BAT-) has no return path
-#   because the DW01A is unpowered and the FS8205A pair is off: no current in either direction, USB present or not.
+    {"1": "GUARD_G", "2": "CELL_G", "3": "CELL_P"})   # 1 G, 2 S = board side (BAT+ via R22), 3 D = cell positive
+add("R45", R, "100k", R0402, (355, 385), {"1": "BAT+", "2": "GUARD_G"})      # holds Q2 off unless Q5 pulls the gate down
+add("Q5", ("Transistor_FET", "AO3400A"), "AO3400A", "Package_TO_SOT_SMD:SOT-23", (370, 400), {"1": "GUARD_C", "2": "GND", "3": "GUARD_G"})
+add("R46", R, "10k", R0402, (385, 385), {"1": "CELL_P", "2": "GUARD_C"})     # Q5's gate follows the connector's + pin: 0.91 Vcell (2.7 V at an empty 3.0 V cell) vs Vgs(th) max 1.45 V
+add("R47", R, "47k", R0402, (400, 385), {"1": "GUARD_C", "2": "GND"})        # no cell: Q5 off, Q2 off, connector dead. 47k: Q2 leakage up to 10 uA hot gives 0.57 V at Q5's gate, below its 0.65 V minimum threshold (HR-P05 part 4)
 add("R22", R, "0R", "Resistor_SMD:R_0603_1608Metric", (395, 400), {"1": "CELL_G", "2": "BAT+"})   # ammeter link (HR-P03)
-# battery voltage divider to GP28 (HR-P01: >= 100k total)
+add("R48", R, "1M", R0402, (415, 385), {"1": "BAT+", "2": "CELL_P"})          # wakes a protection-tripped pack (0 V until a charger voltage appears): ~4 uA reaches the pack, it shows Vcell, Q5 turns on. No cell: CELL_P 0.23 V, Q5 off. Reversed: 8 uA. (HR-P05 part 4)
+# Reverse-polarity guard, rev 0.4 (AUDIT-3 #1 and HR-P05 part 4; the rev 0.3 single P-FET referenced to BAT- was not
+# enough with USB present, because the charger powers the DW01A, Q1 is on, BAT- sits at ground, and a reversed cell then
+# turned Q2 on). Now Q2's gate is pulled to BAT+ by R45 and only pulled down by Q5, whose gate (R46 10k from CELL_P, R47 47k to ground)
+# follows the connector's + pin: Q2 conducts only while CELL_P is positive with respect to board ground.
+#  Correct cell, no USB: Q2's body diode (drain=cell) lifts BAT+ to Vcell - 0.7; CELL_P = Vcell turns Q5 on (AO3400A
+#    Vgs(th) 0.65 to 1.45 V, ao3400a.pdf; gate = 0.82 Vcell = 2.5 V at a 3.0 V empty cell); Q2's gate goes to 0 V, Vgs = -Vcell, channel on.
+#  Correct cell, USB: as above; charge current flows board -> cell through the ON channel.
+#  Reversed cell, USB present: CELL_P is the cell's negative at about -3.7 V (BAT- is at ground through Q1): Q5 gate
+#    negative -> Q5 off -> Q2 gate at BAT+ (4.2 V) = source -> Q2 off; body diode (drain at -3.7 V, source 4.2 V) reverse
+#    biased. No current. R46 limits Q5's gate current; Vgs = -3.7 V is inside the AO3400A's +/-12 V rating.
+#  Reversed cell, no USB: nothing powers BAT+; Q5 off; Q2 off; isolated.
+#  No cell: R47 holds Q5 off, Q2 off: the connector carries only R48's 0.23 V.
+#  Protection-tripped pack (0 V at its terminals): R48 feeds the charger voltage to the pack at ~4 uA so its PCM can
+#    re-enable (general practice, unverified for the chosen cell); the pack then shows Vcell and the guard turns on.
 # AUDIT-2 finding 2 (fixed): the divider is connected only while the 3.3 V rail is up. Q3 (N-FET, gate on +3V3) pulls the
-# P-FET's gate low; with the board off, R39 holds Q4's gate at BAT+, Q4 is off, and R24 holds the ADC pin at 0 V, so GPIO28
+# P-FET's gate low (AO3400A, Vgs(th) <= 1.45 V); with the board off, R39 holds Q4's gate at BAT+, Q4 is off, and R24 holds the ADC pin at 0 V, so GPIO28
 # never sees voltage with IOVDD at 0 V (RP2350 ds: IO limit IOVDD + 0.5 V). Same idea as the Pico W's WL_CS-gated VSYS divider.
 add("Q4", ("Transistor_FET", "AO3401A"), "AO3401A", "Package_TO_SOT_SMD:SOT-23", (300, 455), {"1": "DIV_PG", "2": "BAT+", "3": "DIV_TOP"})
 add("R39", R, "100k", R0402, (315, 455), {"1": "BAT+", "2": "DIV_PG"})
-add("Q3", ("Transistor_FET", "2N7002"), "2N7002", "Package_TO_SOT_SMD:SOT-23", (330, 455), {"1": "+3V3", "2": "GND", "3": "DIV_PG"})
+add("Q3", ("Transistor_FET", "AO3400A"), "AO3400A", "Package_TO_SOT_SMD:SOT-23", (330, 455), {"1": "+3V3", "2": "GND", "3": "DIV_PG"})   # same logic-level N-FET as Q5 (one BOM line)
 add("R23", R, "100k", R0402, (300, 430), {"1": "DIV_TOP", "2": "VBAT_SENSE"})
 add("R24", R, "100k", R0402, (315, 430), {"1": "VBAT_SENSE", "2": "GND"})
 add("C28", C, "100nF", C0402, (330, 430), {"1": "VBAT_SENSE", "2": "GND"})
@@ -461,7 +474,7 @@ def build():
                           ["effects", ["font", ["size", 1.27, 1.27]], ["justify", "left"]], ["uuid", U()]])
     sch = ["kicad_sch", ["version", 20250114], ["generator", Q("eeschema")], ["generator_version", Q("9.0")],
            ["uuid", root_uuid], ["paper", Q("A1")],
-           ["title_block", ["title", Q("Pocket Chance board, spin 1")], ["date", Q("2026-10-04")], ["rev", Q("0.4")],
+           ["title_block", ["title", Q("Pocket Chance board, spin 1")], ["date", Q("2026-10-04")], ["rev", Q("0.5")],
             ["company", Q("Pocket Chance")],
             ["comment", 1, Q("Generated by pcb/tools/gen_sch.py from the connection table. Label-based: every pin carries its net name.")],
             ["comment", 2, Q("Blocks left to right: core | USB, power | screen, input, audio, card, sensors | wireless.")]],

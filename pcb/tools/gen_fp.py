@@ -48,33 +48,43 @@ def footprint(name, descr, items, attr="smd"):
 def rm2():
     """RM2: 14.5 x 16.5 mm module, 21 castellated pads at 1.5 mm pitch (rm2-datasheet.pdf Figure 6, Table 2).
     Origin: module centre. Module top edge at y = -8.25 (antenna end), bottom edge at y = +8.25.
-    Reading of Figure 6: pads are 1.0 mm wide along the edge and 2.0 mm long into the module, extended 0.5 mm
-    outside the edge (castellation). Left column pins 1..7 from the top down, 0.5 mm clear of the bottom edge;
-    bottom row pins 8..14 left to right starting 2.75 mm from the left edge (pad edge); right column pins 15..21
-    from the bottom up. Keep-out: 35.5 x 18.5 mm centred on the module, 13.5 mm beyond the antenna edge and
+    Reading of Figure 6 (corrected after AUDIT-3 and HR-P05 part 4): side pads 1.0 wide, 2.0 long in total (1.5 inside,
+    0.5 outside), first pad's top on the keep-out line; bottom pads 1.0 wide, 1.8 long (1.3 inside, 0.5 outside), centred
+    2.75 + 1.5k from the left edge. Left column pins 1..7 top down, bottom row 8..14 left to right, right column 15..21
+    bottom up. Keep-out: 35.5 x 18.5 mm centred on the module, 13.5 mm beyond the antenna edge and
     5.0 mm into the module. VERIFY on the 1:1 print and against the figure before ordering."""
     W, H = 14.5, 16.5
     L, R, T, B = -W / 2, W / 2, -H / 2, H / 2
-    pw, pl, ext, pitch = 1.0, 2.0, 0.5, 1.5
+    pw, pitch, ext = 1.0, 1.5, 0.5
     items = [text("Reference", "U", 0, T - 1.5, "F.SilkS"), text("Value", "RM2", 0, B + 1.5, "F.Fab"),
              text("user", "${REFERENCE}", 0, 0, "F.Fab")]
-    # left column: 7 pads, last one 0.5 mm above the bottom edge
-    ys = [B - 0.5 - pw / 2 - pitch * (6 - k) for k in range(7)]   # k=0 is pin 1 (top)
+    # Figure 6 reading agreed with the expert and the auditor (2026-10-04): side pads 2.0 long x 1.0 wide, the first one
+    # starting 0.5 mm below the keep-out line (which lies 5.0 mm into the module), 1.5 mm pitch; bottom pads 1.0 wide x 1.8
+    # long centred 2.75 mm from the left edge, 1.5 mm pitch; every pad reaches 0.5 mm outside the module edge.
+    keepout_y = T + 5.0
+    side_len = 2.0
+    ys = [keepout_y + 0.5 + pw / 2 + pitch * k for k in range(7)]          # pin 1 at the top: -2.75, ..., +6.25
     for k, y in enumerate(ys):
-        items.append(pad(k + 1, L + (pl - ext) / 2, y, pl + ext, pw))
-    # bottom row: pins 8..14, first pad edge 2.75 mm from the left edge
+        items.append(pad(k + 1, L + side_len / 2 - ext, y, side_len, pw))     # x centre -6.75, spans -7.75 .. -5.75 (2.0 total, 0.5 outside)
+    bot_len = 1.8
     for k in range(7):
-        x = L + 2.75 + pw / 2 + pitch * k
-        items.append(pad(8 + k, x, B - (pl - ext) / 2, pw, pl + ext))
-    # right column: pins 15..21 from the bottom up
+        x = L + 2.75 + pitch * k                                             # -4.50, ..., +4.50
+        items.append(pad(8 + k, x, B + ext - bot_len / 2, pw, bot_len))     # y centre 7.85, spans 6.95 .. 8.75
     for k, y in enumerate(reversed(ys)):
-        items.append(pad(15 + k, R - (pl - ext) / 2, y, pl + ext, pw))
+        items.append(pad(15 + k, R - side_len / 2 + ext, y, side_len, pw))    # x centre +6.75
     # outlines: fab = module body; silk = body minus the pad sides; courtyard = body + 0.5 mm
     items.append(rect("F.Fab", L, T, R, B))
     items.append(rect("F.SilkS", L, T, R, T + 4.0, 0.12))     # antenna end marked on silk
-    items.append(rect("F.CrtYd", L - 0.5, T - 0.5, R + 0.5, B + 0.5, 0.05))
-    # RF keep-out, drawn on the comments layer for the layout to turn into a rule area
+    items.append(rect("F.CrtYd", L - 0.75, T - 0.5, R + 0.75, B + 0.75, 0.05))   # 0.25 mm beyond the pads' outer edges
+    # RF keep-out (RM2 ds 2.4): 35.5 x 18.5 mm, 13.5 mm beyond the antenna edge and 5.0 mm into the module.
+    # Drawn on the comments layer AND as a rule area on every copper layer inside the footprint, so the DRC enforces it.
     items.append(rect("Cmts.User", -35.5 / 2, T - 13.5, 35.5 / 2, T + 5.0, 0.15))
+    kx0, ky0, kx1, ky1 = -35.5 / 2, T - 13.5, 35.5 / 2, T + 5.0
+    items.append(f'\t(zone (net 0) (net_name "") (layers "F&B.Cu") (uuid "{U()}") (name "RF_KEEP_OUT") (hatch edge 0.5)'
+                 f' (connect_pads (clearance 0)) (min_thickness 0.25) (filled_areas_thickness no)'
+                 f' (keepout (tracks not_allowed) (vias not_allowed) (pads not_allowed) (copperpour not_allowed) (footprints not_allowed))'
+                 f' (placement (enabled no) (sheetname "")) (fill (thermal_gap 0.5) (thermal_bridge_width 0.5))'
+                 f' (polygon (pts (xy {kx0:.3f} {ky0:.3f}) (xy {kx1:.3f} {ky0:.3f}) (xy {kx1:.3f} {ky1:.3f}) (xy {kx0:.3f} {ky1:.3f}))))')
     items.append(text("user", "RF KEEP OUT: no copper on any layer (rm2 ds 2.4)", 0, T - 7, "Cmts.User", size=0.8))
     items.append(text("user", "pin 1", L - 2.0, ys[0], "F.SilkS", size=0.6))
     footprint("RM2", "Raspberry Pi Radio Module 2, 21 castellated pads 1.5 mm pitch; drawn from the RM2 datasheet Figure 6 (VERIFY on 1:1 print)", items)
