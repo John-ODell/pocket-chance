@@ -39,6 +39,12 @@ The expert ran the build on the board. One blocker, now fixed: the image-loader 
 2. **Art:** make the four pilot images (`c_AS`, `c_back`, `chip_5`, `table`) at the sizes in `assets/ASSETS.md`, drawn the right way up as described there. Then `UPLOAD.md` step 2.
 3. Nothing else is waiting on you.
 
+## Approved for slots (DR-017, 018, 019, 022, 023) and what I did
+- `assets/ASSETS.md` Phase 2 is final: 8 symbols at 56 x 56, the optional cabinet with the window positions fixed, the jackpot banner, `sym_blur` dropped, and the dark zones to keep calm. **Pilot files first: `sym_cherry`, `sym_star`, `sym_bar`.**
+- The converter knows all Phase 2 names and warns about light or busy text zones on the cabinet, and about a symbol name that is not one of the eight.
+- The menu is now a scrolling list for five games (`UPLOAD.md` step 1e, one file). The two poker games show as **"Caribbean"** and **"Hold'em"**: the names in the ruling ("Carib. Stud", "Ult. Hold'em") are too wide for the label area at this text size (176 and 192 px against 152 available), so I used the longest forms that fit and told the PM. Say if you prefer other short names.
+- Waiting on the expert for DR-020 (spin animation) and DR-021 (win display and save rate) before the slot screens are built.
+
 ## Slots: seven decision requests filed (DR-017 to DR-023)
 You approved slots next (D-008). Before I build the screen I need your rulings on: the reel layout (one payline, three reels, 8 symbols); the paytable (I recommend 93.8% return to player, a win on 28% of spins, a 1000x jackpot about once in 32,768 spins; the numbers are exact, not estimates); bets (same chips, 5 to 100 a spin); how the reels spin and stop (the expert reviews the redraw cost); how wins are shown (gold frame, amount, jackpot banner, a paytable screen on X, no auto-spin); the menu for five games (a scrolling list); and the final Phase 2 art list (window positions fixed, `sym_blur` dropped). The slots engine itself is already built and tested (`games/slots_rules.py`); the rulings only set its parameters.
 
