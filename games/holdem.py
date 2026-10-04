@@ -22,8 +22,8 @@ from cards import card_name
 from holdem_rules import PREFLOP, FLOP, RIVER, WIN, LOSE, PUSH, FOLD
 from holdem_table import HoldemTable, BETTING, RESULT, BROKE
 
-FELT = rgb(0, 90, 40)
-FELT_EDGE = rgb(0, 60, 25)
+FELT = rgb(20, 40, 110)                 # deep blue (DR-065: a colour per game)
+FELT_EDGE = rgb(10, 25, 70)
 CREAM = rgb(240, 232, 200)
 BLACK = rgb(0, 0, 0)
 RED = rgb(200, 20, 20)
