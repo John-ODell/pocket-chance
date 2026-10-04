@@ -119,6 +119,11 @@ Scripts: `hwtest/pocket_bench.py` (8 scripted hands), plus a per-module import r
 | `Double`: bet doubles, one card, round resolves, balance moves by exactly the doubled bet | correct in 8 of 8 hands (bench pressed X whenever allowed) |
 | Re-banded screen (commit `2c930a9`, four non-overlapping bands), re-bench | unchanged within noise: `draw_all` 45 ms, bet band 16 ms, key→banner 82.5 / 101 ms, save 62 / 119 ms, 63.3 KB after 8 hands |
 | John playing the real game (`pocket.py` RESULT lines) | boot 82,800 free; inside blackjack 58,736 (pre-split build) / **54,096 (split build)**; after leaving 74,080 / 71,664; a second entry costs only ~8 KB because the rules modules stay cached |
+| **`os.stat` on this LittleFS** | **3.7 ms**; `open` + header + 6,272-byte read 4.1 ms; so one `Assets.blit` from flash costs ~8 ms, of which ~1 ms is the read (HR-F03). Blit the same sprite from RAM: 1.5 ms keyed, 0.8 ms unkeyed |
+| Slots spin, 3 reels, 8 px/frame, as described in DR-020 (flash reads + copy + `show_rect` per reel per frame) | **82 ms, 12 fps** at 62.5 MHz; 90 ms at 24 MHz (`slots_spin_bench.py`, HR-020) |
+| Slots spin, fixed path (symbols in RAM, compose pushed directly) | **13.1 ms, 76 fps** at 62.5 MHz; 17.7 ms, 56 fps at 24 MHz; frame with 6 symbol reads 38 ms; one reel 4.5 ms (`slots_spin_bench2.py`) |
+| Direct push of a 56x56 window | 1.5 ms; `show_rect` of the same window 7.1 ms (Python row copy) |
+| Blink: gold frame on/off around three 60x60 windows via `show_rect` | 57.8 ms per toggle, 85 max (HR-021) |
 | Menu with photo background (D-007, step 1d), real `pocket.py` code | image read **once** on entry, 20.9 ms; menu entry 92–104 ms total (read 21 + show 18 + ~60 ms plates and size-2 text); joystick move 45.6 / 49 ms (two 48-row slices re-read from flash ≈ 4.5 ms each + two band pushes); 68.5 KB free after (`menu_bench.py`) |
 | Split as built (step 1c), scripted play | Y redraw 51.5 ms; hit/double on a split hand 40–42 ms; key→banner 99.6 / 103 ms; round-ending stand incl. save 213 / **256 ms**; 59.6 KB free after (`split_play_bench.py`, HR-016) |
 | Split layout (DR-016), two hands in the 142-row player band, code-drawn cards | 2+2 cards 38 ms; 3+2 42 ms; **4+4 worst 52.6 ms** vs 36.6 ms for one 4-card hand today; one code-drawn card 3.9 ms; second hand 64 bytes RAM (`split_bench.py`, HR-016) |
