@@ -2,12 +2,18 @@
 
 _Updated by the senior dev at the end of each session. Written for John._
 
-**Last updated:** 2026-10-04 (afternoon)
+**Last updated:** 2026-10-04 (evening)
 
 ## Where we are
 Every decision for Phase 1 is approved (DR-001 to DR-015) and the first full version of the game is written. **It has never run on the board.** I have asked the expert to look it over on the bench first; after that the next step is yours: upload it following `UPLOAD.md` step 1 and tell the PM what you see.
 
 The board currently boots to a blank screen because the old program was erased at your request (D-003). The new game installs as `/pocket.py` and you start it by hand from Viper IDE; it does not take over the boot file until you say so (`UPLOAD.md` step 3).
+
+## Your first play (2026-10-04) and what I did about it
+- **"Double seems off":** the arithmetic was right (the expert confirmed it on the bench: bet doubled, one card, balance moved by exactly twice the bet). What was wrong is what you saw: the top line kept showing the original bet, and nothing said the hand had been doubled. Now the top line shows your chips minus the stake while a hand is in play, the bet doubles on screen when you press X, the total line says "DOUBLED x2", and the result line reads "DOUBLED: bet 20, +20". 16 new tests cover every step of the double path. If you saw something else, tell the PM what happened and I will chase it.
+- **Split:** not in v1 by your earlier ruling (DR-012). I filed **DR-016** recommending split once, any pair, aces one card each, double after split allowed; it lowers the house edge from about 0.97% to about 0.55% (measured, 3 million hands per row). Y would be the split button.
+- **"Main select screen is a mess":** confirmed. "Slots (soon)" was drawn 44 px off the right edge and the labels crossed the highlight box. The menu is laid out again (three boxed rows, labels inside the rows, "soon" small and grey) and a test now measures every string on every screen against the 240 px panel, so this cannot come back. A photo of the new menu after you re-upload would help me confirm it looks right.
+- Re-upload is `UPLOAD.md` step 1b (three files).
 
 ## Bench check result (expert, 2026-10-04)
 The expert ran the build on the board. One blocker, now fixed: the image-loader module was called `assets.py`, and on the board the empty `/assets` folder hid it, so the game would not start. It is renamed `lib/art.py` (a file rename within DR-001, no new decision). A test now fails if any module is ever named like a board folder. Everything else was good: 8 scripted hands with no errors, a full redraw in about 43 ms, bet change 15 ms, hit 29 ms, 64 KB of RAM free after play. I also moved the save to after the result is drawn, so the banner appears instantly instead of up to 0.18 s later. The expert is re-checking the fixed build before you upload.
@@ -28,7 +34,9 @@ The expert ran the build on the board. One blocker, now fixed: the image-loader 
 3. Nothing else is waiting on you.
 
 ## Waiting on a decision
-Nothing. I will file a request before any new work on slots (Phase 2), and for making `pocket.py` the boot file if you prefer it decided here rather than in `UPLOAD.md`.
+- **DR-016** splitting pairs (needs the expert's look at the redraw cost first).
+
+Otherwise nothing. I will file a request before any new work on slots (Phase 2), and for making `pocket.py` the boot file if you prefer it decided here rather than in `UPLOAD.md`.
 
 ## What I plan next
 - Fix whatever the bench check and step 1 turn up.
