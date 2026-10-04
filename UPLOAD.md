@@ -184,9 +184,9 @@ _The record of what the board holds. `tools/check_upload.py` reads it: every mod
 
 | Board path | Repo file | Step | Version (git blob) |
 |---|---|---|---|
-| `/games/holdem.py` | `games/holdem.py` | 1m | e66a581fcd0c |
+| `/games/holdem.py` | `games/holdem.py` | 1m | 15999364de92 |
 | `/games/holdem_pay.py` | `games/holdem_pay.py` | 1m | 16eb817d94e1 |
-| `/games/holdem_table.py` | `games/holdem_table.py` | 1m | fa7058a9716e |
+| `/games/holdem_table.py` | `games/holdem_table.py` | 1m | f2ce77f0b1ce |
 | `/games/holdem_seats.py` | `games/holdem_seats.py` | 1m | 16a22b6a6c43 |
 | `/games/holdem_rules.py` | `games/holdem_rules.py` | 1m | 608855a2b7a8 |
 | `/lib/poker.py` | `lib/poker.py` | 1j | 41fea1368c8c |
@@ -195,7 +195,7 @@ _The record of what the board holds. `tools/check_upload.py` reads it: every mod
 | `/games/stud_table.py` | `games/stud_table.py` | 1j | fe06c8a6ac90 |
 | `/games/stud_rules.py` | `games/stud_rules.py` | 1j | 3aa5af7c4a7e |
 | `/lib/sheets.py` | `lib/sheets.py` | 1j | e3adeacc4c38 |
-| `/pocket.py` | `pocket.py` | 1m | 4936c8e68db7 |
+| `/pocket.py` | `pocket.py` | 1m | c61acd694e67 |
 | `/lib/pixfmt.py` | `lib/pixfmt.py` | 1 | 03010786bfba |
 | `/lib/clocks.py` | `lib/clocks.py` | 1 | b8c0bbf5c8f0 |
 | `/lib/lcd.py` | `lib/lcd.py` | 1i | 3c6b0dee4cfc |

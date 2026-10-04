@@ -202,8 +202,10 @@ class TableFlow(unittest.TestCase):
         self.assertIsNone(t.outs)
         t.check()
         self.assertEqual(t.state, RIVER)
-        self.assertIsNotNone(t.outs)                                      # hint computed at the river
+        self.assertIsNone(t.outs)                                         # the screen asks for the hint
+        self.assertIsNotNone(t.compute_outs())
         self.assertTrue(0 <= t.outs <= 45)
+        self.assertEqual(t.compute_outs(), t.outs)                        # computed once
         t.raise_(1)
         self.assertEqual(t.state, RESULT)
         r = t.round
@@ -218,6 +220,7 @@ class TableFlow(unittest.TestCase):
         t.deal()
         t.check()
         t.check()
+        self.assertIsNone(t.compute_outs())
         self.assertIsNone(t.outs)
 
     def test_seats_never_touch_the_player(self):
