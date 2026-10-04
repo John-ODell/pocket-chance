@@ -17,6 +17,9 @@ _Maintained by the microcontroller expert. State what is on the desk and how you
 | Free RAM at boot | 222,720 bytes free, largest allocatable block 199,129 | `hwtest/ram_free.py` |
 | ADC3 / GPIO29 | reads 7770/65535 = 1.17 V after the Pico's x3 divider. Not a believable VSYS, so this board probably does not wire GPIO29 to VSYS like a Pico. Check the schematic in `../Pico_Reference/` before relying on it | `hwtest/pins_idle.py` |
 
+## If mpremote says "could not enter raw repl"
+The board is almost certainly fine. A killed `mpremote exec` (timed background run, closed terminal) leaves it in raw-REPL mode with the program still running, and mpremote's handshake then fails. Run `hwtest/unwedge.py` (Mac side, pyserial: Ctrl-C, Ctrl-B, Ctrl-D) and mpremote connects again. Unplugging also works but is not needed. Learned the hard way on 2026-10-04, twice.
+
 ## Pin map: VERIFIED on this board, 2026-10-04
 All nine inputs idle high with pull-ups (`pins_idle.py`), and every one answered on its own GPIO when John pressed it (`bounce.py` 45 s capture; `pin_hunt.py` 30 s scan of all free GPIOs for up/down). The LCD pins are confirmed by the display: pattern shown, orientation and colour order read by John (`byteorder.py`). `main_monolith.py` runs unchanged on the RP2040-Plus.
 
