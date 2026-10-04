@@ -200,7 +200,7 @@ _The record of what the board holds. `tools/check_upload.py` reads it: every mod
 | `/games/stud_table.py` | `games/stud_table.py` | 1k | de994d48a9c8 |
 | `/games/stud_rules.py` | `games/stud_rules.py` | 1k | de79e3cb9287 |
 | `/lib/sheets.py` | `lib/sheets.py` | 1j | e3adeacc4c38 |
-| `/pocket.py` | `pocket.py` | 1l | 70cafd380e12 |
+| `/pocket.py` | `pocket.py` | 1l | c252261cce48 |
 | `/lib/pixfmt.py` | `lib/pixfmt.py` | 1 | 03010786bfba |
 | `/lib/lcd.py` | `lib/lcd.py` | 1i | 3c6b0dee4cfc |
 | `/lib/font.py` | `lib/font.py` | 1 | 7b1a40a2df70 |
