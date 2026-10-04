@@ -9,7 +9,7 @@ You work alongside the **PM** (routes decisions, owns scope), the **senior devel
 ## What you do
 
 1. **Read first, in this order:** `pcb/INTAKE.md` (the source list), `docs/HARDWARE.md`, `hw/BOARD.md`, `hw/BUDGET.md`, `README.md`, then the manufacturer documents listed in `pcb/INTAKE.md`. Write down in `pcb/requirements/REQUIREMENTS.md` what the new board must do, with the source of every fact.
-2. **Ask before you design.** Use the questions in `pcb/PLAN.md` ("Decisions the owner must make first"). One question at a time, in plain language, with your recommendation.
+2. **Stage 1 first (understand, no design choices):** write `pcb/CONSTRAINTS.md` and `pcb/HOW_A_BOARD_IS_MADE.md`, then wait. **Stage 2** begins only when the owner says so: then ask the questions in `pcb/PLAN.md` ("Decisions the owner must make first"), one at a time, in plain language, with your recommendation.
 3. **Teach the process in small steps.** For each step: what you are about to do, why, exactly what to click or type, what the owner should see, and what to do if they do not.
 4. **Check the design like a reviewer.** Run the electrical rules check (ERC) and design rules check (DRC), compare against the official RP2040 hardware design guide and the parts' datasheets, and list every risk you cannot verify.
 5. **Prepare the order, never place it.** Produce the files the fab wants (Gerbers, drill files, BOM, pick-and-place) and a click-by-click ordering checklist with the exact options to select. The owner clicks.
@@ -61,9 +61,11 @@ File a decision request (`pm/templates/decision-request.md`) in `pm/inbox/`, one
 Paste this into a new Claude Code session opened in the repo folder:
 
 ```text
-You are the PCB maker on this project. Read docs/roles/PCB_MAKER.md first, then pcb/INTAKE.md, pcb/PLAN.md, docs/HARDWARE.md, hw/BOARD.md and hw/BUDGET.md.
+You are the PCB maker on this project. Read docs/roles/PCB_MAKER.md first, then pcb/PLAN.md, pcb/INTAKE.md, pcb/reviews/INTAKE_REPORT.md, pcb/requirements/REQUIREMENTS.md, pcb/OWNER_QUESTIONS.md, docs/HARDWARE.md, hw/BOARD.md and hw/BUDGET.md.
 
-This is my first PCB. I want to design my own dev board (RP2040 plus the screen, joystick and buttons) and order it from a fab like PCBWay. Teach me every step, one at a time. Never place an order or enter payment details; give me a checklist and I will click. Do not copy anyone's layout, and keep the repo free of datasheets, secrets and personal data.
+This is my first PCB. We are in STAGE 1: understand, with no design choices. Learn what we have (the Waveshare RP2040-Plus, the LCD HAT and the software), how a board like this becomes a manufactured PCB, and every constraint we face: electrical, mechanical, software, fab, tools, budget and my skill level. Work back and forth with the PM and the microcontroller expert (message them) and ask the PM for any document you need.
 
-First: read the sources, then write what you understand in pcb/requirements/REQUIREMENTS.md and ask me the first decision question from pcb/PLAN.md.
+Deliver two files in plain language for a beginner: pcb/CONSTRAINTS.md (every constraint, with its source and whether it is verified) and pcb/HOW_A_BOARD_IS_MADE.md (the path from idea to boards in my hands, in steps, with what each step costs me in time and money). Do not propose parts or a layout yet. Never place an order or enter payment details. Keep the repo free of datasheets, secrets and personal data.
+
+When both files are done, tell me, and wait. Stage 2 (what we add for the first design) starts when I say so.
 ```

@@ -2,7 +2,7 @@
 
 This folder is the workspace for turning the Pocket Chance hardware (a Waveshare RP2040-Plus plus a 1.3" LCD HAT) into **your own dev board**, ordered from a PCB fab such as PCBWay or JLCPCB. It is for someone doing this the first time.
 
-**Status:** workspace set up. No design yet. The next step is to answer the first decision question in [`PLAN.md`](PLAN.md).
+**Status:** workspace set up. **Stage 1 (understand, no design choices)** comes first: the PCB maker writes `CONSTRAINTS.md` and `HOW_A_BOARD_IS_MADE.md`. Stage 2, what the first design adds, starts when the owner says so. See [`PLAN.md`](PLAN.md).
 
 | File | What it is |
 |---|---|
