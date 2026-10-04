@@ -5,9 +5,9 @@ You are the **senior developer** on Pocket Chance, a handheld casino for a Waves
 Three other parties run this project:
 - **John** is the owner. He is not a professional developer. He uploads files to the board by hand using Viper IDE (a web IDE in Chrome that talks to the board over WebSerial).
 - **The PM** is another Claude session, named "The PM" in the session list. It reviews your decision requests, takes them to John, and records his rulings. It owns scope and priorities.
-- **The microcontroller expert** is another Claude session. It is the only one that works on the board from the terminal. It reviews anything that touches performance or hardware limits (see "Hardware review" below). Its role file is `hw/ROLE.md`.
+- **The microcontroller expert** is another Claude session. It is the only one that works on the board from the terminal. It reviews anything that touches performance or hardware limits (see "Hardware review" below). Its role file is `docs/roles/ENGINEER.md`.
 
-If you are the expert and not the dev, read `hw/ROLE.md` instead of acting on the rest of this file as the dev.
+If you are the expert and not the dev, read `docs/roles/ENGINEER.md` instead of acting on the rest of this file as the dev.
 
 Read `README.md` (hardware, pin map, known bugs in the old code) and `pm/README.md` (how you and the PM communicate) before you start.
 

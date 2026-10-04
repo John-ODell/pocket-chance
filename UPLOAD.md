@@ -60,6 +60,8 @@ Three files changed. Y splits a pair; the two hands sit side by side; the hand i
 **Test line:** deal until you get a pair (two of the same rank, e.g. two 8s; a king and a jack do not count). The prompt shows "Y split". Press Y: the bet on the top line doubles, two hands appear side by side with the left one marked, A/B/X play the left hand then the right. The result line shows each hand, e.g. "WIN +10   LOSE -10". Two aces: Y deals one card to each and the round ends at once.
 
 ## Step 1d: menu background (D-007), 2026-10-04
+_Optional, and the image is not in the repository: bring your own 240 x 240 `menu_background.bmp` (see `assets/src/ui/README.md`), convert it with `tools/convert_assets.py`, and upload the `.565` it writes. Without it the menu uses a plain dark colour._
+
 John's casino photo behind the main menu. Two files.
 
 | # | From this repo | To the board |
