@@ -35,6 +35,13 @@ BAND_H = 72
 DEALER_Y, PLAYER_Y = 28, 100
 BANNER_Y, BOTTOM_Y = 168, 200
 REVEAL_MS = 300                        # DR-029
+# Seat rail (DR-041): five stacks in the 12 px under the prompt lines, inside the bottom band.
+RAIL_Y = 228
+RAIL_X = (10, 54, 98, 142, 186)
+STACK_W = 30
+SEAT_COLOURS = (rgb(220, 60, 60), rgb(60, 160, 220), rgb(240, 200, 60), rgb(120, 200, 100), rgb(200, 120, 220))
+UP = rgb(40, 220, 60)
+DOWN = rgb(230, 40, 40)
 CHIP_DENOMS = (500, 100, 25, 5)
 
 BANNERS = {WIN: ('banner_win', 'YOU WIN', GOLD), LOSE: ('banner_lose', 'DEALER WINS', GREY),
@@ -52,7 +59,7 @@ class Screen:
         self.assets = ctx.assets
         self.buttons = ctx.buttons
         self.store = ctx.store
-        self.table = StudTable(ctx.rng, ctx.bankroll)
+        self.table = StudTable(ctx.rng, ctx.bankroll, seats=getattr(ctx, 'stud_seats', 5))
         self.has_table_art = self.assets.size('table') is not None
         self.assets.use_sheets(('cards', 'chips', 'banners'))
         self.shown = 1                                # dealer cards face up (1 = the up-card)
@@ -141,11 +148,26 @@ class Screen:
             self.card(r.player[i], CARD_X[i], PLAYER_Y)
         font.text(lcd, 'You: ' + describe(r.pv), 6, PLAYER_Y + CARD_H + 2, WHITE, 1)
 
+    def draw_rail(self):
+        """Other players' chip stacks (DR-041): one 2 px line per 200 chips, a green or red marker
+        after a hand. Rectangles only, about 1 ms, inside the bottom band's redraw."""
+        lcd = self.lcd
+        seats = self.table.seats
+        for i in range(seats.count):
+            x = RAIL_X[i]
+            n = seats.stack_height(i)
+            for k in range(n):
+                lcd.fill_rect(x + 8, RAIL_Y + 11 - 2 * k, STACK_W, 1, SEAT_COLOURS[i])
+            d = seats.delta[i]
+            if d:
+                lcd.fill_rect(x + 1, RAIL_Y + 4, 4, 4, UP if d > 0 else DOWN)
+
     def draw_bottom(self):
         lcd = self.lcd
         t = self.table
         st = t.state
         self.felt(BOTTOM_TOP, BAND_H)
+        self.draw_rail()
         if st == BETTING:
             font.text_centred(lcd, 'Ante: joystick', 120, BOTTOM_Y + 4, GREY, 1)
             font.text_centred(lcd, 'A deal  X pays  B menu', 120, BOTTOM_Y + 18, WHITE, 1)
