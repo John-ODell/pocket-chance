@@ -4,6 +4,9 @@ _Updated by the senior dev at the end of each session. Written for John._
 
 **Last updated:** 2026-10-06
 
+## Baccarat: ten requests filed (DR-051 to DR-060), nothing built yet
+You picked baccarat. The requests cover the rules and pays (standard punto banco, eight decks, Banker 5% commission, Tie 8:1; our new simulator `tools/baccarat_edge.py` reproduces the published edges exactly: Banker 1.06%, Player 1.24%, Tie 14.36%, and gives the alternatives: Tie 9:1 4.84%, no-commission Banker 1.46%), the screen (Caribbean's bands, three card slots per hand, three bet boxes along the bottom, cards dealt one at a time 300 ms apart), the buttons (joystick left/right picks Player, Tie or Banker, up/down the stake, A deals and A again repeats the bet, X pays, B menu), stakes 5 to 100, five chip-stack seats along the bottom each with its own betting habit, the save, the menu word "Baccarat" with a fourth icon slot, a one-screen help text, how the 5% commission rounds to whole chips (19 for 20 rounded down; exact 1.06% at 20, 40, 60, 80, 100 and dearer at 5 or 10, table in DR-059), and a row of twelve coloured squares showing the last results. I build when the rulings land.
+
 ## How much room is left, and could another game fit? (your question, 2026-10-06)
 Short answer: **yes, easily.** Storage is almost empty and memory has room for one more game of any size we have built so far. The numbers below come from the expert's benches (`hw/BUDGET.md`) and the upload record (`UPLOAD.md`).
 
