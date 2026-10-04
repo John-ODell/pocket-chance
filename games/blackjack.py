@@ -26,11 +26,18 @@ GREY = rgb(160, 160, 160)
 BLUE = rgb(30, 60, 160)
 
 CARD_W, CARD_H = 40, 56
-TOP_H = 24                 # bankroll and bet line (art keeps it calm)
-DEALER_Y = 30
-PLAYER_Y = 104
-BOTTOM_Y = 200             # prompts (art keeps the bottom 40 px calm)
-BANNER_Y = 166
+# Four horizontal bands that never overlap. Each band is redrawn and pushed whole, so a line of
+# text must sit entirely inside its own band (John saw the "You 21" line cut off when the player
+# band ended at 165 and the text ran to 169). tests/test_text_bounds.py checks every line survives.
+TOP_H = 24                 # 0..23   bankroll and bet (art keeps it calm)
+DEALER_TOP = 24            # 24..95  dealer cards at 28..83, total line at 86..93
+PLAYER_TOP = 96            # 96..167 player cards at 100..155, total line at 158..165
+BOTTOM_TOP = 168           # 168..239 banner 168..199, prompt lines at 204 and 218
+BAND_H = 72
+DEALER_Y = DEALER_TOP + 4
+PLAYER_Y = PLAYER_TOP + 4
+BANNER_Y = BOTTOM_TOP
+BOTTOM_Y = 200
 CHIP_DENOMS = (500, 100, 25, 5)
 
 BANNERS = {BLACKJACK: ('banner_blackjack', 'BLACKJACK!', GOLD), WIN: ('banner_win', 'YOU WIN', GOLD),
@@ -116,7 +123,7 @@ class Screen:
 
     def draw_dealer(self):
         r = self.table.round
-        self.felt(DEALER_Y - 6, PLAYER_Y - DEALER_Y)
+        self.felt(DEALER_TOP, BAND_H)
         if r is None:
             return
         hide = r.hole_hidden()
@@ -126,7 +133,7 @@ class Screen:
 
     def draw_player(self):
         r = self.table.round
-        self.felt(PLAYER_Y - 6, BANNER_Y - PLAYER_Y + 6)
+        self.felt(PLAYER_TOP, BAND_H)
         if r is None:
             return
         self.hand(r.player, PLAYER_Y)
@@ -138,7 +145,7 @@ class Screen:
 
     def draw_bottom(self):
         lcd = self.lcd
-        self.felt(BANNER_Y, 240 - BANNER_Y)
+        self.felt(BOTTOM_TOP, BAND_H)
         st = self.table.state
         if st == BETTING:
             font.text_centred(lcd, 'Bet: joystick', 120, BOTTOM_Y + 4, GREY, 1)
@@ -177,9 +184,9 @@ class Screen:
 
     def shuffling(self):
         lcd = self.lcd
-        self.felt(BANNER_Y, 240 - BANNER_Y)
+        self.felt(BOTTOM_TOP, BAND_H)
         font.text_centred(lcd, 'Shuffling...', 120, BANNER_Y + 8, WHITE, 2)
-        lcd.show_band(BANNER_Y, 240 - BANNER_Y)
+        lcd.show_band(BOTTOM_TOP, BAND_H)
         utime.sleep_ms(700)
 
     # ---- input -------------------------------------------------------------------------------
@@ -221,7 +228,7 @@ class Screen:
             else:
                 self.draw_player()
                 self.draw_bottom()
-                self.lcd.show_band(PLAYER_Y - 6, 240 - PLAYER_Y + 6)
+                self.lcd.show_band(PLAYER_TOP, 240 - PLAYER_TOP)
         elif st == RESULT:
             if key == 'A':
                 t.next_hand()
