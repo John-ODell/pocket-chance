@@ -24,5 +24,8 @@ Written for John, 2026-10-04. The decisions behind it are in `pm/inbox/PCB-001-b
 - The board does not measure the cell's temperature with a two-wire cell. The cell's own protection board and the gentle 0.5 C charge rate are what protect it. That is the residual risk you accepted.
 - Charging stops by itself after about 6 hours whatever happens (safety timer).
 
+## A small standing drain
+With a cell plugged in and the board switched off, the reverse-polarity guard's sensing resistors draw about 110 µA from the cell (about a quarter of a percent of a 1000 mAh cell per day). Unplug the cell for storage longer than a few weeks.
+
 ## What the charge current is
-494 mA with the resistor the board ships with (R14 = 1.8 kΩ), which is 0.49 C for a 1000 mAh cell. For a 500 mAh cell the resistor must be 3.6 kΩ (247 mA): say so before the boards are ordered, or do not use a smaller cell.
+494 mA nominal with the resistor the board ships with (R14 = 1.8 kΩ). With USB the charger's total input is capped at 500 mA, board included, so a 1000 mAh or larger cell gets at most 0.50 C whatever the tolerances. For a 500 mAh cell the resistor must be 3.6 kΩ (247 mA nominal, up to 271 mA with resistor and chip tolerance, so a hair over 0.5 C): say so before the boards are ordered, or use a 1000 mAh cell. With USB the charger's total input is capped at 500 mA, board included, so the cell can never get more than that.
