@@ -192,7 +192,7 @@ class TableFlow(unittest.TestCase):
         t.fold()
         t.next_hand()
         t.deal()
-        self.assertEqual(t.shoe.remaining(), 42)           # fresh deck minus ten cards
+        self.assertEqual(t.shoe.remaining(), 52 - 10 - 5 * t.seats.count)   # fresh deck minus the hand's cards
 
 
 if __name__ == '__main__':
