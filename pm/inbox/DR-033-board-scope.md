@@ -12,6 +12,11 @@ Which chip, which wireless, which screen and which power blocks go on the **firs
 ## John's wishes (his words, via the PM, 2026-10-04)
 One board together with the HAT, no gap ("not a sandwich with a hole"). Resizable buttons; a power switch; LiPo charging and battery management; a small speaker; more RAM and storage for the multi-line slots that was shelved (D-009); wireless (an "RP2040 W" or any 2.4 GHz Wi-Fi/Bluetooth). Added later the same day: a **microSD card slot** (purpose not yet stated; appendix H). Trade-offs he accepts: button size, joystick replaced by buttons or a different style, a different or slightly larger screen (anything except e-ink). Footprint does not matter yet.
 
+## Owner's direction, 2026-10-04 (in the PCB maker's chat; for the PM to record)
+John's words, lightly tidied: the base is **a Pi Pico W style board**, designed from the official Raspberry Pi documents, not from Waveshare parts (the Waveshare board was only a Pico with 16 MB for prototyping). The board **needs to be faster**, and **if the RP2350 works out better, do that**. Spin 1 is a **flat "credit card" style board** (no stacking, nothing sitting on all the pins like the HAT) with the screen, buttons, joystick and the other features on it; the team learns from those boards what is really wanted and shrinks the footprint later. He cannot probe pins on the current board with the HAT attached.
+
+PCB maker's note on "an easy change, no code changes": the game code does not change between RP2040 and RP2350, but the chip is **not a drop-in on the board** (RP2040 is a 56-pin package, RP2350A a 60-pin one, different footprint and support parts), and the firmware build does change (appendix A). So the chip is chosen before the schematic is drawn, not swapped afterwards. The recommendation stands: RP2350A.
+
 ## Why it matters
 Each of the four big asks (new chip for RAM, wireless, integrated screen, battery) is a classic way a first board fails on its own. Stacking all four on spin 1 means that when something does not work, four unknowns hide the cause. Staging them puts each unknown on a board where the rest is already proven.
 

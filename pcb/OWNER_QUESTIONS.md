@@ -102,6 +102,8 @@ Reason: a first board that works matters more than saving money. Hand-soldering 
 - Difficulty: hard. Needs mechanical drawings.
 - Risk: high.
 
+**Update, 2026-10-04:** John answered this in chat: a flat, credit-card style board with everything on it for the first spin, then shrink. That is a variant of Option A/C (one board, nothing stacked), recorded in `pm/inbox/DR-033-board-scope.md`.
+
 **My recommendation: Option B** if you chose Question 1 Option A. It is a direct consequence. If you chose Option B or C in Question 1, I will ask this again, because the answer changes.
 
 ---

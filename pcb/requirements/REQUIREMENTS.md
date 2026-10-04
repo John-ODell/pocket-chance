@@ -223,6 +223,13 @@ The owner's wishes for the first custom board: one integrated handheld, more RAM
 
 Requirement E14 (new): a microSD slot in SPI mode on the pins above, with pull-ups, a bulk capacitor for write bursts (up to about 200 mA, estimate), ESD protection and a push-push surface-mount slot the fab stocks. The card is bulk storage and file transfer only; the game, its modules and its saves stay in internal flash. Source: owner's wish via the PM; details in DR-033 appendix H; all electrical values Unverified until the datasheets are read.
 
+## 11b. Owner's direction on form factor and design base (2026-10-04, in chat)
+
+- **Design base:** the official Raspberry Pi Pico W / Pico 2 W reference (schematics in `pcb/refs/pico-w-datasheet.pdf` and `pico-2-w-datasheet.pdf`, minimal designs in the two "Hardware design with ..." guides), not Waveshare's parts. Owner's choice.
+- **Spin 1 form factor:** a flat, credit-card style board (about 85.6 x 54 mm as a starting size, Unverified by the owner) with screen, buttons, joystick and the other features on one board, nothing stacked. Purpose: learn what is really wanted, then shrink. Owner's choice.
+- **Chip:** RP2350 if it works out better; the owner accepts the change. Decided in DR-033. Note: not a drop-in swap on the board (different package), so it is chosen before the schematic.
+- **Licence of the reference material:** the Raspberry Pi datasheets and design guides are documentation; their reuse terms are printed in each document and must be recorded here before any schematic fragment is reused (to do at parts choice). Nothing has been copied yet.
+
 ## 12. Acceptance (what "done" means for the first board)
 
 Still unconfirmed by the owner (source: `pcb/PLAN.md`).
