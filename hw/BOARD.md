@@ -17,14 +17,17 @@ _Maintained by the microcontroller expert. State what is on the desk and how you
 | Free RAM at boot | 222,720 bytes free, largest allocatable block 199,129 | `hwtest/ram_free.py` |
 | ADC3 / GPIO29 | reads 7770/65535 = 1.17 V after the Pico's x3 divider. Not a believable VSYS, so this board probably does not wire GPIO29 to VSYS like a Pico. Check the schematic in `../Pico_Reference/` before relying on it | `hwtest/pins_idle.py` |
 
-## Pin map
-Verified at idle: all nine inputs read high 200/200 samples with pull-ups, so no shorts and no stuck key (`hwtest/pins_idle.py`). The LCD pins are confirmed by the display driving. **Which button is which GPIO is only confirmed when John presses them** (`hwtest/bounce.py`, pending).
+## Pin map: VERIFIED on this board, 2026-10-04
+All nine inputs idle high with pull-ups (`pins_idle.py`), and every one answered on its own GPIO when John pressed it (`bounce.py` 45 s capture; `pin_hunt.py` 30 s scan of all free GPIOs for up/down). The LCD pins are confirmed by the display: pattern shown, orientation and colour order read by John (`byteorder.py`). `main_monolith.py` runs unchanged on the RP2040-Plus.
 
-| Function | GPIO | Status |
+| Function | GPIO | How verified |
 |---|---|---|
-| LCD DC / CS / SCK / MOSI / RST / BL | 8 / 9 / 10 / 11 / 12 / 13 | working (frames timed; visual check pending) |
-| Buttons A / B / X / Y | 15 / 17 / 19 / 21 | idle-high verified; press mapping pending |
-| Joystick up / down / left / right / press | 2 / 18 / 16 / 20 / 3 | idle-high verified; press mapping pending |
+| LCD DC / CS / SCK / MOSI / RST / BL | 8 / 9 / 10 / 11 / 12 / 13 | frames timed; John read the pattern: upright, left half red |
+| Buttons A / B / X / Y | 15 / 17 / 19 / 21 | each pressed, each landed on its pin; 3–7 presses each |
+| Joystick up / down | 2 / 18 | `pin_hunt.py`: only GP2 then GP18 went low, 3 presses each |
+| Joystick left / right / press | 16 / 20 / 3 | `bounce.py`: 1 press each on the expected pin |
+
+Orientation: holding the board landscape with USB-C and joystick on the left, buttons on the right, framebuffer (0,0) is the player's top-left. Physical top-to-bottom order of the four buttons is not yet tied to A/B/X/Y (John's note "A B C D top to bottom" is unconfirmed; `bounce.py` now prints press order for a future check).
 
 ## Serial port lock
 Viper IDE (Chrome) holds `/dev/cu.usbmodemXXXX` even when its tab is only open. `lsof /dev/cu.usbmodem*` shows the holder. John must Disconnect **and** close the tab before mpremote can connect.
@@ -33,3 +36,4 @@ Viper IDE (Chrome) holds `/dev/cu.usbmodemXXXX` even when its tab is only open. 
 - 2026-10-03 (early): mpremote present. Board not visible over USB. Nothing done.
 - 2026-10-03: board appeared; Chrome held the port until John closed Viper. Backed up `/main.py` to `backups/2026-10-03/`. Ran read-only `board_info.py`, `flash_probe.py`, `pins_idle.py`; benches `spi_clock.py`, `ram_free.py`, `frame_full.py`, `frame_partial.py`, `core2.py`, `flash_read.py`; `flash_write.py` created and removed `/_hwtest_tmp.json` and `/_hwtest_tmp.new` only, `os.listdir('/')` afterwards shows `main.py` alone. `byteorder.py` left a red/colour test pattern on the screen for John to read. **Board state:** filesystem unchanged (`/main.py` only), no soft reset yet, test pattern on screen, awaiting John's visual answer and the button-press capture.
 - 2026-10-03 (late): visual check and button capture cancelled for the night. John reflashed to v1.29.0 16 MB (HR-F01). I restored `/main.py` from the backup and verified its sha1 on the board, reran every bench (RAM, flash, pins unchanged; SPI regressed to 24 MHz), diagnosed and tested the `clk_peri` fix, soft-reset. **Board state at hand-over:** v1.29.0, `/main.py` only, old menu running, USB serial free. `CLK_PERI_CTRL` is left at `0x800` (the fixed state) because a soft reset does not clear it; the next unplug returns it to the shipped `0x840`. Pending: John's byte-order/orientation look (`byteorder.py`), button capture (`bounce.py`), ruling on the `clk_peri` fix.
+- 2026-10-04: board power-cycled by John, `CLK_PERI_CTRL` back to `0x840`, port now `/dev/cu.usbmodem212301`. Ran `byteorder.py` (John: TOP on top, L on left, LEFT half red → upright, big-endian), `bounce.py` 45 s (all buttons + left/right/press mapped, zero bounce), a second `bounce.py` run that crashed on my edit error and recorded nothing, then `pin_hunt.py` 30 s (up=GP2, down=GP18). Soft reset at the end. **Board state:** v1.29.0, `/main.py` only, old menu running, clocks at shipped defaults, nothing written to the filesystem.

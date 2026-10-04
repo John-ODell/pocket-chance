@@ -86,8 +86,12 @@ It works and it moves the 18.5 ms push off the drawing core, so drawing gets the
 | Item | Value | Source |
 |---|---|---|
 | All 9 inputs idle with pull-ups | high 200/200 samples each | measured, `pins_idle.py` |
-| Bounce, press length, which GPIO is which key | **pending** John pressing keys during `bounce.py` | |
-| Poll cost | reading 9 pins takes well under 100 µs (20 kHz sample loop in `bounce.py` reads all nine) | measured indirectly |
+| Key to GPIO mapping | all nine match the old pin map (see `BOARD.md`) | measured, `bounce.py` + `pin_hunt.py`, 2026-10-04, John pressing |
+| Contact bounce | **none seen**: 44 edges across 7 keys, 0 edges within 5 ms of another; sample period 240 µs, so any bounce longer than that would have shown | measured, `bounce.py` 45 s |
+| Press length, a human tap | 140–880 ms buttons; 1.1–1.6 s deliberate joystick holds | measured |
+| Poll cost | sampling all 9 pins in a Python loop runs at ~4.1 kHz, so one poll of nine pins ≈ 240 µs | measured, `bounce.py` |
+
+For the dev: poll at 50–100 Hz, treat a key as pressed on the falling edge, and ignore it until it goes high again (edge detect, not level). No debounce timer is needed on this HAT; a 20 ms one costs nothing if you want belt and braces. A 240 µs poll of all nine pins is under 3% of a 10 ms frame.
 
 ## Power
 | Item | Value | Source |
