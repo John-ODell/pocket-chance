@@ -24,6 +24,7 @@ from multiprocessing import Pool
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 import tests.context  # noqa: E402,F401
 from poker import evaluate, evaluate5, rank_value, HIGH_CARD, PAIR, TWO_PAIR, FLUSH, FULL_HOUSE, QUADS, STRAIGHT_FLUSH, ROYAL_FLUSH  # noqa: E402
+import caribbean_rules  # noqa: E402
 
 ANTE_PAY = {ROYAL_FLUSH: 100, STRAIGHT_FLUSH: 20, QUADS: 10, FULL_HOUSE: 3, FLUSH: 2}
 FOLD, LOW, HIGH = 0, 1, 2
@@ -63,6 +64,9 @@ STRAT = 1
 def decide(hole, flop, two_sizes=True):
     """Heuristic strategy. Returns FOLD, LOW or HIGH (HIGH only when two_sizes); the caller maps
     LOW and HIGH to call sizes."""
+    if STRAT == 0:                                  # the game's taught strategy (caribbean_rules.advice)
+        a = caribbean_rules.advice(hole, flop)
+        return FOLD if a is None else (HIGH if (a == caribbean_rules.HIGH and two_sizes) else LOW)
     v = evaluate5(hole + flop)
     hole_ranks = [rank_value(c) for c in hole]
     board_ranks = [rank_value(c) for c in flop]
@@ -165,13 +169,16 @@ if __name__ == '__main__':
     # (label, seats, (low call, high call) in Antes, unqualified Ante, multiplier on, trigger, cap on N)
     # (label, seats, (low call, high call) in Antes, unqualified Ante, multiplier on, trigger, cap on N, strategy)
     S = 2
+    # (label, seats, (low, high) in Antes, unqualified: 'pay' table / 'even' / 'push', multiplier on
+    #  'none' / 'call' / 'all', trigger 'any' / 'qualified', cap on N, strategy (0 = the game's), qualifying pair)
+    # (label, seats, (low, high) in Antes, unqualified: 'pay' table / 'even' / 'push', multiplier on
+    #  'none' / 'call' / 'all', trigger 'any' / 'qualified', cap on N, strategy (0 = the game's), qualifying pair)
     configs = [
-        ("fixed 2x, Ante table vs unqualified (standard)", 4, (2, 2), 'pay', 'none', 'any', 9, S, 4),
-        ("low 2x / high 4x, Ante 1:1 vs unqualified", 4, (2, 4), 'even', 'none', 'any', 9, S, 4),
-        ("  + x2 on the call, all beat a qualified dealer", 4, (2, 4), 'even', 'call', 'qualified', 2, S, 4),
-        ("  + x3 on the call, all beat a qualified dealer", 4, (2, 4), 'even', 'call', 'qualified', 3, S, 4),
-        ("  + x5 on the call, all beat a qualified dealer", 4, (2, 4), 'even', 'call', 'qualified', 9, S, 4),
-        ("  + x5 on the whole win, all beat the dealer (as described)", 4, (2, 4), 'even', 'all', 'any', 9, S, 4),
+        ("Caribbean as built: 2x/4x, unq. push, x3 on the WHOLE win, qualified", 4, (2, 4), 'push', 'all', 'qualified', 3, 0, 4),
+        ("  same with x2 on the whole win", 4, (2, 4), 'push', 'all', 'qualified', 2, 0, 4),
+        ("  same with x3 on the call only (previous build)", 4, (2, 4), 'push', 'call', 'qualified', 3, 0, 4),
+        ("  same with no multiplier", 4, (2, 4), 'push', 'none', 'any', 9, 0, 4),
+        ("fixed 2x, Ante table vs unqualified (published game), game strategy", 4, (2, 2), 'pay', 'none', 'any', 9, 0, 4),
     ]
     jobs = []
     for i, cfg in enumerate(configs):

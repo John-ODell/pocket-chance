@@ -365,9 +365,18 @@ class Entry(unittest.TestCase):
             self.assertEqual(ns['menu_select'](ctx, 2, 1, 0), 0)
             self.assertIn((125000000, 125000000), machine.freq_calls)      # DR-050 boot call
             lcd = ns['lcd']
-            # no background art: plain colour in the margin, selected row is the panel colour
-            self.assertEqual(lcd.pixel(2, 100), ns['BG'])
-            self.assertEqual(lcd.pixel(ns['ROW_X'] + 2, ns['ROW_Y'][1] + 2), ns['PANEL'])
+            # no background art: style A (DR-072): shaded felt in the margin, gold border lines, the
+            # selected row a pill in its game's colour with a gold chip cursor in the right margin,
+            # unselected rows the darker shade, a code-drawn suit sign in the icon slot
+            self.assertEqual(lcd.pixel(2, 100), ns['SHADES'][25])
+            self.assertEqual(lcd.pixel(4, 100), ns['GOLD'])
+            self.assertEqual(lcd.pixel(120, ns['ROW_Y'][1] + 2), ns['GAME_COLOUR']['holdem'][0])
+            self.assertEqual(lcd.pixel(120, ns['ROW_Y'][0] + 2), ns['GAME_COLOUR']['blackjack'][1])
+            self.assertEqual(lcd.pixel(ns['ROW_X'] + ns['ROW_W'] + 5, ns['ROW_Y'][1] + 24), ns['GOLD'])
+            self.assertNotEqual(lcd.pixel(ns['ROW_X'] + ns['ROW_W'] + 5, ns['ROW_Y'][0] + 24), ns['GOLD'])
+            self.assertEqual(lcd.pixel(ns['ROW_X'] + 28, ns['ROW_Y'][0] + 24), ns['CREAM'])      # spade body
+            self.assertEqual(lcd.pixel(ns['ROW_X'] + 28, ns['ROW_Y'][1] + 24), ns['SUIT_RED'])   # diamond
+            self.assertEqual(lcd.pixel(ns['ROW_X'] + 28, ns['ROW_Y'][2] + 24 - 7), ns['CREAM'])  # club top leaf
             # with John's background: the photo shows in the margin and inside unselected rows,
             # the plates and the selected row cover it under the text
             write_565(os.path.join(adir, 'menu_background.565'), 240, 240, (200, 40, 80))

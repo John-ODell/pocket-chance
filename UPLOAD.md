@@ -136,10 +136,10 @@ Seven files: the poker hand evaluator (new on the board; `stud_rules.py` imports
 |---|---|---|
 | 1 | `lib/poker.py` | `/lib/poker.py` (new; needed by `stud_rules.py`) |
 | 2 | `lib/sheets.py` | `/lib/sheets.py` |
-| 3 | `games/stud_rules.py` | `/games/stud_rules.py` |
-| 4 | `games/stud_table.py` | `/games/stud_table.py` |
-| 5 | `games/stud_pay.py` | `/games/stud_pay.py` |
-| 6 | `games/stud.py` | `/games/stud.py` |
+| 3 | `archive/stud/stud_rules.py` | `/games/stud_rules.py` |
+| 4 | `archive/stud/stud_table.py` | `/games/stud_table.py` |
+| 5 | `archive/stud/stud_pay.py` | `/games/stud_pay.py` |
+| 6 | `archive/stud/stud.py` | `/games/stud.py` |
 | 7 | `pocket.py` | `/pocket.py` |
 
 **Test line:** menu, Caribbean, A deals: your five cards face up, the dealer's first card up and four face down, "Dealer shows K" and "You: pair of 9s" lines. A raises (the top line shows "ante 10 + 20"): the dealer's cards turn over one at a time about a third of a second apart, then the result banner and a line like "+30: ante + raise 20 x 1". B folds (all dealer cards shown at once, "-10: ante lost"). X shows the pays and the basic strategy. Copy the `RESULT` lines to the PM.
@@ -149,10 +149,10 @@ Five files. Five chip stacks appear in a thin rail along the bottom of the Stud 
 
 | # | From this repo | To the board |
 |---|---|---|
-| 1 | `games/stud_rules.py` | `/games/stud_rules.py` |
-| 2 | `games/stud_seats.py` | `/games/stud_seats.py` (new) |
-| 3 | `games/stud_table.py` | `/games/stud_table.py` |
-| 4 | `games/stud.py` | `/games/stud.py` |
+| 1 | `archive/stud/stud_rules.py` | `/games/stud_rules.py` |
+| 2 | `archive/stud/stud_seats.py` | `/games/stud_seats.py` (new) |
+| 3 | `archive/stud/stud_table.py` | `/games/stud_table.py` |
+| 4 | `archive/stud/stud.py` | `/games/stud.py` |
 | 5 | `pocket.py` | `/pocket.py` |
 
 **Test line:** Caribbean: five small coloured stacks of five lines along the bottom edge. Play a hand: after the result every stack gets a green (up) or red (down) square and grows or shrinks by a line per 200 chips; the next deal clears the squares. Copy the `RESULT` lines to the PM.
@@ -186,10 +186,10 @@ Everything since Caribbean Stud went live, uploaded once: the Stud seats, the cl
 
 | # | From this repo | To the board |
 |---|---|---|
-| 1 | `games/stud_rules.py` | `/games/stud_rules.py` |
-| 2 | `games/stud_seats.py` | `/games/stud_seats.py` |
-| 3 | `games/stud_table.py` | `/games/stud_table.py` |
-| 4 | `games/stud.py` | `/games/stud.py` |
+| 1 | `archive/stud/stud_rules.py` | `/games/stud_rules.py` |
+| 2 | `archive/stud/stud_seats.py` | `/games/stud_seats.py` |
+| 3 | `archive/stud/stud_table.py` | `/games/stud_table.py` |
+| 4 | `archive/stud/stud.py` | `/games/stud.py` |
 | 5 | `games/holdem_rules.py` | `/games/holdem_rules.py` (new) |
 | 6 | `games/holdem_seats.py` | `/games/holdem_seats.py` (new) |
 | 7 | `games/holdem_table.py` | `/games/holdem_table.py` (new) |
@@ -200,7 +200,23 @@ Everything since Caribbean Stud went live, uploaded once: the Stud seats, the cl
 
 **Test line:** start `/pocket.py`: `RESULT first show us=` about 18,000. Menu Blackjack / Caribbean / Hold'em / Off. Caribbean: a hand plays and the five chip stacks along the bottom get green or red marks. Hold'em: deal, B, B (flop, then turn and river with "outs n" on the prompt), A: the dealer's cards turn, the result shows and the four side stacks get marks; X shows the Blind pays and strategy. Blackjack unchanged. Copy all `RESULT` lines to the PM.
 
-## Step 2: art (any time after step 1n)
+## Step 1o: the three-game menu (John's ruling of 2026-10-06; DR-061 to DR-071), 2026-10-06
+Seven files and five deletions. The menu becomes Blackjack / Ultimate / Caribbean / Off: "Hold'em" is renamed Ultimate (its felt turns deep blue), Caribbean Stud leaves the board (its code is kept in `archive/stud/`), and the new Caribbean is the flop game John described: two cards each, the first three table cards turn, A calls high (4x the Ante), Y calls low (2x) or B folds, the last two turn, the dealer needs a pair of fours or better or every bet pushes; four chip-stack seats (`CAR_SEATS` in `pocket.py`, 0 to 4); when everyone at the table beats a dealer hand, a win on the next hand pays x3 (Ante and call together). **The expert benches this from the mount first** (the flop game module itself has not been measured; its layout is Ultimate's, HR-043).
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `games/caribbean_rules.py` | `/games/caribbean_rules.py` (new) |
+| 2 | `games/caribbean_seats.py` | `/games/caribbean_seats.py` (new) |
+| 3 | `games/caribbean_table.py` | `/games/caribbean_table.py` (new) |
+| 4 | `games/caribbean_pay.py` | `/games/caribbean_pay.py` (new) |
+| 5 | `games/caribbean.py` | `/games/caribbean.py` (new) |
+| 6 | `games/holdem.py` | `/games/holdem.py` (deep blue felt, DR-065) |
+| 7 | `pocket.py` | `/pocket.py` (menu Blackjack / Ultimate / Caribbean / Off; `CAR_SEATS` replaces `STUD_SEATS`; menu style A, DR-072: shaded felt, gold border, coloured pills, code-drawn suit signs, drawn when no `menu_background.565` is on the board) |
+| 8 | **delete** `/games/stud.py`, `/games/stud_rules.py`, `/games/stud_table.py`, `/games/stud_seats.py`, `/games/stud_pay.py` from the board | |
+
+**Test line:** start `/pocket.py`: without your photo file the menu is a shaded green felt with a double gold border, "Pocket Chance" with a shadow, your chips on a cream plaque, and the rows as coloured pills (green, blue, burgundy, grey) with a spade, diamond, club and power sign; the chosen pill has a gold outline and a small gold chip beside it. Rows: Blackjack / Ultimate / Caribbean / Off (four rows, three visible). With `menu_background.565` on the board the photo menu shows as before. Ultimate plays as before on a blue felt. Caribbean (burgundy felt): A deals, your two cards show, a third of a second later the first three table cards turn and the prompt reads "A high 20  Y low 10  B fold" (at Ante 5); A or Y: the last two table cards turn, then the dealer's cards one by one, then "WIN +n" / "LOSE -n" / "PUSH, no dealer hand" / "FOLD -n", "you pair / dlr high card", and the four side stacks get green or red marks; when every stack and you win against a dealer hand the bottom line says "x3 NEXT HAND". X shows the pays and the strategy. Copy all `RESULT` lines to the PM.
+
+## Step 2: art (any time after step 1o)
 On the Mac, from the repo folder:
 
 ```bash
@@ -254,7 +270,7 @@ _The record of what the board holds. `tools/check_upload.py` reads it: every mod
 Also on the board: `/assets/menu_background.565` (step 1d), `/save.json` and `/save.bak` (written by the game). The old `main.py` is gone (D-003). The three `/games/slots*.py` files are deleted at step 1i (their code is in `archive/slots/`); `/lib/clocks.py` is deleted at step 1l.
 
 ## Not on the board yet
-Nothing at the moment.
+Step 1o: `games/caribbean_rules.py`, `games/caribbean_seats.py`, `games/caribbean_table.py`, `games/caribbean_pay.py`, `games/caribbean.py` (new), `games/holdem.py` and `pocket.py` (changed). The five `/games/stud*.py` files on the board are deleted at step 1o; their rows above go when the step is recorded.
 
 ## Restore the old version
 Upload `main_monolith.py` and name it `/main.py` on the board.
