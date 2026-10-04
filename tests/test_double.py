@@ -52,7 +52,7 @@ class RoundDouble(unittest.TestCase):
         r = rnd(['5S', 'TD', '6H', '8C', 'TH'])
         self.assertEqual(r.bet, 10)
         r.double()
-        self.assertEqual((r.bet, r.doubled), (20, True))
+        self.assertEqual((r.bet, r.doubled), (20, [True]))
 
     def test_pays_twice_on_win(self):
         r = rnd(['5S', 'TD', '6H', '8C', 'TH'])            # 21 v 18
