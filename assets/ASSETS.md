@@ -31,11 +31,12 @@ If you don't want to draw these, say so. The dev can generate simple versions in
 | `cards/c_back.bmp` | 1 | **40 x 56** | 4,484 | Card back. Bold pattern in two or three colours |
 | `chips/chip_5.bmp`, `chip_25`, `chip_100`, `chip_500` (`chip_1` optional, not used by blackjack, DR-014) | 4 | **24 x 24** | 1,156 each | Round, magenta outside the circle. Suggested colours: 5 red, 25 green, 100 black, 500 purple, (1 white). The value does not need to be readable. The dev prints the amount next to the chip |
 | `ui/table.bmp` (optional: the game draws plain felt without it) | 1 | **240 x 240** | 115,204 | Felt table background. Dark green, a quiet border or edge line. **No text and no card shapes baked in.** Keep the top 24 px and bottom 40 px calm, since the dev draws the bankroll and bet there |
+| `ui/menu_background.bmp` (optional) | 1 | **240 x 240** | 115,204 | Behind the main menu. Blurred or dark photos work best. Menu text sits on small dark plates so it stays readable, but keep the three row boxes (x 16–224, y 70–214) and the title area (y 8–60) from being very bright; the converter warns if they are. Supplied by John 2026-10-04 (D-007) |
 | `ui/logo.bmp` | 1 | **200 x 40** | 16,004 | "Pocket Chance" title, magenta background |
 | `ui/icon_blackjack.bmp`, `icon_slots.bmp` | 2 | **48 x 48** | 4,612 each | Menu icons |
 | `ui/banner_win.bmp`, `banner_lose`, `banner_push`, `banner_bust`, `banner_blackjack` | 5 | **160 x 32** | 10,244 each | Short result banners drawn over the table, magenta background |
 
-Phase 1 total: 66 files, roughly 0.43 MB (each file carries a 4-byte size header). The card set is 237 KB of that.
+Phase 1 total: 67 files, roughly 0.54 MB (each file carries a 4-byte size header). The card set is 237 KB of that.
 
 **Hand fit:** five 40 px cards side by side take 200 px. A sixth card overlaps the others. This is why the card width is 40.
 
@@ -49,6 +50,8 @@ The game draws over `table.565` in four horizontal bands that never overlap. Tex
 | Dealer | 24–95 | Cards y 28–83, centred across x 12–228. `Dealer 17` in white at x 6–78, y 86–94 | x 0–100, y 84–96 |
 | Player | 96–167 | Cards y 100–155, centred across x 12–228 (two hands at x 12–112 and 128–228 after a split). Totals at y 158–166: one hand at x 6–200, split hands at x 12–112 and 128–228, with a gold underline at y 167 | the whole strip y 156–168 |
 | Bottom | 168–239 | Result banner (your `banner_*` art, 160 x 32) at x 40–200, y 168–200; without the art, size-2 text up to x 32–208, y 176–192. Two lines of small text at y 204–212 and 218–226, up to x 20–220 | x 16–224, y 168–240 |
+
+**Main menu** (`menu_background`): the title plate is at x 16–224, y 11–33; the balance plate y 37–59; the three row boxes at x 16–224, y 70–118, 118–166, 166–214 (the selected row is a solid dark blue box, the others show the photo with a small dark plate under the word); the footer plate at y 223–237. The photo shows through the 16 px side margins, between the plates, and inside the unselected rows.
 
 Good: a plain dark green felt with a slightly lighter border in the outer 12 px, a subtle logo or pattern in the card rows only (y 28–83 and 100–155, which the cards mostly cover), any decoration in the corners above y 24 is fine if it stays dark. Bad: light wood, bright gold trim or text under the four boxes above.
 
