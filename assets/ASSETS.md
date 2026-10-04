@@ -39,6 +39,19 @@ Phase 1 total: 66 files, roughly 0.43 MB (each file carries a 4-byte size header
 
 **Hand fit:** five 40 px cards side by side take 200 px. A sixth card overlaps the others. This is why the card width is 40.
 
+## Readability: where text and cards sit on the blackjack table
+
+The game draws over `table.565` in four horizontal bands that never overlap. Text is gold, white or grey, so under every text box the art must be **dark (average brightness under 100 of 255) and calm** (no bright pattern, no thin light lines). Cards and the chip cover their boxes completely, so the art under them does not matter. The converter prints a warning for any text box that is too light or too busy; it still converts the file. Everything below is in pixels, x from the left edge, y from the top, as you see the screen while playing.
+
+| Band | Rows (y) | Text and cards | Keep dark and calm |
+|---|---|---|---|
+| Top | 0–23 | `$chips` in gold size-2 text at x 6–118, y 4–20. Chip icon at x 150–174. Bet digits in white, right-aligned ending at x 234, y 4–20 | the whole band |
+| Dealer | 24–95 | Cards y 28–83, centred across x 12–228. `Dealer 17` in white at x 6–78, y 86–94 | x 0–100, y 84–96 |
+| Player | 96–167 | Cards y 100–155, centred across x 12–228 (two hands at x 12–112 and 128–228 after a split). Totals at y 158–166: one hand at x 6–200, split hands at x 12–112 and 128–228, with a gold underline at y 167 | the whole strip y 156–168 |
+| Bottom | 168–239 | Result banner (your `banner_*` art, 160 x 32) at x 40–200, y 168–200; without the art, size-2 text up to x 32–208, y 176–192. Two lines of small text at y 204–212 and 218–226, up to x 20–220 | x 16–224, y 168–240 |
+
+Good: a plain dark green felt with a slightly lighter border in the outer 12 px, a subtle logo or pattern in the card rows only (y 28–83 and 100–155, which the cards mostly cover), any decoration in the corners above y 24 is fine if it stays dark. Bad: light wood, bright gold trim or text under the four boxes above.
+
 ## Phase 2: slots
 
 | File | Count | Size (px) | Bytes on board | Notes |
