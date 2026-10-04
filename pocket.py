@@ -3,8 +3,9 @@
 # Start-up order matters (HR-001, HR-015): clock fix, then the framebuffer before anything else
 # large, then the rest. A game module is imported when chosen and dropped on exit to free RAM.
 
-FAST_SPI = True          # DR-015 off switch. False = screen link at 24 MHz, everything else the same.
-SPI_BAUD = 62_500_000    # real 62.5 MHz with the fix on; use 12_000_000 for a real 31.25 MHz (HR-015)
+FAST_SPI = True          # DR-050: peripheral clock from the 125 MHz system PLL (62.5 MHz SPI).
+                         # False = the firmware's 48 MHz source (24 MHz SPI, 46 ms a frame), else identical.
+SPI_BAUD = 62_500_000    # honest with DR-050: the repr says what it gets. Fallback 31_250_000.
 SAVE_PATH = '/save.json'
 
 import sys
@@ -13,15 +14,20 @@ import gc
 if '/games' not in sys.path:
     sys.path.append('/games')
 
-if FAST_SPI:
-    from clocks import fast_peripherals
-    fast_peripherals()
+import machine
+import utime
+# DR-050 / HR-F05: the supported way to source clk_peri from the system PLL on v1.29.0; same frame
+# time as the old register poke, and MicroPython's cached clock follows, so SPI speeds are honest.
+# Must run before the SPI object is created. A power cycle resets it, so it is a boot-time call.
+machine.freq(125_000_000, 125_000_000 if FAST_SPI else 48_000_000)
 
 from lcd import LCD
 lcd = LCD(SPI_BAUD)
+_t = utime.ticks_us()
+lcd.show()
+print('RESULT first show us=%d spi=%s' % (utime.ticks_diff(utime.ticks_us(), _t), lcd.spi))
 gc.collect()
 
-import utime
 import random
 import font
 from pixfmt import rgb
@@ -223,7 +229,7 @@ def main():
     ctx.assets.use_sheets(('icons',))                 # DR-024: the menu's icon sheet stays open
     ctx.bankroll = Bankroll(bank) if bank is not None else Bankroll()
     gc.collect()
-    print('RESULT boot mem_free=%d fast_spi=%s' % (gc.mem_free(), FAST_SPI))
+    print('RESULT boot mem_free=%d fast_spi=%s freq=%s' % (gc.mem_free(), FAST_SPI, machine.freq()))
     if msg:
         message(msg)
     sel = 0

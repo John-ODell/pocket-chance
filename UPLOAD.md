@@ -16,7 +16,7 @@ Create these folders on the board if they do not exist: `/lib`, `/games`, `/asse
 | # | From this repo | To the board |
 |---|---|---|
 | 1 | `lib/pixfmt.py` | `/lib/pixfmt.py` |
-| 2 | `lib/clocks.py` | `/lib/clocks.py` |
+| 2 | (was `lib/clocks.py`, removed at step 1l) | `/lib/clocks.py` |
 | 3 | `lib/lcd.py` | `/lib/lcd.py` |
 | 4 | `lib/font.py` | `/lib/font.py` |
 | 5 | `lib/buttons.py` | `/lib/buttons.py` |
@@ -144,7 +144,17 @@ Seven files: the poker hand evaluator (new on the board; `stud_rules.py` imports
 
 **Test line:** menu, Caribbean, A deals: your five cards face up, the dealer's first card up and four face down, "Dealer shows K" and "You: pair of 9s" lines. A raises (the top line shows "ante 10 + 20"): the dealer's cards turn over one at a time about a third of a second apart, then the result banner and a line like "+30: ante + raise 20 x 1". B folds (all dealer cards shown at once, "-10: ante lost"). X shows the pays and the basic strategy. Copy the `RESULT` lines to the PM.
 
-## Step 2: art (any time after step 1j)
+## Step 1l: screen clock the supported way (DR-050), 2026-10-06
+One file and one deletion. The screen-speed fix is now `machine.freq(125_000_000, 125_000_000)` at the top of `pocket.py` instead of the register trick in `lib/clocks.py`. Nothing visible changes; the expert benches it from the mounted folder first.
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `pocket.py` | `/pocket.py` |
+| 2 | **delete** `/lib/clocks.py` from the board | |
+
+**Test line:** start `/pocket.py`: the menu appears at full speed as before; the printed `RESULT first show us=` is about 18,000 (about 46,000 with `FAST_SPI = False`). Copy the `RESULT` lines to the PM.
+
+## Step 2: art (any time after step 1l)
 On the Mac, from the repo folder:
 
 ```bash
@@ -165,7 +175,7 @@ Upload `pocket.py` a second time, named `/main.py` on the board. Unplug and plug
 ## Not run anywhere yet
 All of this has run only on the Mac, against stand-in `machine` and `framebuf` modules (96 tests). Nothing has run under MicroPython or on the board. Timing, colours on the panel and RAM use are what step 1 finds out.
 
-## On the board now (code, after step 1j)
+## On the board now (code, after step 1l)
 _The record of what the board holds. `tools/check_upload.py` reads it: every module a board file imports must be here, every method a board file calls on the shared libraries must exist in the version recorded here, and a repo file that differs from its recorded version is flagged as not yet uploaded. After an upload, run `python3 tools/check_upload.py --record <step> <repo paths...>` to update the rows._
 
 | Board path | Repo file | Step | Version (git blob) |
@@ -176,9 +186,8 @@ _The record of what the board holds. `tools/check_upload.py` reads it: every mod
 | `/games/stud_table.py` | `games/stud_table.py` | 1j | fe06c8a6ac90 |
 | `/games/stud_rules.py` | `games/stud_rules.py` | 1j | 3aa5af7c4a7e |
 | `/lib/sheets.py` | `lib/sheets.py` | 1j | e3adeacc4c38 |
-| `/pocket.py` | `pocket.py` | 1j | d72d5918b2fc |
+| `/pocket.py` | `pocket.py` | 1l | 70cafd380e12 |
 | `/lib/pixfmt.py` | `lib/pixfmt.py` | 1 | 03010786bfba |
-| `/lib/clocks.py` | `lib/clocks.py` | 1 | b8c0bbf5c8f0 |
 | `/lib/lcd.py` | `lib/lcd.py` | 1i | 3c6b0dee4cfc |
 | `/lib/font.py` | `lib/font.py` | 1 | 7b1a40a2df70 |
 | `/lib/buttons.py` | `lib/buttons.py` | 1 | 7dd47cbb1e2e |
@@ -190,7 +199,7 @@ _The record of what the board holds. `tools/check_upload.py` reads it: every mod
 | `/games/blackjack_table.py` | `games/blackjack_table.py` | 1c | 47214b7e2d74 |
 | `/games/blackjack.py` | `games/blackjack.py` | 1h | b9ee6035a735 |
 
-Also on the board: `/assets/menu_background.565` (step 1d), `/save.json` and `/save.bak` (written by the game). The old `main.py` is gone (D-003). The three `/games/slots*.py` files are deleted at step 1i (their code is in `archive/slots/`).
+Also on the board: `/assets/menu_background.565` (step 1d), `/save.json` and `/save.bak` (written by the game). The old `main.py` is gone (D-003). The three `/games/slots*.py` files are deleted at step 1i (their code is in `archive/slots/`); `/lib/clocks.py` is deleted at step 1l.
 
 ## Not on the board yet
 Nothing at the moment.

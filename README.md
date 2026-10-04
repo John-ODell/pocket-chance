@@ -54,7 +54,7 @@ Chips: you start with 1000. If you go broke you get a free refill. Your chips ar
 The house edges were measured by simulation (`tools/bj_edge.py`, `tools/bj_split.py`, `tools/stud_edge.py`) and the rules were checked against the public references on wizardofodds.com.
 
 ## What it does well on this hardware
-- Full-speed screen: about 58 frames a second for a full redraw, once the board's SPI clock is fixed (`lib/clocks.py`).
+- Full-speed screen: about 58 frames a second for a full redraw, once the board's peripheral clock is set from the system PLL (one `machine.freq` call at the top of `pocket.py`, see `docs/HARDWARE.md`).
 - Redraws only the strip of the screen that changed, so a button press answers in about 15 to 100 ms.
 - About 50 to 55 KB of RAM left while playing, on a board with 264 KB.
 - Art is optional. With no image files the game draws cards and the table in code.
