@@ -292,9 +292,16 @@ add("R48", R, "1M", R0402, (415, 385), {"1": "BAT+", "2": "CELL_P"})          # 
 #    negative -> Q5 off -> Q2 gate at BAT+ (4.2 V) = source -> Q2 off; body diode (drain at -3.7 V, source 4.2 V) reverse
 #    biased. No current. R46 limits Q5's gate current; Vgs = -3.7 V is inside the AO3400A's +/-12 V rating.
 #  Reversed cell, no USB: nothing powers BAT+; Q5 off; Q2 off; isolated.
-#  No cell: R47 holds Q5 off, Q2 off: the connector carries only R48's 0.23 V.
+#  No cell, cold (USB plugged in after the cell was removed, or never a cell): R47 holds Q5 off, Q2 off, socket at 0.23 V.
+#  LATCH (AUDIT-3 finding, confirmed): once a correct cell has turned the guard on with USB present, removing the cell
+#    does NOT turn it off: the charger holds CELL_P at BAT+ through Q2's own channel, so Q5 stays on. The socket stays
+#    live until USB is removed (BAT+ collapses) or the charger's battery-detection dip pulls BAT+ low enough (unverified,
+#    to be measured at bring-up). A reversed cell inserted during that window meets an ON guard: the rev 0.3 fault path.
+#    No passive circuit on a 2-wire connector can distinguish 'cell present' from 'guard holding the pin up'. Owner rule:
+#    UNPLUG USB BEFORE CHANGING THE BATTERY (BATTERY.md, silkscreen). Decision on a stronger interlock: PCB-002.
 #  Protection-tripped pack (0 V at its terminals): R48 feeds the charger voltage to the pack at ~4 uA so its PCM can
-#    re-enable (general practice, unverified for the chosen cell); the pack then shows Vcell and the guard turns on.
+#    re-enable; but with R46+R47 loading it the pack only sees about 0.23 V, so this wake is NOT established (AUDIT-3);
+#    R48 stays as a harmless bleed. A tripped pack may need a moment on a plain charger; documented in BATTERY.md.
 # AUDIT-2 finding 2 (fixed): the divider is connected only while the 3.3 V rail is up. Q3 (N-FET, gate on +3V3) pulls the
 # P-FET's gate low (AO3400A, Vgs(th) <= 1.45 V); with the board off, R39 holds Q4's gate at BAT+, Q4 is off, and R24 holds the ADC pin at 0 V, so GPIO28
 # never sees voltage with IOVDD at 0 V (RP2350 ds: IO limit IOVDD + 0.5 V). Same idea as the Pico W's WL_CS-gated VSYS divider.
