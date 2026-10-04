@@ -97,6 +97,50 @@ class ZoneWarnings(unittest.TestCase):
 
 
 @unittest.skipIf(Image is None, 'Pillow not installed')
+class PackSheets(unittest.TestCase):
+    def setUp(self):
+        self.src = tempfile.mkdtemp()
+        self.out = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.src)
+        shutil.rmtree(self.out)
+
+    def make(self, folder, name, size, colour):
+        d = os.path.join(self.src, folder)
+        os.makedirs(d, exist_ok=True)
+        Image.new('RGB', size, colour).save(os.path.join(d, name), 'BMP')
+
+    def test_pack_with_placeholders(self):
+        from convert_assets import pack_sheet
+        import sheets
+        self.make('cards', 'c_as.bmp', (40, 56), (200, 10, 10))
+        self.make('cards', 'c_back.bmp', (40, 56), (10, 10, 200))
+        dst, missing = pack_sheet('cards', self.src, self.out)
+        self.assertEqual(os.path.getsize(dst), sheets.file_size('cards'))
+        self.assertEqual(len(missing), 51)
+        self.assertNotIn('c_AS', missing)
+        with open(dst, 'rb') as f:
+            data = f.read()
+        self.assertEqual(struct.unpack_from('<HH', data, 0), (40, 56 * 53))
+        self.assertEqual(data[4], 0xC8)                                   # first pixel of c_AS: red high byte
+        off = sheets.offset('cards', 1)
+        self.assertEqual(data[off:off + 2], bytes([0xF8, 0x1F]))          # missing member: magenta key
+
+    def test_wrong_size_member_is_an_error(self):
+        from convert_assets import pack_sheet
+        self.make('chips', 'chip_5.bmp', (25, 24), (1, 2, 3))
+        with self.assertRaises(ValueError):
+            pack_sheet('chips', self.src, self.out)
+
+    def test_no_members_no_file(self):
+        from convert_assets import pack_sheet
+        dst, missing = pack_sheet('icons', self.src, self.out)
+        self.assertIsNone(dst)
+        self.assertEqual(len(missing), 4)
+
+
+@unittest.skipIf(Image is None, 'Pillow not installed')
 class ConvertFile(unittest.TestCase):
     def setUp(self):
         self.dir = tempfile.mkdtemp()

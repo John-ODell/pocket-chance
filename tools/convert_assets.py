@@ -19,6 +19,7 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'lib'))
 from pixfmt import rgb565, KEY_RGB, KEY_BE  # noqa: E402
+import sheets  # noqa: E402
 
 # Expected sizes by file name (assets/ASSETS.md). First match wins.
 SIZES = (
@@ -163,6 +164,54 @@ def convert_file(src, out_dir, resize=False, any_size=False):
     return dst
 
 
+def find_source(src_root, name):
+    """Path of name.bmp/.png anywhere under assets/src (case-insensitive stem), or None."""
+    for d, _, files in os.walk(src_root):
+        for n in files:
+            stem, ext = os.path.splitext(n)
+            if ext.lower() in ('.bmp', '.png') and stem.lower().replace(' ', '') == name.lower():
+                return os.path.join(d, n)
+    return None
+
+
+def pack_sheet(sheet, src_root, out_dir, resize=False):
+    """Write assets/out/<sheet>.565 from the members' source files (DR-024). Missing members become
+    magenta (transparent) placeholders. Returns (path, missing names) or (None, missing) when no
+    member exists at all."""
+    from PIL import Image
+    w, h, names = sheets.SHEETS[sheet]
+    pixels = []
+    missing = []
+    found = 0
+    for name in names:
+        src = find_source(src_root, name)
+        if src is None:
+            missing.append(name)
+            pixels.extend([KEY_RGB] * (w * h))
+            continue
+        img = Image.open(src).convert('RGB')
+        if img.size != (w, h):
+            if resize:
+                img = img.resize((w, h), Image.NEAREST)
+            else:
+                raise ValueError('%s: is %dx%d, must be %dx%d' % (name, img.size[0], img.size[1], w, h))
+        get = getattr(img, 'get_flattened_data', None) or img.getdata
+        pixels.extend(list(get()))
+        found += 1
+    if not found:
+        return None, missing
+    data, nudged = to_565(pixels, w, h * len(names))
+    os.makedirs(out_dir, exist_ok=True)
+    dst = os.path.join(out_dir, sheet + '.565')
+    with open(dst, 'wb') as f:
+        f.write(data)
+    note = ' (%d pixel%s nudged)' % (nudged, '' if nudged == 1 else 's') if nudged else ''
+    print('  sheet %s -> %s  %d of %d members, %d bytes%s' % (sheet, os.path.relpath(dst), found, len(names), len(data), note))
+    if missing:
+        print('    missing (magenta placeholders): ' + ', '.join(missing))
+    return dst, missing
+
+
 def main(argv):
     root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
     resize = '--resize' in argv
@@ -174,18 +223,35 @@ def main(argv):
             for n in sorted(names):
                 if n.lower().endswith(('.bmp', '.png')):
                     files.append(os.path.join(d, n))
-    if not files:
-        print('nothing to convert: put BMP or PNG files under assets/src/')
-        return 0
     out_dir = os.path.join(root, 'assets', 'out')
+    src_root = os.path.join(root, 'assets', 'src')
     errors = 0
+    singles = 0
     for f in files:
+        stem = os.path.splitext(os.path.basename(f))[0].lower().replace(' ', '')
+        m = re.match(r'^c_([a23456789tjqk])([shdc])$', stem)
+        if m:
+            stem = 'c_' + m.group(1).upper() + m.group(2).upper()
+        if sheets.member(stem) is not None:
+            continue                       # packed into its sheet below
         try:
             convert_file(f, out_dir, resize, any_size)
+            singles += 1
         except Exception as e:  # report every file, then fail
             print('  ERROR %s: %s' % (os.path.relpath(f), e))
             errors += 1
-    print('%d file(s), %d error(s)' % (len(files), errors))
+    packed = 0
+    for sheet in sorted(sheets.SHEETS):
+        try:
+            dst, missing = pack_sheet(sheet, src_root, out_dir, resize)
+            if dst:
+                packed += 1
+        except Exception as e:
+            print('  ERROR sheet %s: %s' % (sheet, e))
+            errors += 1
+    if not singles and not packed and not errors:
+        print('nothing to convert: put BMP or PNG files under assets/src/')
+    print('%d single file(s), %d sheet(s), %d error(s)' % (singles, packed, errors))
     return 1 if errors else 0
 
 
