@@ -28,10 +28,14 @@ class Ctx:
 
 
 class Bounds:
-    """Replace font.text; record any string that leaves the screen."""
-    def __init__(self):
+    """Wrap font.text: draw for real, record the call, and flag any string that leaves the screen.
+    verify() then checks each line's first and last glyph pixel still hold the text colour, which
+    catches a later fill or line drawn over it (John saw the lower half of "You 21" cut off)."""
+    def __init__(self, real):
+        self.real = real
         self.bad = []
         self.calls = 0
+        self.drawn = []
 
     def __call__(self, fb, s, x, y, c, size=1):
         self.calls += 1
@@ -39,12 +43,30 @@ class Bounds:
         h = font.CH * size
         if x < 0 or y < 0 or x + w > 240 or y + h > 240:
             self.bad.append('%r at (%d,%d) size %d spans x %d..%d y %d..%d' % (s, x, y, size, x, x + w, y, y + h))
+        self.real(fb, s, x, y, c, size)
+        if s.strip():
+            self.drawn.append((fb, s, x, y, c, size))
+
+    def reset(self):
+        self.drawn = []
+
+    def verify(self, where):
+        # the fake glyph lights its top row and its diagonal, so (x, y) and the diagonal's last
+        # pixel of the last character are always set when the text is intact
+        for fb, s, x, y, c, size in self.drawn:
+            if len(s) <= 2:
+                continue        # rank and suit glyphs on code-drawn cards; overlapping cards hide them by design
+            lx = x + (len(s) - 1) * 8 * size + 7 * size
+            ly = y + 7 * size
+            for px, py in ((x, y), (lx, ly), (x + 7 * size, ly)):
+                if fb.pixel(px, py) != c:
+                    self.bad.append('%s: %r at (%d,%d) size %d was drawn over at (%d,%d)' % (where, s, x, y, size, px, py))
 
 
 class TextBounds(unittest.TestCase):
     def setUp(self):
         self.real = font.text
-        self.bounds = Bounds()
+        self.bounds = Bounds(self.real)
         font.text = self.bounds
         self.dir = tempfile.mkdtemp()
 
@@ -66,27 +88,39 @@ class TextBounds(unittest.TestCase):
         self.assertEqual(self.bounds.bad, [])
         self.assertGreater(self.bounds.calls, 0)
 
+    def full(self, s, where):
+        self.bounds.reset()
+        s.draw_all()
+        self.bounds.verify(where)
+
+    def band(self, s, where):
+        self.bounds.reset()
+        s.draw_player()
+        s.draw_bottom()
+        self.bounds.verify(where)
+
     def test_blackjack_screens(self):
         for balance in (5, 1000, 999999):
             ctx = self.ctx(balance)
             s = blackjack.Screen(ctx)
             t = s.table
-            s.draw_all()                                       # betting or broke
+            self.full(s, 'idle')                                # betting or broke
             if t.state == BROKE:
                 continue
             t.adjust_bet(1000)                                 # biggest bet allowed
-            s.draw_all()
+            self.full(s, 'max bet')
             # long hands: 8 cards each, soft total text, both states
             t.shoe = Shoe(6, random.Random(0), stacked=[card_from_name(n) for n in
                           ['AS', 'AD', '2H', '2C', '2D', '2S', 'AH', 'AC', '3S', '3H', '3D', '3C', '4S', '4H', '4D', '4C', '5S', '5H', '5D', '5C']])
             t.deal()
-            s.draw_all()
+            self.full(s, 'dealt')
+            self.bounds.reset()
             s.shuffling()
+            self.bounds.verify('shuffling')
             while t.state == PLAYING and len(t.round.player) < 8:
                 t.hit()
-                s.draw_player()
-                s.draw_bottom()
-            s.draw_all()
+                self.band(s, 'hit %d cards' % len(t.round.player))
+            self.full(s, 'long hand')
             # every outcome, doubled and not
             for outcome in (BLACKJACK, WIN, LOSE, PUSH, BUST):
                 for doubled in (False, True):
@@ -99,10 +133,11 @@ class TextBounds(unittest.TestCase):
                     r._finish(outcome)
                     t.round = r
                     t.state = RESULT
-                    s.draw_all()
+                    self.full(s, '%s doubled=%s' % (outcome, doubled))
+                    self.band(s, '%s doubled=%s band' % (outcome, doubled))
             t.round = None
             t.state = BROKE
-            s.draw_all()
+            self.full(s, 'broke')
         self.check()
 
     def test_menu_and_messages(self):
@@ -113,10 +148,14 @@ class TextBounds(unittest.TestCase):
         for balance in (0, 1000, 999999):
             ctx = self.ctx(balance)
             for sel in range(len(ns['MENU'])):
+                self.bounds.reset()
                 ns['draw_menu'](ctx, sel)
+                self.bounds.verify('menu sel=%d' % sel)
         from save import MSG_RESTORED, MSG_FRESH
-        ns['message'](MSG_RESTORED, 0)
-        ns['message'](MSG_FRESH, 0)
+        for m in (MSG_RESTORED, MSG_FRESH):
+            self.bounds.reset()
+            ns['message'](m, 0)
+            self.bounds.verify(m)
         self.check()
 
 
