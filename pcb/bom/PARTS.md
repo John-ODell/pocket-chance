@@ -42,7 +42,7 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 
 | Ref | Part | MPN | Package | KiCad symbol / footprint | Source | To check |
 |---|---|---|---|---|---|---|
-| U-CHG | power-path charger | BQ24074RGTR (TI) | VQFN-16, 3 x 3 mm (RGT) | `Battery_Management:BQ24074RGT` / `Package_DFN_QFN:VQFN-16-1EP_3x3mm_P0.5mm_EP1.6x1.6mm` (KiCad's own assignment; EP vs RGT drawing at phase 5) | `refs/parts/bq24074.pdf`: EN table (00 USB100, 01 USB500), K_ISET 890 AΩ, TS 10 kΩ fixed when unused, ITERM open = 10 %, TMR 18 to 72 kΩ | stock |
+| U-CHG | power-path charger | BQ24074RGTR (TI) | VQFN-16, 3 x 3 mm (RGT) | `Battery_Management:BQ24074RGT` / `Package_DFN_QFN:VQFN-16-1EP_3x3mm_P0.5mm_EP1.68x1.68mm_ThermalVias` (TI's RGT land pattern: 1.68 mm centre pad, 0.6 x 0.24 mm pins at 0.5 mm pitch, thermal vias; KiCad's generic pins are longer, which is normal for reflow: checked 2026-10-04) | `refs/parts/bq24074.pdf`: EN table (00 USB100, 01 USB500), K_ISET 890 AΩ, TS 10 kΩ fixed when unused, ITERM open = 10 %, TMR 18 to 72 kΩ | stock |
 | U-BB | 3.3 V buck-boost | TPS63001DRCR (TI) | VSON-10, 3 x 3 mm (DRC) | `Regulator_Switching:TPS63001` / `Package_SON:Texas_DRC0010J_ThermalVias` (KiCad's own assignment) | `refs/parts/tps63001.pdf`: 2.2 µH, 10 µF in/out, PS/SYNC low = power save, EN high ≥ 1.2 V | stock |
 | L-BB | buck-boost inductor | 2.2 µH, 2 A class, 3 x 3 mm | | `Device:L` / `Inductor_SMD:L_1210_3225Metric` or vendor | TPS63001 datasheet | pick after datasheet |
 | U-PROT | cell protection | DW01A (Fortune) | SOT-23-6 | `Battery_Management:DW01A` / `Package_TO_SOT_SMD:SOT-23-6` | HR-033, HR-P01 | datasheet (official); stock |

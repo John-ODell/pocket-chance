@@ -228,7 +228,7 @@ add("U4", ("Power_Protection", "USBLC6-2SC6"), "USBLC6-2SC6", "Package_TO_SOT_SM
     {"1": "USB_DP", "6": "USB_DP", "3": "USB_DM", "4": "USB_DM", "5": "VBUS", "2": "GND"})
 
 # ---- Block 3: power (PCB-001, HR-P03) ---------------------------------------------------
-add("U5", ("Battery_Management", "BQ24074RGT"), "BQ24074RGTR", "Package_DFN_QFN:VQFN-16-1EP_3x3mm_P0.5mm_EP1.6x1.6mm", (300, 180), {
+add("U5", ("Battery_Management", "BQ24074RGT"), "BQ24074RGTR", "Package_DFN_QFN:VQFN-16-1EP_3x3mm_P0.5mm_EP1.68x1.68mm_ThermalVias", (300, 180), {
     "13": "VBUS", "10": "VSYS", "11": "VSYS", "2": "BAT+", "3": "BAT+", "1": "TS", "4": "GND",
     "6": "CHG_EN1", "5": "GND", "7": "NC", "9": "CHG_STAT", "12": "ILIM", "14": "TMR", "15": "NC", "16": "ISET", "8": "GND", "17": "GND"})
 add("C20", C, "1uF", C0603, (340, 160), {"1": "VBUS", "2": "GND"})
