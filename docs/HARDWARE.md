@@ -57,14 +57,19 @@ How we checked: a test pattern put bytes `F8 00` on the left half and `00 F8` on
 | One 48-row band | about 4 to 7 ms on the wire |
 
 ### The one trap: v1.29.0 clocks SPI from the USB clock
-On MicroPython v1.29.0 the peripheral clock `clk_peri` is fed from the 48 MHz USB PLL, which caps SPI at **24 MHz**. The older stock Pico build (v1.22.2) did not have this. Re-pointing `clk_peri` at the 125 MHz system clock fixes it with three register writes (`lib/clocks.py`). Only SPI and UART baud rates depend on that clock, so USB, PWM and the CPU are untouched.
+On MicroPython v1.29.0 the peripheral clock `clk_peri` is fed from the 48 MHz USB PLL, which caps SPI at **24 MHz** (a full frame takes 46 ms instead of 18). The older stock Pico build (v1.22.2) did not have this. The fix is one supported call at the top of `pocket.py`, before the screen is created:
 
-Things to know about the fix:
-- Call it **before** creating the SPI object.
-- MicroPython remembers the old clock, so `print(spi)` still says `baudrate=24000000`. Time a frame to see the real speed. After the fix every requested baud is really about 2.6 times larger. Request `12_000_000` for a real 31.25 MHz.
-- A soft reset does not undo it. Unplugging the board does.
-- `FAST_SPI = False` at the top of `pocket.py` switches it off.
-- A different board or a different MicroPython build may behave differently. If the screen is dark or garbled, turn it off first.
+```python
+machine.freq(125_000_000, 125_000_000)   # CPU 125 MHz, peripheral clock from the system PLL
+```
+
+Measured identical to re-pointing the clock register by hand (17.9 ms a frame), and MicroPython's own clock bookkeeping follows, so `print(spi)` reports the real speed and a request for `31_250_000` really gives 31.25 MHz. Only SPI and UART baud rates depend on that clock, so USB, PWM and the CPU are untouched.
+
+Things to know:
+- It must run **before** the SPI object is created; `pocket.py` does that and prints the timed first frame (`RESULT first show us=...`).
+- A power cycle resets it, which is why it is a boot-time call.
+- `FAST_SPI = False` at the top of `pocket.py` selects the firmware's 48 MHz source instead (24 MHz SPI); everything else is unchanged.
+- A different board or a different MicroPython build may behave differently. If the screen is dark or garbled, set `FAST_SPI = False` first.
 
 ## Memory
 
