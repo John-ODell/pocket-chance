@@ -13,16 +13,16 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 | U1 | RP2350A microcontroller | RP2350A (Raspberry Pi) | QFN-60, 7 x 7 mm, 0.4 mm pitch | `MCU_RaspberryPi:RP2350A` / `Package_DFN_QFN:QFN-60-1EP_7x7mm_P0.4mm_EP3.4x3.4mm` | `refs/rp2350-datasheet.pdf` Figure 148 (recommended footprint: 0.4 mm pitch, 0.2 mm pads, 7.75 mm outer span, 3.4 mm centre pad); design guide | **checked 2026-10-04: KiCad's footprint matches** (pad length 0.8 vs 0.875 mm, otherwise identical; KiCad's own description cites this datasheet). Paste: KiCad's default windowed paste on the centre pad; stock |
 | U2 | 16 MB QSPI flash | W25Q128JVSIQ (Winbond) | SOIC-8, 208 mil (5.3 x 5.3 mm) | `Memory_Flash:W25Q128JVS` / `Package_SO:SOIC-8_5.3x5.3mm_P1.27mm` | `refs/W25Q128JV-datasheet.pdf`; design guide 3.1 and 3.3 (supported chip) | stock |
 | U3 | 8 MB PSRAM | APS6404L-3SQR-SN (AP Memory; 3.0 V, 64 Mbit) | SOP-8L (150 mil), package code SN: confirmed in `refs/parts/aps6404l-3sqn.pdf` section 4.1 | `Memory_RAM:APS6404L-3SQRx-SN` / `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | Pimoroni Pico Plus 2 W uses it; design guide 3.2 | exact ordering variant (3SQR vs 3SQN) at quote; stock |
-| R9, R13 | PSRAM chip-select link and pull-up | 0 Ω, 10 kΩ | 0402 | `Device:R` / `Resistor_SMD:R_0402_1005Metric` | design guide 3.2: GPIO0 is XIP_CS1n; "the pull-up on the chip select pin is definitely needed" | |
-| R-QSPI | flash chip-select 1 kΩ series to BOOT button, optional 10 kΩ pull-up | 1 kΩ, 10 kΩ | 0402 | same | design guide 3.1 (R6 1 kΩ to USB_BOOT) | |
+| R6 | PSRAM chip-select pull-up (GPIO0 wired straight to CE, no 0 Ω link fitted) | 10 kΩ | 0402 | `Device:R` / `Resistor_SMD:R_0402_1005Metric` | design guide 3.2: GPIO0 is XIP_CS1n; "the pull-up on the chip select pin is definitely needed" | |
+| R4, R5 | flash chip-select: R4 10 kΩ pull-up, R5 1 kΩ to the BOOT button SW1 | 10 kΩ, 1 kΩ | 0402 | same | design guide 3.1 | |
 | Y1 | 12 MHz crystal | ABM8-272-T3 (Abracon) | 3.2 x 2.5 mm | `Device:Crystal_GND24` / `Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm` | design guide 4.1: "we highly recommend using this crystal"; 10 pF load, 30 ppm, 50 Ω ESR max | stock |
-| C3, C4 | crystal load capacitors | 15 pF, C0G | 0402 | `Device:C` / `Capacitor_SMD:C_0402_1005Metric` | design guide 4: 15 pF each gives 10.5 pF with trace parasitics | |
-| R2 | crystal series resistor | 1 kΩ | 0402 | `Device:R` | design guide 4: prevents over-driving | |
+| C16, C17 | crystal load capacitors | 15 pF, C0G | 0402 | `Device:C` / `Capacitor_SMD:C_0402_1005Metric` | design guide 4: 15 pF each gives 10.5 pF with trace parasitics | |
+| R3 | crystal series resistor | 1 kΩ | 0402 | `Device:R` | design guide 4: prevents over-driving | |
 | L1 | core regulator inductor | AOTA-B201610S3R3-101-T (Abracon, 3.3 µH, polarity dot) | 2.0 x 1.6 x 1.0 mm (`refs/parts/aota-b201610s.pdf`) | `Device:L` / placeholder `Inductor_SMD:L_0805_2012Metric`; **phase 5: footprint from Abracon's land pattern** | design guide 2.1: the exact part, oriented per the dot | stock |
-| C6, C7, C9 | regulator input, output, AVDD caps | 4.7 µF | 0402 | `Device:C` | design guide 2.1 | |
-| R3 | VREG_AVDD filter | 33 Ω | 0402 | `Device:R` | design guide 2.1 (33 Ω + 4.7 µF) | |
-| C-dec | decoupling, one per power pin, pins 53/54 share one | 100 nF | 0402 | `Device:C` | design guide 2.2.1 | count after the symbol is placed |
-| C-bulk | 3.3 V bulk and the buck-boost in/out capacitors | 10 µF; regulator caps 0805 X5R 10 V (3.3 V side) and 16 V (VSYS side) so the effective capacitance under DC bias stays near 10 µF | 0603 / 0805 | `Device:C` | general practice; AUDIT-2 #10 | |
+| C13, C14, C15 (+ C40 at DVDD pin 23, AUDIT-2 #11) | regulator input, output, AVDD caps | 4.7 µF | 0402 | `Device:C` | design guide 2.1 | |
+| R2 | VREG_AVDD filter | 33 Ω | 0402 | `Device:R` | design guide 2.1 (33 Ω + 4.7 µF) | |
+| C1 to C10 | decoupling, one per power pin (six IOVDD, one shared for pins 53/54, three DVDD) | 100 nF | 0402 | `Device:C` | design guide 2.2.1 | |
+| C11 (3.3 V bulk), C23, C25, C26 (buck-boost) | 3.3 V bulk and the buck-boost in/out capacitors | 10 µF; regulator caps 0805 X5R 10 V (3.3 V side) and 16 V (VSYS side) so the effective capacitance under DC bias stays near 10 µF | 0603 / 0805 | `Device:C` | general practice; AUDIT-2 #10 | |
 | SW-BOOT, SW-RESET | tactile buttons | PTS645SM43SMTR92 (C&K) | 6 x 6 mm SMD | `Switch:SW_Push` / `Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92` | design guide 5.4 | stock |
 | D-LED, R-LED | user LED and 1 kΩ | 0603 LED | 0603 | `Device:LED` / `LED_SMD:LED_0603_1608Metric` | | GPIO: none free; LED driven from the RM2's wireless GPIO as on the Pico 2 W (HR-033) or omitted |
 | TP1.. | test points | pad | 1.5 mm | `Connector:TestPoint` / `TestPoint:TestPoint_Pad_D1.5mm` | PLAN phase 7 | 3V3, VBAT, VSYS, GND x2, RUN, SWD |
@@ -32,9 +32,9 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 
 | Ref | Part | MPN | Package | KiCad symbol / footprint | Source | To check |
 |---|---|---|---|---|---|---|
-| J-USB | USB-C receptacle, USB 2.0, 16 pins | USB4085-GF-A (GCT) | SMD with through-board pegs | `Connector:USB_C_Receptacle_USB2.0_16P` / `Connector_USB:USB_C_Receptacle_GCT_USB4085` | KiCad library footprint is vendor-specific; GCT drawing to verify | stock; datasheet (official GCT) |
-| R-CC1, R-CC2 | CC pull-downs | 5.1 kΩ | 0402 | `Device:R` | USB-C sink requirement (general; **the Pico 2 W schematic in `refs/pico-2-w-datasheet.pdf` to confirm**) | |
-| R7, R8 | D+ and D- series | 27 Ω | 0402 | `Device:R` | design guide 5.1: "27 Ω series termination resistors, placed close to the chip" | |
+| J2 | USB-C receptacle, USB 2.0, 16 pins | USB4085-GF-A (GCT) | surface-mount pads, through-board locating pegs (not a DIP part) | `Connector:USB_C_Receptacle_USB2.0_16P` / `Connector_USB:USB_C_Receptacle_GCT_USB4085` | KiCad library footprint is vendor-specific; GCT drawing to verify | stock; datasheet (official GCT) |
+| R8, R9 | CC pull-downs | 5.1 kΩ | 0402 | `Device:R` | USB-C sink requirement (general; **the Pico 2 W schematic in `refs/pico-2-w-datasheet.pdf` to confirm**) | |
+| R10, R11 | D+ and D- series | 27 Ω | 0402 | `Device:R` | design guide 5.1: "27 Ω series termination resistors, placed close to the chip" | |
 | U-ESD | USB ESD array | USBLC6-2SC6 (ST) | SOT-23-6 | `Power_Protection:USBLC6-2SC6` / `Package_TO_SOT_SMD:SOT-23-6` | general practice | stock |
 | F/D-VBUS | input protection | optional polyfuse or none (BQ24074 has 28 V OVP) | | | PCB-001 | decide at schematic |
 
@@ -52,7 +52,7 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 | SW-PWR | power switch on the regulator enable | PCM12SMTR (C&K) slide | SMD | `Switch:SW_SPDT` / `Button_Switch_SMD:SW_SPDT_PCM12` | HR-033 | stock |
 | R-DIV | battery divider to GP28, **gated**: Q4 AO3401A high-side switch on BAT+, driven through Q3 2N7002 from the 3.3 V rail, R39 100 kΩ holds Q4 off when the board is off | 100 kΩ + 100 kΩ, 100 nF; AO3400A (Q3); AO3401A (Q4) | 0402, SOT-23 | `Device:R`, `Device:C`, `Transistor_FET:AO3400A`, `Transistor_FET:AO3401A` | HR-P01; AUDIT-2 #2 (fix mirrors the Pico W's gated VSYS sense) | stock |
 | R-TS | thermistor-pin resistor, **fitted by default = cell temperature check bypassed** (John's decision 2026-10-04); remove when a thermistor cell is on J-BAT pin 3 | 10 kΩ | 0402 | `Device:R` | PCB-001; AUDIT-2 #8; BQ24074 ds Table 7-1 | |
-| U-GAUGE | fuel gauge (optional, footprint only) | MAX17048G+T10 | TDFN-8, 2 x 2 mm | custom symbol / `Package_DFN_QFN:` 2x2 DFN-8 to verify | HR-P01: optional | deferred unless time allows |
+| (none) | fuel gauge: **dropped from spin 1** (the gated ADC divider is used instead; no symbol, no footprint) | MAX17048 remains a spin-2 option | | | HR-P01, HR-P02 | |
 
 ## Block 4: screen and input
 
@@ -67,8 +67,8 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 | Ref | Part | MPN | Package | KiCad symbol / footprint | Source | To check |
 |---|---|---|---|---|---|---|
 | U-AMP | class-D mono amplifier | **PAM8302AADCR** (Diodes; the AAD suffix is the SO-8 package, AAS is MSOP-8: datasheet ordering table, read 2026-10-04) | SO-8 | `Amplifier_Audio:PAM8302AAD` / `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | HR-033, HR-P02; `refs/parts/pam8302a.pdf` | stock |
-| R/C-AUD | PWM to analog filter from GP22 | 1 kΩ + 100 nF (approx.) | 0402 | `Device:R`, `Device:C` | general practice | values at schematic |
-| J-SPK | speaker connector | JST PH 2-pin SMD (same as J-BAT, different silkscreen) | SMD | as J-BAT | ruling item 4 | |
+| R25, C29 | PWM to analog filter from GP22 | 1 kΩ + 10 nF (16 kHz corner, above the audio band, below the PWM carrier) | 0402 | `Device:R`, `Device:C` | general practice | values at schematic |
+| J5 | speaker connector | S2B-PH-SM4-TB (JST PH 2-pin SMD; the battery socket J3 is the 3-pin S3B) | SMD | `Connector:Conn_01x02_Socket` / `Connector_JST:JST_PH_S2B-PH-SM4-TB_1x02-1MP_P2.00mm_Horizontal` | ruling item 4 | |
 
 ## Block 6: microSD
 
@@ -77,14 +77,14 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 | J-SD | push-push microSD slot | 104031-0811 (Molex) | SMD | `Connector:Micro_SD_Card` / `Connector_Card:microSD_HC_Molex_104031-0811` | HR-P01 | datasheet (official Molex); stock |
 | R-SD | pull-ups on CS, MOSI, MISO, DAT1, DAT2 | 10 kΩ x5 | 0402 | `Device:R` | HR-P01 | |
 | C-SD | slot supply | 10 µF + 100 nF | 0603, 0402 | `Device:C` | HR-P01 | |
-| U-ESD-SD | ESD on card lines (optional) | TPD4E05U06 | | `Power_Protection:TPD4E05U06DQA` | HR-P01 "ESD array" | decide at schematic |
+| (none) | ESD on card lines: **not fitted on spin 1** (decided at schematic; the slot is inside the case) | | | | HR-P01 | revisit if field returns show card-slot ESD damage |
 
 ## Block 7: sensors and connectors
 
 | Ref | Part | MPN | Package | KiCad symbol / footprint | Source | To check |
 |---|---|---|---|---|---|---|
 | U-RTC | real-time clock | DS3231MZ+ (Analog Devices) | SOIC-8 | `Timer_RTC:DS3231MZ` / `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | HR-P02 | datasheet (official ADI); stock |
-| BT-RTC | CR1220 holder | 3001 (Keystone, 12 mm) | SMD | `Device:Battery_Cell` / `Battery:BatteryHolder_Keystone_3001_1x12mm` | DR-033 app. I.2 | **verify** 3001 takes a CR1220 (12.5 mm); Keystone drawing |
+| BT2 | CR1220 holder | 3001 (Keystone, 12 mm) | **through-hole** (KiCad's footprint has drilled lands; PCBWay places through-hole) | `Device:Battery_Cell` / `Battery:BatteryHolder_Keystone_3001_1x12mm` | DR-033 app. I.2 | **verify** 3001 takes a CR1220 (12.5 mm); Keystone drawing |
 | U-IMU | 6-axis IMU | LSM6DSOXTR (ST) | LGA-14, 3 x 2.5 x 0.83 mm, 0.5 mm pitch (same package as the LSM6DSL/DSM in KiCad's library) | `Sensor_Motion:LSM6DSM` symbol (same family pinout) / `Package_LGA:LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y` | HR-P02; micropython-lib driver; `refs/parts/lsm6dsox.pdf` (owner-fetched, 2026-10-04): pin map confirmed identical to the KiCad symbol, address 0x6A with SA0 low, SDx/SCx tied to GND per the pin table | land pattern checked 2026-10-04 against the datasheet's Figure 28 (body 3.0 x 2.5, 14 pads 0.25 x 0.475 at 0.5 mm pitch, 4 per short side, 3 per long side; KiCad's lands 0.35 x 0.625 at the same positions): matches | stock |
 | J-QT | STEMMA QT / Qwiic | SM04B-SRSS-TB (JST SH, 1 mm) | SMD | `Connector:Conn_01x04_Socket` / `Connector_JST:JST_SH_SM04B-SRSS-TB_1x04-1MP_P1.00mm_Horizontal` | DR-033 app. I.4 | stock |
 | R-I2C | I2C pull-ups | 4.7 kΩ x2 | 0402 | `Device:R` | HR-P02 | |
@@ -134,15 +134,15 @@ Each row: the cheaper or easier-to-source near-equivalent, whether it is a **dro
 | Screen module, Waveshare 1.54" | Waveshare 1.3inch LCD Module (same PH2.0 8-pin cable and order, 240 x 240 ST7789) | **drop-in** | about 2 USD cheaper, smaller | its schematic for the BL transistor; stock |
 | Screen socket S8B-PH-SM4-TB | JST S8B-PH-K-S (through-hole, horizontal) | layout change (through-hole footprint, in KiCad) | cheaper; sturdier for repeated plugging | PCBWay through-hole fee |
 | Screen socket | generic "PH2.0 8P SMD" (unbranded JST-PH clones) | drop-in | cents | plating, retention |
-| Charger BQ24074RGT | BQ24072RGT (same family: same footprint, different timer and current defaults) | **drop-in** | similar price, second source within the family | EN/ISET table of the variant |
+| Charger BQ24074RGT | BQ24072RGT (same family and footprint) | **not a plain drop-in** (AUDIT-3): its pin 15 is TD (a termination/timer-disable input that must not float) instead of ITERM, and its OUT behaviour differs; needs a resistor and a re-read of its table | second source within the family | EN/ISET/TD table of the variant |
 | Charger BQ24074RGT | MCP73871 (Microchip) | layout change (QFN-20 4 x 4) | the other common power-path part | full re-review of the power sheet |
 | Regulator TPS63001 | TPS63000 (adjustable; same footprint, two feedback resistors) | drop-in plus 2 resistors (place footprints now) | often better stocked | feedback divider values |
 | Regulator TPS63001 | MP28164 (what Waveshare uses) | layout change | cheap, proven on the Plus | its datasheet layout; John said no Waveshare-specific parts, but this is a generic MPS part |
 | Speaker amp PAM8302AAD (SO-8) | PAM8302AASCR (same chip, MSOP-8) | layout change (MSOP-8 footprint) | whichever package PCBWay stocks | package |
 | Speaker amp PAM8302AAS | PAM8403 (stereo, SOP-16; use one channel) | layout change | the most-stocked cheap class-D part | pinout, shutdown pin |
-| Battery socket S2B-PH-SM4-TB | JST S2B-PH-K-S (through-hole) | layout change | cheaper, stronger | through-hole fee |
-| Battery socket | generic "PH2.0 2P SMD" clones | drop-in | cents | polarity marking is on our silkscreen, not the part |
-| RTC DS3231MZ | DS3231M+ (same die, same SOIC-8) | drop-in | whichever is stocked | package marking |
+| Battery socket S3B-PH-SM4-TB (3-pin) | JST S3B-PH-K-S (through-hole, 3-pin) | layout change | cheaper, stronger | through-hole fee |
+| Battery socket | generic "PH2.0 3P SMD" clones | drop-in | cents | polarity marking is on our silkscreen, not the part |
+| RTC DS3231MZ+ | DS3231M+ | **not drop-in** (AUDIT-3): DS3231M+ is the 16-pin SO package; only the MZ+ is 8-pin SOIC. Drop-in alternative within the family: none; the DS3231SN (16-pin TCXO) also needs a different footprint | | package per the datasheet's ordering table |
 | RTC DS3231MZ | PCF8523 (NXP) | layout change (SOIC-8 but different pinout; needs a crystal) | cheaper | its trickle charger register must stay off (HR-P02) |
 | IMU LSM6DSOX | LSM6DSO or LSM6DS3TR-C (ST, same LGA-14 2.5 x 3 mm, pin-compatible per ST) | drop-in (ST states pin compatibility; **verify**) | cheaper; both have micropython-lib drivers (lsm6dsox covers the DSO) | pin map, pedometer feature on the DS3 |
 | USB-C USB4085 | HRO TYPE-C-31-M-12 (16-pin, USB 2.0) | layout change (own KiCad footprint) | the cheapest widely stocked USB-C receptacle | drawing, through-board pegs |
