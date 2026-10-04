@@ -3,7 +3,7 @@
 Ruling: `pm/outbox/DR-033.md` (2026-10-04, Option B with the owner's choices). This file tracks the phases of `PLAN.md` for spin 1. Nothing is ordered without John's explicit yes; John places the order.
 
 ## What spin 1 is (from the ruling)
-RP2350A, 16 MB flash, 8 MB PSRAM; 1.54" 240 x 240 ST7789 module on a header; joystick and four buttons on today's pins; RM2 wireless fitted; speaker amplifier and speaker connector fitted; microSD; DS3231 RTC with CR1220; 6-axis IMU; STEMMA QT connector; SWD header; test points; single lithium cell (JST LiPo or 18650 holder), charged on the board, USB pass-through; flat credit-card-style board; PCBWay, fab-assembled. Design principle: **each optional block is grouped so it can be removed on spin 2 without touching the rest.**
+RP2350A, 16 MB flash, 8 MB PSRAM; 1.54" 240 x 240 ST7789 module on a header; joystick and four buttons on today's pins; RM2 wireless fitted; speaker amplifier and speaker connector fitted; microSD; DS3231 RTC with CR1220; 6-axis IMU; STEMMA QT connector; SWD header; test points; single lithium cell (JST LiPo or 18650 holder), charged on the board, USB pass-through; flat board, **size not a constraint for spin 1** (owner, 2026-10-04: a prototype that only has to work; credit-card size is the later goal); test points and probing room; PCBWay, fab-assembled. Design principle: **each optional block is grouped so it can be removed on spin 2 without touching the rest.**
 
 ## Phases and status
 
