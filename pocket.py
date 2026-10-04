@@ -6,6 +6,7 @@
 FAST_SPI = True          # DR-015 off switch. False = screen link at 24 MHz, everything else the same.
 SPI_BAUD = 62_500_000    # real 62.5 MHz with the fix on; use 12_000_000 for a real 31.25 MHz (HR-015)
 SAVE_PATH = '/save.json'
+STUD_SEATS = 5           # other players at the Caribbean Stud table, 0 to 5 (DR-041)
 
 import sys
 import gc
@@ -214,6 +215,7 @@ def main():
     ctx.buttons = Buttons()
     ctx.assets = Assets('/assets')
     ctx.store = Store(SAVE_PATH)
+    ctx.stud_seats = STUD_SEATS
     try:
         random.seed()           # hardware RNG on rp2
     except Exception:
