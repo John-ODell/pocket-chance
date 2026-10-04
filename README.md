@@ -36,13 +36,16 @@ Landscape, with USB-C and the joystick on the left and the buttons on the right.
 | Blackjack, betting | Joystick up / down | Change the bet (5 to 500, steps of 5) |
 | Blackjack, betting | **A** deal, **B** back to menu | |
 | Blackjack, playing | **A** hit, **B** stand, **X** double, **Y** split a pair | |
+| Caribbean Stud, betting | Joystick up / down, left / right | Change the ante (5 to 100, capped at a third of your chips) |
+| Caribbean Stud, betting | **A** deal, **X** pays and strategy, **B** menu | |
+| Caribbean Stud, deciding | **A** raise (twice the ante), **B** fold | The dealer's cards then turn over one by one |
 
 ## Games
 
 | Game | Status | Rules | House edge |
 |---|---|---|---|
 | Blackjack | **Playable** | 6 decks, reshuffle at 75% dealt, dealer stands on all 17, blackjack pays 3:2, hit / stand / double, split pairs once (aces get one card each, double after split allowed) | about 0.55% |
-| Caribbean Stud | In progress | Ante, five cards each, dealer shows one, fold or raise 2x, dealer needs Ace-King or better, raise pays 1 to 100:1, no jackpot | about 5.2% of the ante with good play |
+| Caribbean Stud | **Built**, awaiting John's first play | Ante 5 to 100, five cards each, dealer shows one, fold or raise 2x, dealer needs Ace-King or better, raise pays 1 to 100:1, no jackpot; X shows the pays and the basic strategy | about 5.2% of the ante with good play |
 | Ultimate Texas Hold'em | Planned | Ante and Blind, check or raise 4x / 3x pre-flop, 2x after the flop, 1x after the river | about 2.2% of the ante with good play |
 | Slots | Shelved | A 3-reel machine was built and tuned (93.84% return) then dropped: a classic multi-line machine does not fit the board's RAM. Code kept in `archive/slots/` | n/a |
 

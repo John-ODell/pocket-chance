@@ -2,7 +2,7 @@
 
 _Updated by the senior dev at the end of each session. Written for John._
 
-**Last updated:** 2026-10-05 (evening)
+**Last updated:** 2026-10-05 (night)
 
 ## Where we are
 Every decision for Phase 1 is approved (DR-001 to DR-015) and the first full version of the game is written. **It has never run on the board.** I have asked the expert to look it over on the bench first; after that the next step is yours: upload it following `UPLOAD.md` step 1 and tell the PM what you see.
@@ -42,7 +42,7 @@ The expert ran the build on the board. One blocker, now fixed: the image-loader 
 ## Slots dropped (D-009): what changed
 As you decided, slots is out. The code is parked in `archive/slots/` with a note; the menu is Blackjack, Caribbean, Hold'em, Off; the art list no longer mentions slot symbols or a cabinet. The sprite sheets stay for cards, chips, banners and icons. I kept the memory fixes the expert's slots bench taught us (no allocations in the screen driver and sheet reader, a slimmer sheet list), which help blackjack too. **Step 1i is on the board (2026-10-05, with your go).** The expert benched it first: 68 KB free at boot (65 before), about 54 KB free while playing blackjack, no leak, verdict fits. A full redraw is about 48 ms and a card from the new sheet format 3.4 to 3.9 ms, so your card art will make the game faster, not slower (key press to result 84 ms with a card sheet, 94 ms without). The sheet code costs about 7.6 KB more RAM than before sheets existed; that is the price of DR-024 and it fits.
 
-**Caribbean Stud: eight requests filed (DR-025 to DR-032).** Rules and paytable with a measured house edge (5.2% of the ante with good play, matching the published figure), the screen layout (two rows of five cards in the blackjack bands), buttons (A raise, B fold), ante 5 to 100 so a raise is always affordable, the dealer's cards turning over one by one, the save, the menu word, and the art (everything reused; one optional new banner). The poker hand evaluator is built and tested. I build as soon as the rulings land.
+**Caribbean Stud is built (all eight rulings applied), `UPLOAD.md` step 1j, six files for the expert.** Ante with the joystick, A deals, A raises or B folds, the dealer's cards turn over one by one, result and chips saved; X shows the pays and the three ace-king rules in plain words. 42 new tests. Earlier note: Rules and paytable with a measured house edge (5.2% of the ante with good play, matching the published figure), the screen layout (two rows of five cards in the blackjack bands), buttons (A raise, B fold), ante 5 to 100 so a raise is always affordable, the dealer's cards turning over one by one, the save, the menu word, and the art (everything reused; one optional new banner). The poker hand evaluator is built and tested. I build as soon as the rulings land.
 
 ## Sprite sheets built (DR-024, approved), upload step 1h
 Your pictures now travel to the board as one file per family: `cards.565` (all 53), `chips.565`, `banners.565`, `icons.565`, `symbols.565`. You still draw one BMP per picture; `python3 tools/convert_assets.py` packs them and lists what is missing (missing ones are transparent placeholders, so a few drawn cards already show). Why: the expert measured 3 ms to open any file on the board, so 53 card files would have made blackjack slower than the plain drawn cards; from a sheet a card takes 2.9 ms and the slot reels read rows in 0.26 ms. `assets/ASSETS.md` has the table of sheets. Five files for the expert in `UPLOAD.md` step 1h.
