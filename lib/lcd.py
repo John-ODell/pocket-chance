@@ -106,6 +106,12 @@ class LCD(framebuf.FrameBuffer):
         self._window(0, y, WIDTH, h)
         self._push(memoryview(self.buffer)[y * ROW_BYTES:(y + h) * ROW_BYTES])
 
+    def show_buf(self, x, y, w, h, buf):
+        """Push a prepared w x h RGB565 buffer to a window of the panel, without touching the
+        framebuffer (HR-020: a composed reel window goes straight to the panel, ~1.5 ms)."""
+        self._window(x, y, w, h)
+        self._push(memoryview(buf)[:w * h * 2])
+
     def show_rect(self, x, y, w, h, scratch):
         """Push a window by copying its rows into `scratch` (needs w*h*2 bytes, else falls back
         to show_band). Worth it for small windows; a band is simpler for anything wide."""
