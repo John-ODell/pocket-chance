@@ -9,7 +9,8 @@ The old `main.py` was erased at your request (ruling D-003), so **the board boot
 
 The new game does **not** replace `main.py` yet (ruling DR-001). It installs as `/pocket.py` and you run it by hand from Viper IDE. Making it start at boot is step 3 below, and only after you have seen it run.
 
-## Step 1: first upload of the new game (nothing to test on the board has been run yet)
+## Step 1: first upload of the new game
+The expert ran this build on the bench on 2026-10-04 (8 scripted hands, no errors, 64 KB RAM free) after fixing one start-up bug (HR-F02). Awaiting a re-bench of the fixed files before you upload.
 Create these folders on the board if they do not exist: `/lib`, `/games`, `/assets`.
 
 | # | From this repo | To the board |
@@ -19,7 +20,7 @@ Create these folders on the board if they do not exist: `/lib`, `/games`, `/asse
 | 3 | `lib/lcd.py` | `/lib/lcd.py` |
 | 4 | `lib/font.py` | `/lib/font.py` |
 | 5 | `lib/buttons.py` | `/lib/buttons.py` |
-| 6 | `lib/assets.py` | `/lib/assets.py` |
+| 6 | `lib/art.py` | `/lib/art.py` (not `assets.py`: the `/assets` folder would hide it, HR-F02) |
 | 7 | `lib/save.py` | `/lib/save.py` |
 | 8 | `lib/bankroll.py` | `/lib/bankroll.py` |
 | 9 | `lib/cards.py` | `/lib/cards.py` |
