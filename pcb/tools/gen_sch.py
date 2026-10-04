@@ -290,7 +290,6 @@ for i, (ref, net) in enumerate([("SW4", "BTN_A"), ("SW5", "BTN_B"), ("SW6", "BTN
 # no drawing to scripts and John accepts buttons for the joystick; zero custom footprints (PARTS.md fallback row)
 for i, (ref, net) in enumerate([("SW8", "JOY_UP"), ("SW9", "JOY_DOWN"), ("SW10", "JOY_LEFT"), ("SW11", "JOY_RIGHT"), ("SW12", "JOY_PRESS")]):
     add(ref, SWP, "DPAD " + net[4:] + " PTS645SM43SMTR92", PTS645, (480 + 20 * i, 155), {"1": net, "2": "GND"})
-    add(ref, SWP, "JOY " + net[4:], "pcb_custom:Alps_SKRHABE010", (480 + 20 * i, 155), {"1": net, "2": "GND"})
 
 # ---- Block 5: audio --------------------------------------------------------------------
 # PAM8302A ds ordering table: PAM8302AASCR = MSOP-8, PAM8302AADCR = SO-8. SO-8 chosen (larger, easier to inspect).
