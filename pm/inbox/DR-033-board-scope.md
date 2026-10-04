@@ -1,7 +1,7 @@
 # DR-033: Scope of the first custom board (one integrated handheld)
 
 - **Status:** draft, **parked** until the PM confirms John has seen the options (big scope decision). Rewritten 2026-10-04 from John's Stage 2 wishes, relayed by the PM.
-- **Filed by:** PCB maker
+- **Filed by:** PCB maker. Numbering note: this is the only PCB request with a DR number; later PCB requests are `PCB-001`, `PCB-002`, ... and their reviews `HR-P01`, ... (PM, 2026-10-04).
 - **Date:** 2026-10-04
 - **Blocks:** PCB phase 2 (parts choice) and everything after. Phase 1 (install KiCad) can go ahead.
 - **Needs HW review:** yes. **Done: `hw/reviews/HR-033.md` (2026-10-04), verdict "fits, Option B, with limits."** The limits are folded in below (marked "HR-033").
