@@ -4,7 +4,7 @@
 - **Filed by:** senior dev
 - **Date:** 2026-10-05
 - **Blocks:** Hold'em screen
-- **Needs HW review:** yes
+- **Needs HW review:** yes. Done: HR-043, **fits with limits**. Measured: full redraw with nine face-up cards and four seat boxes **85 ms code-drawn, 74 ms from a sheet** (my 60/55 estimate was low); community band push 27 ms. Limits: card backs code-drawn always, full redraw only at phase changes, size-1 text only. (Revision note 2026-10-05: numbers added, layout unchanged.)
 
 ## The decision
 Where the dealer's two cards, the five community cards, the player's two cards, the hand names, the bets and the prompts go, and where seat strips for AI players (DR-044) would sit.
