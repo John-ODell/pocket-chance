@@ -100,6 +100,23 @@ For the dev: poll at 50–100 Hz, treat a key as pressed on the falling edge, an
 | Backlight current at PWM levels | not measured, no meter in the loop | |
 | Battery, charging | not measured; nothing on the charge circuit will be touched without John present | |
 
+## First on-board code (UPLOAD.md step 1, measured 2026-10-04, v1.29.0, fast clock, no art files)
+Scripts: `hwtest/pocket_bench.py` (8 scripted hands), plus a per-module import run. The import collision in HR-F02 was worked around in the bench only.
+
+| Item | Measured |
+|---|---|
+| RAM cost of all 12 modules (compile + import) | **19,632 bytes**: blackjack 4,608, blackjack_rules 3,344, lcd 2,592, cards 1,952, save 1,520, blackjack_table 1,344, bankroll 1,072, buttons 960, font 768, pixfmt 720, clocks 480, assets ~80 |
+| Free after LCD framebuffer | 101,104 |
+| Free after all imports and objects | 84,272 |
+| Free after 8 hands, `gc.collect()` | **64,576** (matches the "60–70 KB in play" rule) |
+| `draw_all` (full redraw + show), code-drawn felt and cards | 39–43 ms, of which ~18 ms is the wire and ~25 ms Python drawing, mostly size-2 text (`font.text` draws each lit glyph pixel as a `fill_rect`) |
+| Bet change: `draw_top` + 24-row band | 15 ms (band push ≈ 3.6 ms, drawing ≈ 12 ms) |
+| Hit/stand: `draw_player` + `draw_bottom` + 142-row band | 29 ms |
+| `finish_round`: save then `draw_all` | **121 ms mean, 177 ms max** |
+| Save with `.bak` (write tmp, rename old → bak, rename tmp → json) | **54 ms mean, 102 ms max** (the plain tmp+rename was 22–26 ms mean; the extra rename doubles it) |
+
+Everything fits the budget. Notes for the dev: redraw before saving in `finish_round` so the result appears within ~45 ms instead of up to 177 ms; size-2 text is the main Python cost, so avoid redrawing it per frame (the code already only draws on input).
+
 ## Rules of thumb for the dev
 - **Until the `clk_peri` fix is ruled on, design for 24 MHz SPI: 46 ms per full push, 20 fps full redraw, 79 fps for a 48-row band.** With the fix: 18.5 ms, 44 fps, 138 fps. Design so the game is fine at the slow numbers and looks better at the fast ones.
 - Time frames with `utime.ticks_us()`, never trust the `SPI` repr's `baudrate=`.
