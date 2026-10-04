@@ -118,7 +118,7 @@ Scripts: `hwtest/pocket_bench.py` (8 scripted hands), plus a per-module import r
 | Save with `.bak` (write tmp, rename old → bak, rename tmp → json) | 54 ms mean / 102 ms max on a near-empty filesystem; **77 ms mean / 151 ms max** once `save.json`, `save.bak` and bench files exist. LittleFS housekeeping varies; budget **up to ~250 ms** for the whole end-of-round, once per round |
 | `Double`: bet doubles, one card, round resolves, balance moves by exactly the doubled bet | correct in 8 of 8 hands (bench pressed X whenever allowed) |
 | Re-banded screen (commit `2c930a9`, four non-overlapping bands), re-bench | unchanged within noise: `draw_all` 45 ms, bet band 16 ms, key→banner 82.5 / 101 ms, save 62 / 119 ms, 63.3 KB after 8 hands |
-| John playing the real game (`pocket.py` RESULT lines) | boot 82,800 free; inside blackjack 58,736; after leaving 74,080; second entry costs only ~8 KB because the rules modules stay cached |
+| John playing the real game (`pocket.py` RESULT lines) | boot 82,800 free; inside blackjack 58,736 (pre-split build) / **54,096 (split build)**; after leaving 74,080 / 71,664; a second entry costs only ~8 KB because the rules modules stay cached |
 | Split as built (step 1c), scripted play | Y redraw 51.5 ms; hit/double on a split hand 40–42 ms; key→banner 99.6 / 103 ms; round-ending stand incl. save 213 / **256 ms**; 59.6 KB free after (`split_play_bench.py`, HR-016) |
 | Split layout (DR-016), two hands in the 142-row player band, code-drawn cards | 2+2 cards 38 ms; 3+2 42 ms; **4+4 worst 52.6 ms** vs 36.6 ms for one 4-card hand today; one code-drawn card 3.9 ms; second hand 64 bytes RAM (`split_bench.py`, HR-016) |
 
