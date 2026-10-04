@@ -9,6 +9,9 @@ Every decision for Phase 1 is approved (DR-001 to DR-015) and the first full ver
 
 The board currently boots to a blank screen because the old program was erased at your request (D-003). The new game installs as `/pocket.py` and you start it by hand from Viper IDE; it does not take over the boot file until you say so (`UPLOAD.md` step 3).
 
+## Bench check result (expert, 2026-10-04)
+The expert ran the build on the board. One blocker, now fixed: the image-loader module was called `assets.py`, and on the board the empty `/assets` folder hid it, so the game would not start. It is renamed `lib/art.py` (a file rename within DR-001, no new decision). A test now fails if any module is ever named like a board folder. Everything else was good: 8 scripted hands with no errors, a full redraw in about 43 ms, bet change 15 ms, hit 29 ms, 64 KB of RAM free after play. I also moved the save to after the result is drawn, so the banner appears instantly instead of up to 0.18 s later. The expert is re-checking the fixed build before you upload.
+
 ## Done today
 - **Screen, buttons, clock fix, image loader, saving:** the shared modules in `lib/`. The clock fix from DR-015 is in `lib/clocks.py` with the `FAST_SPI` switch at the top of `pocket.py`.
 - **Blackjack screens** (`games/blackjack.py`): bet with the joystick, A deals, A hits, B stands, X doubles, "Shuffling..." when the shoe is reshuffled, result banner, out-of-chips screen with the free 1000. Everything draws with plain code shapes when an image is missing, so the game plays before any art exists.
