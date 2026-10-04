@@ -280,8 +280,11 @@ add("C28", C, "100nF", C0402, (330, 430), {"1": "VBAT_SENSE", "2": "GND"})
 # VCC, GND, DIN, CLK, CS, DC, RST, BL. 3.3 V supply and logic.
 add("J4", ("Connector", "Conn_01x08_Socket"), "LCD 1.54in ST7789 module, JST-PH 8-pin", "Connector_JST:JST_PH_S8B-PH-SM4-TB_1x08-1MP_P2.00mm_Horizontal",
     (480, 80), {"1": "+3V3", "2": "GND", "3": "LCD_MOSI", "4": "LCD_SCK", "5": "LCD_CS", "6": "LCD_DC", "7": "LCD_RST", "8": "LCD_BL"})
+# game buttons: John asked for about 10 mm; tactile switches come in 6 and 12 mm standard sizes, so 12 mm it is
+# (C&K PTS125, 12 x 12 mm surface-mount; KiCad footprint), fallback XKB TS-1187A (same size, cheaper), see PARTS.md
+PTS125 = "Button_Switch_SMD:SW_Push_1P1T_NO_CK_PTS125Sx43SMTR"
 for i, (ref, net) in enumerate([("SW4", "BTN_A"), ("SW5", "BTN_B"), ("SW6", "BTN_X"), ("SW7", "BTN_Y")]):
-    add(ref, SWP, net[4:], PTS645, (480 + 20 * i, 130), {"1": net, "2": "GND"})
+    add(ref, SWP, net[4:] + " PTS125SM43SMTR2LFS", PTS125, (480 + 20 * i, 130), {"1": net, "2": "GND"})
 for i, (ref, net) in enumerate([("SW8", "JOY_UP"), ("SW9", "JOY_DOWN"), ("SW10", "JOY_LEFT"), ("SW11", "JOY_RIGHT"), ("SW12", "JOY_PRESS")]):
     add(ref, SWP, "JOY " + net[4:], "pcb_custom:Alps_SKRHABE010", (480 + 20 * i, 155), {"1": net, "2": "GND"})
 
