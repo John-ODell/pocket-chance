@@ -39,6 +39,9 @@ The expert ran the build on the board. One blocker, now fixed: the image-loader 
 2. **Art:** make the four pilot images (`c_AS`, `c_back`, `chip_5`, `table`) at the sizes in `assets/ASSETS.md`, drawn the right way up as described there. Then `UPLOAD.md` step 2.
 3. Nothing else is waiting on you.
 
+## New request: DR-024, one image file per family instead of one per picture
+The expert found that opening a file costs about 3 ms on the board, so your 53 card pictures as 53 files would make blackjack slower than the plain drawn cards. DR-024 proposes that the converter packs each family (cards, chips, banners, icons, slot symbols) into one file; you still draw separate BMPs exactly as before, and uploads get easier (one file instead of 53). Waiting for your ruling before you convert card art.
+
 ## Slots is built (step 1g, four files for the expert)
 The slot machine plays: bet 5 to 100 with the joystick, A spins, the three reels scroll the real symbol strip and stop left to right about 0.4 s apart, the win line and amount appear, the chips are saved, and a win blinks the gold frames. X shows the paytable (93.8% return, one line). Until your symbol art exists the reels show coloured squares, one colour per symbol. Memory: the expert found my first plan (44 KB) would not fit next to the menu, so, as you ruled, the fallback is built: three 6 KB window buffers scrolled in place with the incoming symbol read row by row (18.8 KB). The first spin prints the free memory mid-spin for the expert.
 
