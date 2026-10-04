@@ -272,9 +272,16 @@ class Entry(unittest.TestCase):
             self.assertTrue(clocks.is_fast())
             # menu geometry: labels end inside the row box, rows do not overlap, footer is clear
             rows = ns['ROW_Y']
+            box_l, box_r = ns['ROW_X'], ns['ROW_X'] + ns['ROW_W']
+            self.assertGreaterEqual(box_l, 0)
+            self.assertLessEqual(box_r, 240)
+            area_centre = (ns['LABEL_X0'] + box_r) // 2
             for i, (label, mod, icon) in enumerate(ns['MENU']):
-                right = ns['LABEL_X'] + font.width(label, 2) + (font.width(' soon', 1) if mod is None else 0)
-                self.assertLessEqual(right, ns['ROW_X'] + ns['ROW_W'], label)
+                lx = ns['label_x'](i)
+                w = font.width(label, 2) + (8 + font.width('soon', 1) if mod is None else 0)
+                self.assertGreaterEqual(lx, ns['LABEL_X0'], label)          # clear of the icon slot
+                self.assertLessEqual(lx + w, box_r, label)                   # inside the box
+                self.assertLessEqual(abs((lx + w // 2) - area_centre), 1, label)   # centred in the box
                 if i:
                     self.assertGreaterEqual(rows[i], rows[i - 1] + ns['ROW_H'])
             self.assertGreaterEqual(rows[0], 40 + 16 + 8)          # below the balance line
