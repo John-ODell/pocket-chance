@@ -69,6 +69,15 @@ John's casino photo behind the main menu. Two files.
 
 **Test line:** start `/pocket.py`: the photo fills the menu, the title, chips and footer sit on small dark plates, the selected row is a solid dark-blue box with a gold border, the other rows show the photo with a dark plate under the word. Joystick up/down moves the box with no flicker elsewhere. Without the `.565` file the menu is plain dark blue as before.
 
+## Step 1e: scrolling menu for five games (DR-022), 2026-10-05
+One file. The menu lists Blackjack, Slots, Caribbean, Hold'em and Off; three rows show at a time and a small gold arrow in the right margin says the list continues. The "soon" tag now sits under the word.
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `pocket.py` | `/pocket.py` |
+
+**Test line:** joystick down from Blackjack: Slots, then Caribbean (list scrolls when you pass the third row, a `^` appears top right), Hold'em, Off (`v` disappears). Up again to Blackjack. A on Blackjack still starts the game; A on a "soon" row does nothing.
+
 ## Step 2: pilot image test (after you have made the 4 pilot images)
 On the Mac, from the repo folder:
 
