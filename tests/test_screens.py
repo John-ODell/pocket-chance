@@ -18,7 +18,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
 import machine  # noqa: E402  (the fake)
 from convert_assets import to_565  # noqa: E402
 from pixfmt import rgb, KEY, KEY_BE  # noqa: E402
-import clocks  # noqa: E402
 from lcd import LCD  # noqa: E402
 from buttons import Buttons, PINS  # noqa: E402
 from art import Assets  # noqa: E402
@@ -64,17 +63,6 @@ def make_ctx(asset_dir, save_dir, balance=1000):
     ctx.bankroll = Bankroll(balance)
     ctx.rng = random.Random(3)
     return ctx
-
-
-class Clocks(unittest.TestCase):
-    def test_fix_is_idempotent(self):
-        machine.mem32[clocks.CTRL] = 0x840
-        self.assertFalse(clocks.is_fast())
-        self.assertTrue(clocks.fast_peripherals())
-        self.assertEqual(machine.mem32[clocks.CTRL], 0x800)
-        self.assertTrue(clocks.is_fast())
-        self.assertFalse(clocks.fast_peripherals())
-        self.assertEqual(machine.mem32[clocks.CTRL], 0x800)
 
 
 class Lcd(unittest.TestCase):
@@ -375,7 +363,7 @@ class Entry(unittest.TestCase):
             ns['draw_menu'](ctx, 0)
             ns['draw_menu'](ctx, 2)
             self.assertEqual(ns['menu_select'](ctx, 2, 1, 0), 0)
-            self.assertTrue(clocks.is_fast())
+            self.assertIn((125000000, 125000000), machine.freq_calls)      # DR-050 boot call
             lcd = ns['lcd']
             # no background art: plain colour in the margin, selected row is the panel colour
             self.assertEqual(lcd.pixel(2, 100), ns['BG'])
