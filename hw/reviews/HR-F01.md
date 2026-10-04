@@ -4,6 +4,17 @@
 - **Type:** finding (PM treats as a decision request)
 - **Urgency:** low. Nothing planned so far needs more than 1.4 MB. Decide before John makes a lot of art, not before the dev writes code.
 
+## STATUS: DONE, with one follow-up
+**John reflashed on 2026-10-03** (his own action, BOOTSEL drag-and-drop) with `WAVESHARE_RP2040_PLUS-FLASH_16M-20260824-v1.29.0.uf2` (kept, uncommitted, at `backups/firmware/`, sha256 `654744…c1ba`). Verified afterwards with `hwtest/board_info.py`: MicroPython **v1.29.0**, machine "Waveshare RP2040-Plus 16MB with RP2040", filesystem **15,728,640 bytes (15 MB)**. `main.py` restored from `backups/2026-10-03/` and verified on the board (sha1 `37f2d3f1…49f6`); the old menu runs.
+
+**Regression found on the new firmware: SPI dropped from 62.5 MHz to 24 MHz**, so a full frame takes 46 ms instead of 18.5 ms. Cause, measured with `hwtest/clk_peri.py`: v1.29.0 feeds the peripheral clock from the 48 MHz USB PLL (`CLK_PERI_CTRL = 0x840`), and SPI can only divide that by 2. `machine.freq(125 MHz)` and `machine.freq(133 MHz)` do not change it.
+
+**Fix found and measured, `hwtest/clk_peri_fix.py`:** three register writes at boot re-source the peripheral clock from the 125 MHz system clock; a full frame then takes 17.2 ms (58 fps). Two cautions: MicroPython's `SPI` repr keeps reporting the old 24 MHz (it caches the clock), and a soft reset does not undo the register change (a power cycle does). Full detail and the two-column frame table are in `hw/BUDGET.md`.
+
+**Open for a ruling:** whether the dev adopts the three-line fix in `lib/lcd.py` (recommended; it needs a decision request because it is a raw register write), or designs for 24 MHz (20 fps full redraw, still playable). Also still pending from before the reflash: John's visual check of the byte-order pattern (`hwtest/byteorder.py`) and the button capture (`hwtest/bounce.py`); both are firmware-independent.
+
+**Board state at hand-over, 2026-10-03 late:** v1.29.0, `/main.py` only, old menu running after a soft reset. The `clk_peri` register is currently in the fixed state (`0x800`) from my last test because a soft reset does not clear it; the menu therefore runs at the old speed. The next unplug returns it to the shipped state (`0x840`). Nothing else is changed.
+
 ## What I found
 The board runs **MicroPython v1.22.2, the stock build for the original Raspberry Pi Pico** (`os.uname().machine` = "Raspberry Pi Pico with RP2040"). That build lays the filesystem out for a 2 MB chip. `os.statvfs('/')` reports **1,441,792 bytes total (1.4 MB), 1,388,544 free**. The flash chip itself is bigger: reads at 2, 4, 8 and 15 MB come back erased (0xFFFFFFFF) rather than mirroring the start, so the firmware is simply not using the space. 14.6 MB sits idle.
 
