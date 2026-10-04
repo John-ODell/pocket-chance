@@ -2,45 +2,38 @@
 
 _Updated by the senior dev at the end of each session. Written for John._
 
-**Last updated:** 2026-10-04 (morning)
+**Last updated:** 2026-10-04 (afternoon)
 
 ## Where we are
-Phase 1 (blackjack) has started. The game logic is built and tested on the Mac. On-board code waits on the layout and art rulings below. The board now runs MicroPython v1.29.0 with 15 MB of space, and the expert has measured it, so my requests now rest on real numbers instead of my estimates.
+Every decision for Phase 1 is approved (DR-001 to DR-015) and the first full version of the game is written. **It has never run on the board.** I have asked the expert to look it over on the bench first; after that the next step is yours: upload it following `UPLOAD.md` step 1 and tell the PM what you see.
 
-## New today: the screen speed fix (DR-015)
-The new firmware made the screen link 2.6 times slower (a full redraw takes 46 ms instead of 18 ms). The expert found a three-line software fix and measured it back to full speed. I filed DR-015 recommending we use it, with an off switch in case the picture ever looks wrong. Cards play fine either way; it matters more for slot animation later.
+The board currently boots to a blank screen because the old program was erased at your request (D-003). The new game installs as `/pocket.py` and you start it by hand from Viper IDE; it does not take over the boot file until you say so (`UPLOAD.md` step 3).
 
-## Approved by you so far
-Dealer stands on all 17, blackjack pays 3:2, 6 decks reshuffled after 75%, hit/stand/double only, start at 1000 chips with a free refill when broke, bets 5 to 500 in steps of 5, and Pillow for the Mac-side image converter.
-
-## Done
-- Built the betting and bankroll logic on top of the engine (bet limits, doubling only when you can afford it, broke and refill, reshuffle flag for the "Shuffling" moment). 58 automated tests pass on the Mac. Saving the bankroll to flash is not written, because that waits on DR-007 and DR-008.
-- Read all the project docs and the old program.
-- Built and tested the blackjack rules engine. It deals from a shuffled shoe, scores hands (aces count 1 or 11 correctly), plays the dealer's turn, and works out payouts. Hit, stand and double are supported. 40 automated tests pass on the Mac.
-- The rules you still have to approve are settings, not hard-wired: dealer stand or hit on soft 17, blackjack pays 3:2 or 6:5, and number of decks.
-- Wrote a Mac tool that plays about 3 million hands per rule set and measures the house edge, so the requests below quote real numbers.
-- Wrote a read-only check script for the board (`tools/board_probe.py`).
-- Filed 14 decision requests in `pm/inbox/` (below).
-
-## Still waiting on a decision (pending with the PM)
-Each is one decision with my recommendation. The expert has reviewed DR-001, 002, 003, 005, 006, 007 and 008 (all fit, DR-005 within limits in HR-005), so they are ready for you.
-- **DR-015** Use the expert's screen speed fix at start-up (recommended), or live with the slower screen.
-- **DR-001** File layout on the board, and keeping the old program as the boot file until you say otherwise.
-- **DR-002, DR-003, DR-005** Art pipeline: file format, colour byte order, how images are loaded.
-- **DR-006** Whether the art sizes in `assets/ASSETS.md` hold up. My answer: yes, keep them. Please start with 4 pilot images, not all 60.
-- **DR-007, DR-008** How the bankroll is saved, and what happens if the save is damaged.
-
-I am not waiting on these. Next I will carry on with parts that need no ruling (see below) and pick up each request as soon as it is ruled.
-
-## What I plan next
-- Check `pm/outbox/` first thing next session.
-- Start the screen driver copy, the button reader and the blackjack screens once DR-001 is ruled.
-- Start the converter once DR-002 and DR-003 are ruled (DR-004 is approved).
+## Done today
+- **Screen, buttons, clock fix, image loader, saving:** the shared modules in `lib/`. The clock fix from DR-015 is in `lib/clocks.py` with the `FAST_SPI` switch at the top of `pocket.py`.
+- **Blackjack screens** (`games/blackjack.py`): bet with the joystick, A deals, A hits, B stands, X doubles, "Shuffling..." when the shoe is reshuffled, result banner, out-of-chips screen with the free 1000. Everything draws with plain code shapes when an image is missing, so the game plays before any art exists.
+- **Menu** (`pocket.py`): Blackjack, Slots (marked "soon"), Off. Shows your chips. Loads the blackjack code only when you pick it and frees it after.
+- **Saving:** your chips are written to `/save.json` after every finished hand, with a backup copy, exactly as DR-007 and DR-008 say. If the file is ever damaged you will see a one-line message at start-up.
+- **Image converter** (`tools/convert_assets.py`): turns your BMP/PNG files into `.565` files for the board, checks sizes and names, and refuses wrong ones with a clear message.
+- **Pilot board test** (`tools/pilot_test.py`): draws your four pilot images and prints timing and memory numbers.
+- `assets/ASSETS.md` is updated to the approved format, with "which way up" and the pilot-first instruction. `chip_1` is now optional.
+- **96 automated tests pass** on the Mac, including a headless run of the whole screen code against stand-in `machine` and `framebuf` modules, and a 600-random-key test that tries to crash the blackjack screen.
 
 ## John needs to upload or test
-- Nothing needs uploading for the game yet.
-- With the expert at the board: the screen check (which half is red, is "TOP" at the top) and the 8-second button press capture. These settle colour order and orientation before you make art.
-- Art can wait until DR-002, DR-003 and DR-006 are ruled, then make the 4 pilot files first.
+1. **`UPLOAD.md` step 1** (after the expert's bench check): upload 13 files, run `/pocket.py`, play a hand, copy the `RESULT` lines to the PM. If the screen is dark or garbled, flip `FAST_SPI` to `False` and tell the PM.
+2. **Art:** make the four pilot images (`c_AS`, `c_back`, `chip_5`, `table`) at the sizes in `assets/ASSETS.md`, drawn the right way up as described there. Then `UPLOAD.md` step 2.
+3. Nothing else is waiting on you.
 
-## Not tested
-Everything so far is tested on the Mac only. The code has not been run under MicroPython or on the board. In particular the colour byte order and screen orientation are untested guesses based on reading the old driver (see DR-003).
+## Waiting on a decision
+Nothing. I will file a request before any new work on slots (Phase 2), and for making `pocket.py` the boot file if you prefer it decided here rather than in `UPLOAD.md`.
+
+## What I plan next
+- Fix whatever the bench check and step 1 turn up.
+- A `tools/check_upload.py` that checks the files on the Mac match the upload list (sizes, compile), so uploads are less error-prone.
+- Then slots, after a scope request.
+
+## Not tested, honestly
+- Nothing has run under MicroPython or on the board. The CPython stand-ins mimic `framebuf` and `machine` but cannot catch MicroPython-only differences, timing, or how the panel looks.
+- The panel has not been looked at while running at the full 62.5 MHz on the new firmware. That is why `FAST_SPI` exists.
+- Real RAM use after all modules load. `pocket.py` prints it (`RESULT boot mem_free=...`) so step 1 answers it.
+- Scaled text (`font.py`) is drawn pixel by pixel in Python; it is only redrawn on button presses, which should be fine, but speed is unmeasured.
