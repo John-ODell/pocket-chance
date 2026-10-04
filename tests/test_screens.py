@@ -46,7 +46,7 @@ def write_sheet(adir, sheet, colours):
     for i in range(count):
         c = colours.get(i) if isinstance(colours, dict) else colours[i]
         px.extend([c or (255, 0, 255)] * (w * h))
-    data, _ = to_565(px, w, h * len(names))
+    data, _ = to_565(px, w, h * count)
     with open(os.path.join(adir, sheet + '.565'), 'wb') as f:
         f.write(data)
 
