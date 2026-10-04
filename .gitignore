@@ -9,3 +9,12 @@ backups/2026-10-04*/
 
 # Local copies of manufacturer documents and datasheets (copyrighted, never committed)
 pcb/refs/
+
+# Generated exports (PDFs, reports); regenerate with kicad-cli
+pcb/kicad/exports/
+
+# KiCad per-user and lock files
+*.lck
+*.kicad_prl
+*-backups/
+fp-info-cache
