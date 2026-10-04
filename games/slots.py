@@ -89,21 +89,25 @@ class Screen:
         self.files = [None, None, None]          # open file of the symbol scrolling into reel i
         self.incoming = [None, None, None]       # symbol id scrolling into reel i (for stand-ins)
         self.mem_mid_spin = None
-        # stand-in rows: border, plain, inner-square; built once (8 x 3 x 112 bytes)
-        self.patterns = []
-        for bg, ink in STANDIN:
-            b = rgb(*bg)
-            i = rgb(*ink)
-            self.patterns.append((_row_pattern(b, i, 0, SYM_PX),              # border row
-                                  _row_pattern(b, i, 0, 0),                   # plain row
-                                  _row_pattern(b, i, INNER0, INNER1)))        # square row
+        self.patterns = {}            # stand-in rows per symbol, built only for symbols without art
         line = self.table.reels.line()
         for i in range(3):
             self.fill_window(i, line[i])
+        gc.collect()
+        mf = getattr(gc, 'mem_free', None)
+        if mf:
+            print('RESULT slots mem_free after init=%d' % mf())
 
     # ---- symbol rows --------------------------------------------------------------------------
     def standin_row(self, sym, row, dst):
-        border, plain, square = self.patterns[sym]
+        pats = self.patterns.get(sym)
+        if pats is None:              # 3 x 112 bytes per symbol, only when its art is missing
+            bg, ink = STANDIN[sym]
+            b = rgb(*bg)
+            i = rgb(*ink)
+            pats = (_row_pattern(b, i, 0, SYM_PX), _row_pattern(b, i, 0, 0), _row_pattern(b, i, INNER0, INNER1))
+            self.patterns[sym] = pats
+        border, plain, square = pats
         if row < 3 or row >= SYM_PX - 3:
             dst[:] = border
         elif INNER0 <= row < INNER1:
