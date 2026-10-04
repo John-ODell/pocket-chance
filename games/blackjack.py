@@ -64,6 +64,7 @@ class Screen:
         self.store = ctx.store
         self.table = Table(ctx.rng, bankroll=ctx.bankroll)
         self.has_table_art = self.assets.size('table') is not None
+        self.assets.use_sheets(('cards', 'chips', 'banners'))        # DR-024: one open per scene
 
     # ---- background -------------------------------------------------------------------------
     def felt(self, y=0, h=240):
@@ -296,11 +297,14 @@ class Screen:
     def run(self):
         self.draw_all()
         buttons = self.buttons
-        while True:
-            for key in buttons.poll():
-                if not self.handle(key):
-                    return
-            utime.sleep_ms(15)
+        try:
+            while True:
+                for key in buttons.poll():
+                    if not self.handle(key):
+                        return
+                utime.sleep_ms(15)
+        finally:
+            self.assets.release_sheets()
 
 
 def run(ctx):

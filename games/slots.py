@@ -82,6 +82,7 @@ class Screen:
         self.store = ctx.store
         self.table = SlotsTable(ctx.rng, ctx.bankroll)
         self.has_cabinet = self.assets.size('cabinet') is not None
+        self.sheet = self.assets.sheet('symbols')      # DR-024: one open file for the whole spin
         # Fallback B RAM (DR-020): three window buffers, 18,816 bytes, allocated once here.
         self.win = [bytearray(SYM_BYTES) for _ in range(3)]
         self.win_mv = [memoryview(b) for b in self.win]
@@ -122,15 +123,21 @@ class Screen:
 
     def fill_window(self, i, sym):
         """Load a whole symbol into reel i's window buffer (screen entry and reel reset)."""
+        if self.sheet is not None and self.sheet.read(sym, self.win[i]):
+            return
         if not self.assets.load('sym_' + SYMBOLS[sym], self.win[i]):
             mv = self.win_mv[i]
             for r in range(SYM_PX):
                 self.standin_row(sym, r, mv[r * ROW_BYTES:(r + 1) * ROW_BYTES])
 
     def begin_incoming(self, i, sym):
-        """The symbol that will scroll into reel i next: open its file once (or use stand-in rows)."""
+        """The symbol that will scroll into reel i next. With the symbols sheet nothing is opened:
+        rows are seeked within the one open file. Else open the symbol's own file once (or use
+        stand-in rows when there is no art)."""
         self.end_incoming(i)
         self.incoming[i] = sym
+        if self.sheet is not None:
+            return
         r = self.assets.open_sprite('sym_' + SYMBOLS[sym])
         if r is not None:
             self.files[i] = r[0]
@@ -148,12 +155,15 @@ class Screen:
         mv = self.win_mv[i]
         dst = mv[(SYM_PX - step) * ROW_BYTES:]
         first = rows_in - step
+        sym = self.incoming[i]
+        if self.sheet is not None:
+            if self.sheet.rows(sym, first, step, dst):
+                return
         f = self.files[i]
         if f is not None:
             f.seek(HDR + first * ROW_BYTES)
             if f.readinto(dst) == step * ROW_BYTES:
                 return
-        sym = self.incoming[i]
         for k in range(step):
             self.standin_row(sym, first + k, dst[k * ROW_BYTES:(k + 1) * ROW_BYTES])
 
@@ -372,6 +382,9 @@ class Screen:
         finally:
             for i in range(3):
                 self.end_incoming(i)
+            if self.sheet is not None:
+                self.sheet.close()
+            self.assets.release_sheets()
 
 
 def run(ctx):

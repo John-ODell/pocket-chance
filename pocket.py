@@ -184,6 +184,7 @@ def menu_select(ctx, old, new, top):
 
 
 def play(ctx, modname):
+    ctx.assets.release_sheets()                       # the game opens its own sheets
     gc.collect()
     before = gc.mem_free()
     mod = __import__(modname)
@@ -194,8 +195,10 @@ def play(ctx, modname):
         del mod
         if modname in sys.modules:
             del sys.modules[modname]
+        ctx.assets.release_sheets()
         gc.collect()
         print('RESULT after %s mem_free=%d' % (modname, gc.mem_free()))
+        ctx.assets.use_sheets(('icons',))
 
 
 def off():
@@ -218,6 +221,7 @@ def main():
         random.seed(utime.ticks_us())
     ctx.rng = random
     bank, msg = ctx.store.load()
+    ctx.assets.use_sheets(('icons',))                 # DR-024: the menu's icon sheet stays open
     ctx.bankroll = Bankroll(bank) if bank is not None else Bankroll()
     gc.collect()
     print('RESULT boot mem_free=%d fast_spi=%s' % (gc.mem_free(), FAST_SPI))
