@@ -1,6 +1,6 @@
 # How this project was built: a small team of AI sessions
 
-Pocket Chance was built by one person (the **owner**) directing three Claude Code sessions, each with one job. This page explains the setup so you can try it on your own project. You do not need it to **play** the game: see [`SETUP.md`](../SETUP.md) for that.
+Pocket Chance was built by one person (the **owner**) directing three Claude Code sessions (a fourth, the PCB maker, was added later), each with one job. This page explains the setup so you can try it on your own project. You do not need it to **play** the game: see [`SETUP.md`](../SETUP.md) for that.
 
 ```
                          the owner
@@ -19,6 +19,7 @@ Pocket Chance was built by one person (the **owner**) directing three Claude Cod
 | **PM** | Routes decisions to the owner, records rulings, owns scope, branches and pull requests | [`roles/PM.md`](roles/PM.md) |
 | **Senior developer** | Writes and tests the software. Cannot reach the board | [`roles/DEV.md`](roles/DEV.md) and [`CLAUDE.md`](../CLAUDE.md) |
 | **Microcontroller expert** | Only session that works on the board from the terminal. Measures, benches and reviews anything touching speed, memory, storage or power | [`roles/ENGINEER.md`](roles/ENGINEER.md) |
+| **PCB maker** (optional, added later) | Teaches and guides the owner through designing and ordering their own board: KiCad, review, fab files, bring-up. Never orders. Workspace in [`../pcb/`](../pcb/README.md) | [`roles/PCB_MAKER.md`](roles/PCB_MAKER.md) |
 
 Each role file ends with a **starter prompt** you can paste into a new Claude Code session opened in the repo folder.
 
