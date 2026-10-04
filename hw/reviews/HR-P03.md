@@ -39,3 +39,10 @@ ABM8-272-T3 12 MHz with 15 pF C0G load capacitors and a 1 kΩ series resistor; t
 
 ## What I could not verify
 The BQ24074, TPS63001, DW01A, FS8205A datasheets themselves (not yet downloaded); the real board current (needs the multimeter session, `hwtest/load_hold.py`).
+
+## Re-review after John's choice: JST pouch cell only (2026-10-04)
+- **(a) Reverse-polarity guard, AO3401A P-FET in the positive lead, gate to the cell's negative pin:** correct and standard. Right way round: the body diode lifts the source to the cell voltage, the gate sits at cell negative, Vgs = −Vcell (−3.0 to −4.2 V) turns it fully on (Vgs(th) about −0.9 V, Rds(on) around 50 mΩ: roughly 25 mV at 500 mA, as the request says). Reversed: the body diode blocks and Vgs is positive, so nothing conducts. Charging current flows source→drain with the same Vgs, so it charges through the FET too. Two notes: take the gate from the **connector's** negative pin, not from the protected ground after the DW01A, so the guard judges the cell itself; and the AO3401A's Vgs maximum (±12 V) is never approached by one cell. Agree.
+- **(b) ISET 1.8 kΩ → 500 mA, 3.6 kΩ → 250 mA:** consistent with the BQ2407x relation I_CHG = K_ISET / R_ISET with K_ISET ≈ 890 A·Ω (494 mA and 247 mA). From memory; **confirm K_ISET and the resistor range in the datasheet** when downloaded. The silkscreen note of the fitted value is the right habit.
+- **(c) Cell guideline (503450 / 603048 ≈ 1000 mAh, 303450 ≈ 500 mAh, 3–6 mm thick, with PCM and a JST-PH plug):** sensible sizes for a flat board; add "check the red wire is on the + mark before plugging in" to the silkscreen, since the guard protects the board but not a cell shorted by a wrong adaptor.
+- **EN1 high, EN2 low = 500 mA input limit:** matches my memory of the BQ24074 EN table (EN2:EN1 = 00 → 100 mA, 01 → 500 mA, 10 → ILIM, 11 → disabled). **Verify in the datasheet**; a swapped pair would silently give 100 mA and a board that browns out at full backlight.
+Everything else stands as reviewed.
