@@ -8,6 +8,8 @@ FAST_SPI = True          # DR-050: peripheral clock from the 125 MHz system PLL 
 SPI_BAUD = 62_500_000    # honest with DR-050: the repr says what it gets. Fallback 31_250_000.
 SAVE_PATH = '/save.json'
 STUD_SEATS = 5           # other players at the Caribbean Stud table, 0 to 5 (DR-041)
+UTH_SEATS = 4            # other players at the Hold'em table, 0 to 4 (DR-044)
+UTH_HINT = True          # river dealer-outs count on the Hold'em prompt (DR-042 addendum)
 
 import sys
 import gc
@@ -46,7 +48,7 @@ GREY = rgb(140, 140, 140)
 # 9 characters at most (tests/test_screens.py checks). Full game names are used inside the games.
 MENU = (('Blackjack', 'blackjack', 'icon_blackjack'),
         ('Caribbean', 'stud', 'icon_stud'),
-        ("Hold'em", None, 'icon_holdem'),
+        ("Hold'em", 'holdem', 'icon_holdem'),
         ('Off', 'off', None))                        # slots was dropped (D-009)
 VISIBLE = 3                                  # rows on screen (DR-022: scrolling list)
 
@@ -194,6 +196,7 @@ def play(ctx, modname):
     gc.collect()
     before = gc.mem_free()
     mod = __import__(modname)
+    gc.collect()                                      # drop the compile garbage before the game starts
     print('RESULT import %s mem_free before=%d after=%d' % (modname, before, gc.mem_free()))
     try:
         mod.run(ctx)
@@ -222,6 +225,8 @@ def main():
     ctx.assets = Assets('/assets')
     ctx.store = Store(SAVE_PATH)
     ctx.stud_seats = STUD_SEATS
+    ctx.uth_seats = UTH_SEATS
+    ctx.uth_hint = UTH_HINT
     try:
         random.seed()           # hardware RNG on rp2
     except Exception:
