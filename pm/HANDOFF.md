@@ -29,15 +29,13 @@ Written by the PM so tomorrow starts from the repo, not from memory. Read this f
 | DR-007 | Bankroll save format and location | A |
 | DR-008 | What happens on a damaged save | B |
 
-## Open checks that need John at the board
-1. **Screen check** (settles DR-003 byte order and DR-006 orientation): the expert runs `hwtest/byteorder.py`. John says which half is red, whether "TOP" is at the top and whether "L" is at the left.
-2. **Button capture** (8 seconds, press each button and joystick direction): confirms the pin map and bounce.
+## Update 2026-10-04 (morning)
+- Screen check passed: left half red (big-endian RGB565), upright landscape. Pin map verified on the board, zero bounce. The 62.5 MHz fast-SPI fix looks clean on the panel and is adopted (DR-015).
+- All 15 decision requests are ruled (`pm/outbox/`, `pm/DECISIONS.md`). John also ordered the old `main.py` erased from the board (D-003, backup verified by hash). The board is blank and boots to a dark screen. v1.29.0, 15 MB free.
+- The dev is building the on-board modules, the converter and the blackjack screens. New entry installs as `/pocket.py`.
+- Still unconfirmed: which physical button (top to bottom) is A, B, X and Y.
 
-Both were interrupted by the reflash and need rerunning.
-
-## Tomorrow, in order
-1. Dev files a decision request for the clock fix (the expert's review of it is already in `hw/BUDGET.md`).
-2. Run the screen and button checks with the expert.
-3. PM takes DR-001, 002, 003, 005, 006, 007, 008 to John for rulings.
-4. Dev builds the on-board code and the image converter against the rulings.
-5. John makes the four pilot images (`c_AS`, `c_back`, `chip_5`, a small `table`) only after DR-002, 003 and 006 are ruled. Not before.
+## Next
+1. Dev delivers the converter and a pilot board test (`UPLOAD.md`). The expert reviews any new on-board module before John uploads it.
+2. John makes the four pilot images (`c_AS`, `c_back`, `chip_5`, a small `table`), then the rest of the Phase 1 art if the pilot passes.
+3. John uploads via Viper IDE (the expert must not hold the port at the same time).
