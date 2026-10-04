@@ -101,6 +101,39 @@ class SlotsScreen(unittest.TestCase):
                     self.assertEqual(fb.pixel(3, y), rgb(*SYM_COLOURS[line[i]]), (i, y))
         self.assertTrue(all(f is None for f in s.files))
 
+    def test_spin_from_symbols_sheet_opens_no_files(self):
+        import sheets as sh
+        import art as art_module
+        w, h, names = sh.SHEETS['symbols']
+        px = []
+        for s in range(8):
+            px.extend([SYM_COLOURS[s]] * (w * h))
+        data, _ = to_565(px, w, h * 8)
+        with open(os.path.join(self.adir, 'symbols.565'), 'wb') as f:
+            f.write(data)
+        ctx = make_ctx(self.adir, self.sdir, seed=11)
+        s = slots.Screen(ctx)
+        self.assertIsNotNone(s.sheet)
+        opens = []
+        real = art_module.Assets.open_sprite
+        art_module.Assets.open_sprite = lambda self_, name: opens.append(name) or real(self_, name)
+        try:
+            s.draw_all()
+            for _ in range(3):
+                if s.table.state == RESULT:
+                    s.table.next()
+                s.handle('A')
+                line = s.table.reels.line()
+                for i in range(3):
+                    self.assertEqual(self.window_colour(s, i), rgb(*SYM_COLOURS[line[i]]), (line, i))
+                    fb = s.win_fb[i]
+                    for y in (0, 1, 27, 54, 55):
+                        self.assertEqual(fb.pixel(3, y), rgb(*SYM_COLOURS[line[i]]), (i, y))
+        finally:
+            art_module.Assets.open_sprite = real
+        self.assertEqual(opens, [])                                   # no per-symbol file opened during spins
+        self.assertTrue(all(f is None for f in s.files))
+
     def test_mixed_art_and_standins(self):
         write_sym(self.adir, CHERRY)
         write_sym(self.adir, STAR)
