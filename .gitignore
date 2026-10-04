@@ -1,3 +1,8 @@
 .DS_Store
 __pycache__/
 backups/firmware/*.uf2
+
+# Not published: art the repo does not ship, and on-board snapshots taken during development
+assets/src/ui/menu_background.bmp
+assets/out/*.565
+backups/2026-10-04*/
