@@ -37,3 +37,4 @@ Maintained by the PM. Newest at the bottom. Format: `DD-Mon | DR-NNN | decision 
 | 2026-10-04 | DR-023 | Slots art list adopted; pilot sym_cherry, sym_star, sym_bar | John |
 | 2026-10-04 | DR-020 | Slots spin animation rev 2: real symbols scroll, symbols in RAM, staggered reels, direct push; RAM option A (about 44 KB), fallback B if mid-spin free RAM under about 20 KB | John |
 | 2026-10-04 | DR-021 | Slots wins rev 2: show result, then save, then 3 blinks; no auto-spin; X shows paytable; jackpot banner on three stars | John |
+| 2026-10-04 | DR-024 | Sprite sheets: one .565 per family (cards, chips, banners, icons, slot symbols); John still draws separate BMPs and the converter packs them | John |
