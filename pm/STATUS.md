@@ -4,6 +4,11 @@ _Updated by the senior dev at the end of each session. Written for John._
 
 **Last updated:** 2026-10-06
 
+## The Caribbean freeze: what I found (branch `game-error-screen`)
+I read every Caribbean file for anything that could hang: a loop waiting on a button or the clock, the x3 path, the help screen, the other players, the save. Nothing in them can loop forever. I then played your exact case off the board 6,000 times, from a bank of 966 with a HIGH call at Ante 15 and 20 over the first three hands, plus a long run of random button presses. Nothing failed. So whatever stops it happens only on the board itself, most likely running out of memory or a MicroPython difference.
+
+What I did find is why it looks like a freeze. When any game hits an error, the whole program stops and the last picture stays on the screen with nothing moving. Without the USB cable plugged into Viper IDE, nobody sees the error message. Branch `game-error-screen` changes that (upload step 1p, one file): the error is written to `/error.log`, your chips are saved, the screen says the game stopped and goes back to the menu. That does not fix the cause yet, but the next time it happens we can read exactly what it was. The expert is also checking the board with the cable in.
+
 ## The menu's new look is built (DR-072 style A, your pick), on branch `flop-game`
 Without your photo on the board the menu is now a casino table: a green felt shaded from dark at the top to lighter at the bottom, a double gold border, "Pocket Chance" with a drop shadow, your chips on a cream plaque, and each game as a wide pill in its own felt colour (green Blackjack, blue Ultimate, burgundy Caribbean, grey Off). The pill you are on has a gold outline and a small gold chip beside it. Until you draw the icons, each row shows a card suit drawn in code: a spade, a red diamond, a club, and a power sign for Off. Everything is drawn by code, nothing is loaded, so memory is unchanged; the expert measures the built menu (the entry redraw and the joystick band pushes) from the mount before you upload. If your photo file is on the board, the photo menu shows exactly as before. Same upload step (1o); it is all inside `pocket.py`.
 

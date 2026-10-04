@@ -9,6 +9,7 @@ import shutil
 import struct
 import sys
 import tempfile
+import types
 import unittest
 
 import tests.context  # noqa: F401
@@ -346,6 +347,38 @@ class BlackjackScreen(unittest.TestCase):
 
 
 class Entry(unittest.TestCase):
+    def test_game_error_returns_to_the_menu(self):
+        # a game that raises must not leave the screen stuck: the error goes to a log, the chips are
+        # saved, a message shows, and play() returns to the menu loop
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(root, 'pocket.py')) as f:
+            src = f.read().replace('\nmain()\n', '\n')
+        ns = {'__name__': 'pocket_test'}
+        exec(compile(src, 'pocket.py', 'exec'), ns)
+        tmp = tempfile.mkdtemp()
+        try:
+            ns['ERROR_LOG'] = os.path.join(tmp, 'error.log')
+            ctx = ns['Ctx']()
+            ctx.assets = Assets(tmp)
+            ctx.bankroll = Bankroll(966)
+            ctx.store = Store(os.path.join(tmp, 'save.json'))
+            ctx.buttons = Buttons()
+            mod = types.ModuleType('broken_game')
+
+            def run(c):
+                raise MemoryError('memory allocation failed')
+            mod.run = run
+            sys.modules['broken_game'] = mod
+            ns['gc'] = types.SimpleNamespace(collect=lambda: None, mem_free=lambda: 0)   # MicroPython's gc
+            ns['play'](ctx, 'broken_game')
+            self.assertNotIn('broken_game', sys.modules)
+            with open(ns['ERROR_LOG']) as f:
+                self.assertIn('MemoryError', f.read())
+            self.assertEqual(ctx.store.load(), (966, None))
+        finally:
+            sys.modules.pop('broken_game', None)
+            shutil.rmtree(tmp)
+
     def test_pocket_compiles_and_menu_draws(self):
         # pocket.py runs main() when executed; import it with main guarded by a fake __name__
         root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
