@@ -239,3 +239,52 @@ No nuisance trip up to 60 °C; at 85 °C the family's derating (~0.6 A) still cl
 
 ## Not verified
 F1's datasheet itself (figures as the designer quoted them); DW01A datasheet (still to be saved); PCM figures (no cell chosen).
+
+## Part 8 addendum: the hold-margin claim withdrawn pending a measured load (2026-10-04, after the auditor's `…160129` answer)
+The auditor is right that "no nuisance trips" rested on an unmeasured 0.40–0.45 A. The 3.3 V rail's draw with every consumer on at once, from the sources in `pcb/refs/`:
+| Consumer | Peak at 3.3 V | Source |
+|---|---|---|
+| RM2 transmit, MCS7 at 16 dBm | 271 mA | rm2-datasheet, features list |
+| PAM8302A at full output (0.7–0.8 W into 8 Ω at 10 % THD, ~85 % efficient) | ≈ 250 mA | pam8302a p.4 (P_O at 3.6 V); the division is mine |
+| RP2350 at 150 MHz with PSRAM and flash active | ≈ 50–80 mA | general practice, unmeasured |
+| LCD module backlight at 100 % | ≈ 40–60 mA | unmeasured (the module's drive is still an open item) |
+| microSD write burst | 100–200 mA | general practice, card-dependent |
+| **Sum of peaks** | **≈ 0.7–0.85 A** at 3.3 V → **≈ 0.9–1.05 A from a 3.0 V cell** at 88 % | the TPS63001 switch limit is 1.6–2.0 A (tps63001 p.5), so the regulator does not cap this |
+Against F1 at 1.10 A (25 °C) / 0.77 A (60 °C) hold, the all-at-once case sits in the hold-to-trip band; a PPTC there does not trip quickly, but whether it trips at all depends on how long the firmware keeps Wi-Fi transmit, full-volume audio and a card write going together. Nothing in the project's software does that today (no radio, no audio, no card use yet), so the bound is genuinely open. Three honest ways out, for the designer and John: (a) keep 1.1 A and measure on the first board before committing to the value (same 1812 footprint for every hold rating in the family); (b) fit 1.5 A hold / 3.0 A trip (MF-MSMF150/16X-2 class) and accept that the second layer trips at 3 A instead of 2.2 A, still far below a cell short and still inside what the DW01A (~3 A) and the JST-PH contacts (2 A continuous, jst-ph p.1) tolerate for the seconds to trip; (c) a firmware rule against Wi-Fi transmit during audio. My preference: (b), because a tripped PPTC that stays hot in a pocket is a worse outcome than containment at 3 A, and the PCM remains the first layer either way. Also conceded: "a 0603 is 0.1 W" is the common thick-film rating, not a universal one; the BOM should state the chosen R20 part's rating. Q4's body diode is a possible negative path to GP28, not a clamp I can certify. F1's trip curve and the DW01A's clamp current remain unsourced until their datasheets are in `pcb/refs/parts/`.
+
+---
+
+# Part 9: the DW01A and Bourns MF-MSMF datasheets read; every "from memory" figure replaced (2026-10-04, design commit `1252e0b`, rev 0.7)
+
+Sources now in `pcb/refs/parts/`: `Datasheet-DW01A.pdf` (Pingjing Semi, "DW01A One Cell Lithium-ion/Polymer Battery Protection IC", revision 3.0, June 2023, 7 pages; saved by John) and `bourns-mf-msmf.pdf` ("MF-MSMF Series PTC Resettable Fuses", 16 pages; saved by the designer on John's approval).
+
+## DW01A, what the datasheet says against the board
+| Item | Datasheet | Board (rev 0.7) | Verdict |
+|---|---|---|---|
+| VCC absolute maximum | **−0.3 to 6 V** (p.4) | reversed cell puts −Vcell across VCC–GND | breach confirmed, as Parts 7–8 said |
+| CS absolute maximum | VCC − 15 V to VCC + 0.3 V (p.4) | CS via R21 1 kΩ from GND | normal states inside |
+| Reverse clamp current | **not specified** anywhere in the datasheet | — | the auditor's point stands: nothing qualifies the DW01A's behaviour under reversed supply; the only bound is the external resistor |
+| **R1, the VCC series resistor** | **470 Ω typical, 470–1500 Ω allowed, "cannot be omitted, and R1 must be greater than or equal to 470 ohms"** (p.6, typical application circuit and note 1) | **R20 = 100 Ω** | **OUT OF THE DATASHEET'S RANGE. New finding.** R20 must become 470 Ω–1.5 kΩ. The 330 Ω floated earlier (by me and the designer) is also below the minimum |
+| R2, the CS resistor | 2 kΩ typical, 1–3 kΩ (p.6) | R21 = 1 kΩ | inside, at the low edge; 2 kΩ would match the typical circuit |
+| C1 on VCC | ≥ 0.1 µF (p.6) | C27 100 nF | matches |
+| Over-charge protect / release | 4.28 V ±50 mV / 4.08 V (p.1, p.5) | cell charged to 4.16–4.24 V by the BQ24074 | the DW01A never trips on a normal charge; margin ≥ 40 mV worst case |
+| Over-discharge protect / release | 2.40 V ±100 mV / 3.00 V (p.1) | TPS63001 runs to 1.8 V in, so the DW01A is what stops the cell at 2.3–2.5 V | fine; this is its job |
+| Discharge over-current | 160 mV ±20 mV across the FETs, 10 ms (p.1, p.5) | FS8205A 2 × 21–25 mΩ at Vgs 4.5 V (fs8205a p.3) → **3.2–3.8 A** (2.8–3.3 A at the 35 mΩ, Vgs 2.5 V figure) | the "~3 A" I used from memory was right in band |
+| Load short circuit | 1.0 V ±0.3 V across the FETs, 300 µs typ / 600 µs max (p.5) | ≈ 20 A with 50 mΩ | fine |
+| Charge over-current | −150 mV, 10 ms (p.1, p.5) | ≈ 3 A charging | far above 0.5 A |
+| Supply current | 1.5 µA typ, 5 µA max (p.5) | | negligible against the cell |
+| 0 V-battery charge function | present (p.6 §5) | | a cell whose PCM has opened can be woken by this board's charger if the pack's own protector allows it; `BATTERY.md`'s "may not wake" line stays, since the pack's PCM is the unknown |
+
+**Consequence of the R1 finding for the reversed-cell fault:** with R20 at the minimum 470 Ω the reverse current through the DW01A's VCC pin is ≈ (4.2 − 0.6)/470 ≈ **7.7 mA**, 28 mW in the resistor: inside a 0603's 0.1 W with 3× margin, so the "R20 may open" story and the 0805 question both go away, and the DW01A's stress falls fivefold. Why the datasheet wants ≥ 470 Ω: the resistor and C1 filter the VCC pin against the voltage spikes on the cell when the FETs switch under over-current, and limit the current into the pin when the cell is reverse-connected or the charger overshoots; 100 Ω defeats the second purpose. Recommended value: **1 kΩ** (inside 470–1500 Ω, reverse current ≈ 3.6 mA, 13 mW; the 1.5 µA supply drop across it is 1.5 mV, irrelevant to the thresholds). Also, since "DW01A" is a multi-vendor part name: the BOM should state the vendor whose datasheet this is (Pingjing) or verify the chosen vendor's R1 range, because the thresholds and the R1 rule may differ by vendor.
+
+## Bourns MF-MSMF, what the datasheet says
+| Model | Vmax | Imax | Ihold 23 °C | Itrip 23 °C | R min / R1 max (Ω) | Max time to trip at 8 A | Ihold at 40 / 50 / 60 / 70 / 85 °C |
+|---|---|---|---|---|---|---|---|
+| MF-MSMF110/16X (fitted at `1252e0b`) | 16 V | 100 A | 1.10 A | 2.20 A | 0.06 / 0.20 | 0.3 s | see the first derating table (p.11, row MF-MSMF110/16X; the designer quoted 0.77 A at 60 °C from it) |
+| MF-MSMF150/16X (proposed) | 16 V | 100 A | 1.50 A | 3.00 A | 0.030 / 0.120 | 0.5 s | **1.25 / 1.08 / 1.00 / 0.78 / 0.64 A** (p.12) |
+Both from the electrical characteristics table (p.2–4) and the thermal derating tables (p.11–12). "R1 max" is the resistance one hour after a trip, so the in-circuit drop after a nuisance trip is up to 0.12 Ω × 0.5 A = 60 mV for the 150. Against the sourced all-on load of 0.9–1.05 A from the cell (Part 8 addendum): the 150 holds it at 60 °C (1.00 A) only just, at 70 °C (0.78 A) it does not; the 110 does not hold it from 50 °C up. So (b) widens the margin but does not make the all-on case trip-proof in a hot pocket; what does is that no firmware today runs Wi-Fi transmit, loud audio and a card write together, and the first board's measurement. The trip curve (p.6–7, time-to-trip vs fault current at 23 °C) confirms the family trips in roughly a second at 3× hold and in well under a second at 8 A; it is not instantaneous at 1.2× hold, which is the point of a PPTC.
+
+**Verdict:** one new finding, **R20 100 Ω is below the DW01A datasheet's 470 Ω minimum**; change to 1 kΩ (470 Ω–1.5 kΩ allowed), and name the DW01A vendor in the BOM. The fuse choice between 110 and 150 stands as Part 8 addendum described it, now with the datasheet's own derating numbers: 150 preferred. Everything I had quoted from memory for the DW01A is now sourced; two numbers were refined (over-current 160 mV not 150; short 1.0 V not 1.35 V), neither changes a conclusion.
+
+## Part 9 addendum: rev 0.8 verified (design commit `283594a`, schematic content hash 9ed7c374ca34e7dad227afbdf19a4a0bbdb7435d)
+The designer found the same R1 rule in the DW01A datasheet independently and committed rev 0.8 before Part 9 was filed. Semantic netlist diff `1252e0b` → `283594a`: **exactly two value changes, no net change**: R20 100 Ω 0603 → **470 Ω 0402**, R21 1 kΩ → **2 kΩ** (the datasheet's typical values, p.6). ERC 0 errors, 2 expected warnings. At 470 Ω the reversed-cell current into the DW01A is ≈ 7.7 mA, 28 mW, inside a 0402's 0.063 W with 2× margin, so the footprint step down is justified and the "R20 may open" story is closed. I had suggested 1 kΩ; 470 Ω is the datasheet's typical and equally correct. The CS resistor at 2 kΩ with the DW01A's CS leakage (sub-µA) shifts no threshold. **Rev 0.8 verified; Parts 7–9 apply to it.** Still open from Part 9: name the DW01A vendor in the BOM.
