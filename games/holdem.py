@@ -232,9 +232,9 @@ class Screen:
         t0 = utime.ticks_us()
         self.draw_comm_row()
         self.lcd.show_band(COMM_TOP, ROW_H)
-        if self.table.state == RIVER and self.table.outs is None and self.table.hint:
+        if self.table.state == RIVER and self.table.hint:
             gc.collect()
-            self.table.outs = self.table.round.outs()      # about 228 ms on the board (HR outs bench)
+            self.table.compute_outs()                      # about 0.3 s on the board, inside the pause
         spent = utime.ticks_diff(utime.ticks_us(), t0) // 1000
         if spent < REVEAL_MS:
             utime.sleep_ms(REVEAL_MS - spent)

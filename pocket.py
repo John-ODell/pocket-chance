@@ -196,6 +196,7 @@ def play(ctx, modname):
     gc.collect()
     before = gc.mem_free()
     mod = __import__(modname)
+    gc.collect()                                      # drop the compile garbage before the game starts
     print('RESULT import %s mem_free before=%d after=%d' % (modname, before, gc.mem_free()))
     try:
         mod.run(ctx)
