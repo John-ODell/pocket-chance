@@ -22,6 +22,8 @@ Finish with `mpremote connect $P soft-reset`. Each script prints `RESULT key=val
 | byteorder.py | **visual, needs John**: which byte order the panel shows as red; orientation | LCD, leaves pattern on screen |
 | bounce.py | **needs John pressing keys for DUR_S (30) s**: edges, bounce within 5 ms, press lengths, pin-to-key mapping, press order | read-only |
 | pin_hunt.py | **needs John pressing one key**: every free GPIO as a pulled-up input for 30 s, reports which went low; finds a key's real pin. Skips LCD pins 8-13 and power pins 23-25, 29 | read-only |
+| pins_reserved.py | read-only: GPIO 0,1,4-7,14,22-29 with pull-up then pull-down (floating vs driven), ADC on 26-29; which pins the Plus reserves | inputs only |
+| load_hold.py | for John's multimeter: backlight 100 %, full-frame pushes for 60 s, then backlight back to 20000 | LCD |
 | clk_peri.py | which clock feeds the peripherals (why SPI is 24 MHz on v1.29.0); tries `machine.freq()` | reads `CLK_PERI_CTRL`; `machine.freq()` |
 | clk_peri_fix.py | re-sources `clk_peri` to `clk_sys` and times a frame at the real 62.5 MHz | **writes `CLK_PERI_CTRL`**; survives soft reset, cleared by power cycle |
 | slots_spin_bench.py | DR-020 as described: per frame, two `Assets.blit` reads from flash per reel into a 56x56 compose, copy to framebuffer, `show_rect`; 3 reels and 1 reel; DR-021 blink; same at 24 MHz | writes and removes `/assets/_bench_sym0/1.565`; LCD; toggles clk_peri and restores it |
