@@ -6,7 +6,6 @@ board modules that are not in UPLOAD.md and runs the test suite unless --no-test
 Exit code 0 means clean. Run from the repo root:  python3 tools/check_upload.py
 """
 import os
-import py_compile
 import re
 import subprocess
 import sys
@@ -30,9 +29,10 @@ def check_row(repo_path, board_path):
         return ['%s: file does not exist' % repo_path]
     if repo_path.endswith('.py'):
         try:
-            py_compile.compile(full, cfile=os.devnull, doraise=True)
-        except py_compile.PyCompileError as e:
-            problems.append('%s: does not compile: %s' % (repo_path, e.msg.strip().splitlines()[-1]))
+            with open(full) as f:
+                compile(f.read(), repo_path, 'exec')
+        except SyntaxError as e:
+            problems.append('%s: does not compile: line %s: %s' % (repo_path, e.lineno, e.msg))
     board_path = board_path.split(' ')[0]
     if os.path.basename(board_path) != os.path.basename(repo_path):
         problems.append('%s -> %s: base name differs' % (repo_path, board_path))
