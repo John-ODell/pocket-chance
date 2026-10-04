@@ -27,7 +27,8 @@ def parse(text):
             while j < n:
                 ch = text[j]
                 if ch == '\\' and j + 1 < n:
-                    out.append(text[j:j + 2]); j += 2; continue
+                    nxt = text[j + 1]
+                    out.append({'n': '\n', 't': '\t'}.get(nxt, nxt)); j += 2; continue   # unescape; write() re-escapes
                 if ch == '"':
                     break
                 out.append(ch); j += 1
@@ -50,7 +51,8 @@ def parse(text):
 
 def _atom(a):
     if isinstance(a, QStr):
-        return '"' + a + '"'
+        # KiCad quoted strings escape backslash, double quote and newline
+        return '"' + a.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n') + '"'
     if isinstance(a, bool):
         return 'yes' if a else 'no'
     if isinstance(a, float):

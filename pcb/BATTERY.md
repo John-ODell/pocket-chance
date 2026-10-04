@@ -30,7 +30,7 @@ To be filled in before purchase: seller, listing name, capacity, protection boar
 - Charge on a **non-flammable surface** (a ceramic plate, a metal tray), away from paper and fabric.
 - **Never leave the first charges unattended.** Stop if the cell or the area around the charger chip gets warm to the touch.
 - The board does not measure the cell's temperature with a two-wire cell. The cell's own protection board and the gentle 0.5 C charge rate are what protect it. That is the residual risk you accepted.
-- Charging stops by itself after about 6 hours whatever happens (safety timer).
+- A safety timer ends a charge after roughly 6 hours; it runs slower while the charger is throttling itself (hot, or the USB port is weak), so "about 6 hours" is not a hard stop. Do not rely on it instead of attention.
 
 ## What the charge current is
-494 mA nominal with the resistor the board ships with (R14 = 1.8 kΩ). With USB the charger's total input is capped at 500 mA, board included, so a 1000 mAh or larger cell gets at most 0.50 C whatever the tolerances. For a 500 mAh cell the resistor must be 3.6 kΩ (247 mA nominal, up to 271 mA with resistor and chip tolerance, so a hair over 0.5 C): say so before the boards are ordered, or use a 1000 mAh cell. With USB the charger's total input is capped at 500 mA, board included, so the cell can never get more than that.
+494 mA nominal with the resistor the board ships with (R14 = 1.8 kΩ). With USB the charger's total input is capped at 500 mA, board included, so a 1000 mAh or larger cell gets at most 0.50 C whatever the tolerances. For a 500 mAh cell the resistor must be 3.6 kΩ (247 mA nominal, up to 274 mA with chip spread and a 1 % resistor, so a hair over 0.5 C): say so before the boards are ordered, or use a 1000 mAh cell. With USB the charger's total input is capped at 500 mA, board included, so the cell can never get more than that.
