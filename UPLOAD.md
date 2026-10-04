@@ -2,12 +2,10 @@
 
 _Kept current by the senior dev. Upload in the order shown using Viper IDE, then run the test line._
 
-**Last updated:** 2026-10-04
+**Last updated:** 2026-10-06
 
 ## Board state right now
-The old `main.py` was erased at your request (ruling D-003), so **the board boots to a blank screen** until a new program is installed. Nothing is lost: the old program is `main_monolith.py` in this repo and `backups/2026-10-03/main.py`.
-
-The new game does **not** replace `main.py` yet (ruling DR-001). It installs as `/pocket.py` and you run it by hand from Viper IDE. Making it start at boot is step 3 below, and only after you have seen it run.
+The board runs the three-game menu (Blackjack / Ultimate / Caribbean) from step 1o. `/main.py` is a copy of `/pocket.py`, so the game starts at boot; every later step that changes `pocket.py` uploads it to both names. The old program is kept as `main_monolith.py` in this repo and `backups/2026-10-03/main.py`.
 
 ## Step 1: first upload of the new game
 The expert ran this build on the bench on 2026-10-04 (8 scripted hands, no errors, 64 KB RAM free) after fixing one start-up bug (HR-F02). Awaiting a re-bench of the fixed files before you upload.
@@ -231,30 +229,30 @@ It converts every BMP/PNG under `assets/src/`: single pictures (`table`, `menu_b
 
 **Test line:** start `/pocket.py`; blackjack shows the drawn cards and chips where they exist. Nothing to change in the code. (`tools/pilot_test.py` still works for the single table image and prints timings; it reads `c_AS`, `c_back` and `chip_5` as single files only, so with sheets it will report them as missing: that is expected.)
 
-## Step 3: start at boot (only when you are happy with step 1)
+## Step 3: start at boot (done since step 1n)
 Upload `pocket.py` a second time, named `/main.py` on the board. Unplug and plug in: the menu should appear by itself. This overwrites the boot file, so it is your call, not mine.
 
 ## Not run anywhere yet
 All of this has run only on the Mac, against stand-in `machine` and `framebuf` modules (96 tests). Nothing has run under MicroPython or on the board. Timing, colours on the panel and RAM use are what step 1 finds out.
 
-## On the board now (code, after step 1n)
+## On the board now (code, after step 1o)
 _The record of what the board holds. `tools/check_upload.py` reads it: every module a board file imports must be here, every method a board file calls on the shared libraries must exist in the version recorded here, and a repo file that differs from its recorded version is flagged as not yet uploaded. After an upload, run `python3 tools/check_upload.py --record <step> <repo paths...>` to update the rows._
 
 | Board path | Repo file | Step | Version (git blob) |
 |---|---|---|---|
-| `/games/stud_seats.py` | `games/stud_seats.py` | 1n | 5f087aac8cb6 |
-| `/games/holdem.py` | `games/holdem.py` | 1n | 15999364de92 |
+| `/games/caribbean.py` | `games/caribbean.py` | 1o | 6db1cd498098 |
+| `/games/caribbean_pay.py` | `games/caribbean_pay.py` | 1o | 47a9cd14aea5 |
+| `/games/caribbean_table.py` | `games/caribbean_table.py` | 1o | bd065854da08 |
+| `/games/caribbean_seats.py` | `games/caribbean_seats.py` | 1o | c23bad4ef3d4 |
+| `/games/caribbean_rules.py` | `games/caribbean_rules.py` | 1o | bde62d86045d |
+| `/games/holdem.py` | `games/holdem.py` | 1o | 512a22a1bec0 |
 | `/games/holdem_pay.py` | `games/holdem_pay.py` | 1n | 16eb817d94e1 |
 | `/games/holdem_table.py` | `games/holdem_table.py` | 1n | f2ce77f0b1ce |
 | `/games/holdem_seats.py` | `games/holdem_seats.py` | 1n | 16a22b6a6c43 |
 | `/games/holdem_rules.py` | `games/holdem_rules.py` | 1n | 608855a2b7a8 |
 | `/lib/poker.py` | `lib/poker.py` | 1j | 41fea1368c8c |
-| `/games/stud.py` | `games/stud.py` | 1n | 6ba3de0e8646 |
-| `/games/stud_pay.py` | `games/stud_pay.py` | 1j | 36fde234415a |
-| `/games/stud_table.py` | `games/stud_table.py` | 1n | de994d48a9c8 |
-| `/games/stud_rules.py` | `games/stud_rules.py` | 1n | de79e3cb9287 |
 | `/lib/sheets.py` | `lib/sheets.py` | 1j | e3adeacc4c38 |
-| `/pocket.py` | `pocket.py` | 1n | 6b9a73165446 |
+| `/pocket.py` | `pocket.py` | 1o | 6ecc61e54862 |
 | `/lib/pixfmt.py` | `lib/pixfmt.py` | 1 | 03010786bfba |
 | `/lib/lcd.py` | `lib/lcd.py` | 1i | 3c6b0dee4cfc |
 | `/lib/font.py` | `lib/font.py` | 1 | 7b1a40a2df70 |
@@ -267,10 +265,10 @@ _The record of what the board holds. `tools/check_upload.py` reads it: every mod
 | `/games/blackjack_table.py` | `games/blackjack_table.py` | 1c | 47214b7e2d74 |
 | `/games/blackjack.py` | `games/blackjack.py` | 1h | b9ee6035a735 |
 
-Also on the board: `/assets/menu_background.565` (step 1d), `/save.json` and `/save.bak` (written by the game). The old `main.py` is gone (D-003). The three `/games/slots*.py` files are deleted at step 1i (their code is in `archive/slots/`); `/lib/clocks.py` is deleted at step 1l.
+Also on the board: `/assets/menu_background.565` (step 1d), `/save.json` and `/save.bak` (written by the game). `/main.py` is a copy of `/pocket.py` and starts the game at boot (since step 1n; re-copied at step 1o). The five `/games/stud*.py` files are deleted at step 1o (their code is in `archive/stud/`). The three `/games/slots*.py` files are deleted at step 1i (their code is in `archive/slots/`); `/lib/clocks.py` is deleted at step 1l.
 
 ## Not on the board yet
-Step 1o: `games/caribbean_rules.py`, `games/caribbean_seats.py`, `games/caribbean_table.py`, `games/caribbean_pay.py`, `games/caribbean.py` (new), `games/holdem.py` and `pocket.py` (changed). The five `/games/stud*.py` files on the board are deleted at step 1o; their rows above go when the step is recorded.
+Nothing: the board matches main as of step 1o.
 
 ## Restore the old version
 Upload `main_monolith.py` and name it `/main.py` on the board.
