@@ -26,6 +26,7 @@ SIZES = (
     (r'^c_back$', (40, 56)),
     (r'^chip_\d+$', (24, 24)),
     (r'^table$', (240, 240)),
+    (r'^menu_background$', (240, 240)),
     (r'^cabinet$', (240, 240)),
     (r'^logo$', (200, 40)),
     (r'^banner_jackpot$', (200, 40)),
@@ -69,6 +70,14 @@ TABLE_ZONES = (
     ('dealer total', (0, 84, 100, 12)),
     ('player totals', (0, 156, 240, 12)),
     ('banner and prompts', (16, 168, 208, 72)),
+)
+# Text zones on the main menu (pocket.py). Text sits on dark plates there, so these are advisory.
+MENU_ZONES = (
+    ('title and balance', (16, 8, 208, 52)),
+    ('menu row 1', (16, 70, 208, 48)),
+    ('menu row 2', (16, 118, 208, 48)),
+    ('menu row 3', (16, 166, 208, 48)),
+    ('footer', (16, 222, 208, 16)),
 )
 MAX_MEAN_LUMA = 100        # 0..255; the text colours are 160..255
 MAX_BRIGHT_SHARE = 0.25    # share of pixels brighter than 128 behind the text
@@ -130,8 +139,9 @@ def convert_file(src, out_dir, resize=False, any_size=False):
     get = getattr(img, 'get_flattened_data', None) or img.getdata   # Pillow 12.3 renamed it
     pixels = list(get())
     data, nudged = to_565(pixels, w, h)
-    if name == 'table':
-        for warning in zone_warnings(pixels, w, h):
+    zones = {'table': TABLE_ZONES, 'menu_background': MENU_ZONES}.get(name)
+    if zones:
+        for warning in zone_warnings(pixels, w, h, zones):
             print('  WARNING %s: %s' % (name, warning))
     os.makedirs(out_dir, exist_ok=True)
     dst = os.path.join(out_dir, name + '.565')
