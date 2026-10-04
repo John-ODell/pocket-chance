@@ -2,8 +2,10 @@
 # Requests 100 MHz (old code), then 62.5/40/31.25/20 MHz. Sends 115200 bytes with CS high to the
 # panel's idle state is not needed: we write inside a RAMWR window so the panel just swallows pixels.
 from lcdbench import Bench, spi_baud, stats
-import utime
+import utime, gc
+b = None
 for req in (100_000_000, 62_500_000, 40_000_000, 31_250_000, 20_000_000):
+    b = None; gc.collect()   # free the previous 115 KB framebuffer first
     b = Bench(baud=req, fb=True)
     b.fb.fill(0x1234)
     b.show()  # warm
