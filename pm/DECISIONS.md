@@ -24,3 +24,5 @@ Maintained by the PM. Newest at the bottom. Format: `DD-Mon | DR-NNN | decision 
 | 2026-10-04 | DR-008 | Fall back to `/save.bak`, then fresh start, with messages | John |
 | 2026-10-04 | DR-015 | Fast SPI fix at boot via `lib/clocks.py`, off switch `FAST_SPI`; fallback request is 12_000_000 | John |
 | 2026-10-04 | D-003 | Erase the old `main.py` from the board (John: backed up as `backups/2026-10-03/main.py`, same as `main_monolith.py` in git and on GitHub). Expert verifies the hash first. | John |
+| 2026-10-04 | D-004 | No dedicated hardware reviewer. The `Needs HW review` step is dropped and the expert session is retired. `hw/BUDGET.md` and reviews stay as reference. | John |
+| 2026-10-04 | D-005 | PM and John text each other over iMessage. PM texts start with "J-boy"; John replies start with "JBoy:". The PM ignores texts starting "PM:" or "Wordle:". Used for: asking John to look at the board or take an action. | John |
