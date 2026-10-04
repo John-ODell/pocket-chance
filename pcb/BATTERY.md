@@ -5,8 +5,14 @@ Written for John, 2026-10-04. The decisions behind it are in `pm/inbox/PCB-001-b
 ## The fuse
 The board has a self-resetting fuse in the battery lead (rev 0.7, your decision). It trips if a battery lead, a protection transistor or the board shorts, and it limits the heat after a wiring mistake. It does not save the two chips a reversed battery destroys: the wire check above is still the protection. It costs a few tens of millivolts, so a charge finishes a few minutes later. To reset it, **unplug the battery**: a tripped fuse stays warm and keeps passing a small current as long as the battery is connected; it resets within a minute of being unplugged, once it has cooled. Then find the fault before plugging the battery back in.
 
-## Approved cell listing
-To be filled in before purchase: seller, listing name, capacity, protection board (yes), plug type (JST-PH 2.0 mm), and **which pin the red wire is on in the listing's photo**. One listing only; a different listing is a new check.
+## The standard test cell (John's decision, 2026-10-04: no specific seller required)
+Any cell that matches all of this is approved for the first boards:
+- single-cell 3.7 V lithium-polymer pouch, **1000 to 1200 mAh**;
+- **with its own protection board** (the listing says "protected", "with PCM" or "with protection circuit");
+- **JST-PH 2.0 mm two-wire plug**;
+- size **503450** (5 x 34 x 50 mm) or **603048** (6 x 30 x 48 mm).
+
+Because sellers wire the plug both ways, the rule stands for **every new cell, every time**: hold the plug against the socket and check that the red wire sits at the **+** mark before plugging in. That check is the protection; there is no electronic guard.
 
 ## What to buy
 - A single **LiPo pouch cell, 3.7 V, 1000 to 1200 mAh, WITH a protection board** (the listing says "protected", "with PCM" or "with protection circuit"). Sizes that fit a flat credit-card board: 503450 (5 x 34 x 50 mm) or 603048 (6 x 30 x 48 mm).
