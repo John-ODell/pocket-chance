@@ -77,7 +77,7 @@ mpremote fs mkdir :lib
 mpremote fs mkdir :games
 mpremote fs mkdir :assets
 
-mpremote fs cp lib/pixfmt.py lib/clocks.py lib/lcd.py lib/font.py lib/buttons.py lib/sheets.py lib/art.py lib/save.py lib/bankroll.py lib/cards.py :lib/
+mpremote fs cp lib/pixfmt.py lib/lcd.py lib/font.py lib/buttons.py lib/sheets.py lib/art.py lib/save.py lib/bankroll.py lib/cards.py :lib/
 mpremote fs cp games/blackjack_rules.py games/blackjack_table.py games/blackjack.py :games/
 mpremote fs cp pocket.py :pocket.py
 ```
