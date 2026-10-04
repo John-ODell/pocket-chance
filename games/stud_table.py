@@ -2,6 +2,7 @@
 # what the screen shows. Pure logic: no `machine` import.
 
 from stud_rules import Rules, Round, new_deck, DECISION, DONE, FOLD
+from stud_seats import Seats
 
 MIN_ANTE, MAX_ANTE, STEP = 5, 100, 5
 EXPOSURE = 3                 # ante + 2x raise: the bankroll must cover three antes when dealt
@@ -13,11 +14,12 @@ BROKE = 'broke'
 
 
 class StudTable:
-    def __init__(self, rng, bankroll, rules=None):
+    def __init__(self, rng, bankroll, rules=None, seats=5):
         self.rules = rules or Rules()
         self.bankroll = bankroll
         self.shoe = new_deck(rng)
         self.round = None
+        self.seats = Seats(seats)              # DR-041: cosmetic other players
         self._fit_ante()
         self.state = BROKE if self.is_broke() else BETTING
 
@@ -51,6 +53,7 @@ class StudTable:
         if self.shoe.needs_shuffle():
             self.shoe.shuffle()
         self.round = Round(self.shoe, self.rules, self.bankroll.bet).deal()
+        self.seats.deal(self.shoe)             # after the player's and dealer's ten cards
         self.state = DECIDING
         return self.round
 
@@ -94,4 +97,6 @@ class StudTable:
 
     def _settle(self):
         self.bankroll.apply(self.round.net)
+        r = self.round
+        self.seats.settle(r.dealer, r.dv, r.ante, self.rules)
         self.state = RESULT

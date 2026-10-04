@@ -37,9 +37,11 @@ def make_ctx(adir, sdir, balance=1000, seed=3):
 
 
 def stack(screen, player, dealer):
+    """Stack the player's and dealer's cards, then the rest of the deck for the seats."""
     out = []
     for p, d in zip(player.split(), dealer.split()):
         out += [card_from_name(p), card_from_name(d)]
+    out += [c for c in range(52) if c not in out]
     screen.table.shoe = Shoe(1, random.Random(0), stacked=out)
 
 
@@ -142,6 +144,36 @@ class StudScreen(unittest.TestCase):
             s.buttons.poll()
             if s.table.state == BROKE:
                 s.handle('A')
+
+    def test_rail_shows_stacks_and_markers(self):
+        ctx = make_ctx(self.adir, self.sdir)
+        s = stud.Screen(ctx)
+        s.draw_all()
+        # five stacks of five lines at 1000 chips, no markers yet
+        for i in range(5):
+            x = stud.RAIL_X[i]
+            self.assertEqual(s.lcd.pixel(x + 10, stud.RAIL_Y + 11), stud.SEAT_COLOURS[i])      # bottom line
+            self.assertEqual(s.lcd.pixel(x + 10, stud.RAIL_Y + 11 - 8), stud.SEAT_COLOURS[i])  # fifth line
+            self.assertNotEqual(s.lcd.pixel(x + 10, stud.RAIL_Y + 11 - 10), stud.SEAT_COLOURS[i])  # no sixth
+            self.assertNotIn(s.lcd.pixel(x + 2, stud.RAIL_Y + 5), (stud.UP, stud.DOWN))
+        s.handle('A')
+        s.handle('A')                                                # raise: every seat settles
+        marks = [s.lcd.pixel(stud.RAIL_X[i] + 2, stud.RAIL_Y + 5) for i in range(5)]
+        self.assertTrue(all(m in (stud.UP, stud.DOWN) for m in marks), marks)
+        for i in range(5):
+            self.assertEqual((marks[i] == stud.UP), s.table.seats.delta[i] > 0)
+        s.handle('A')                                                # next hand: betting, markers stay until the deal
+        self.assertTrue(all(s.lcd.pixel(stud.RAIL_X[i] + 2, stud.RAIL_Y + 5) in (stud.UP, stud.DOWN) for i in range(5)))
+        s.handle('A')                                                # deal clears them
+        self.assertTrue(all(s.lcd.pixel(stud.RAIL_X[i] + 2, stud.RAIL_Y + 5) not in (stud.UP, stud.DOWN) for i in range(5)))
+
+    def test_seat_setting_zero(self):
+        ctx = make_ctx(self.adir, self.sdir)
+        ctx.stud_seats = 0
+        s = stud.Screen(ctx)
+        s.draw_all()
+        self.assertEqual(s.table.seats.count, 0)
+        self.assertNotEqual(s.lcd.pixel(stud.RAIL_X[0] + 10, stud.RAIL_Y + 11), stud.SEAT_COLOURS[0])
 
     def test_sheets_opened_and_card_back_stays_code_drawn(self):
         from tests.test_screens import write_sheet
