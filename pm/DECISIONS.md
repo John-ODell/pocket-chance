@@ -27,3 +27,4 @@ Maintained by the PM. Newest at the bottom. Format: `DD-Mon | DR-NNN | decision 
 | 2026-10-04 | D-004 | ~~No dedicated hardware reviewer.~~ **Reversed the same day.** John meant he would not add his usual PR/code reviewer. The hardware expert and the `Needs HW review` step stay in force. | John |
 | 2026-10-04 | D-005 | PM and John text each other over iMessage. PM texts start with "J-boy"; John replies start with "JBoy:". The PM ignores texts starting "PM:" or "Wordle:". Used for: asking John to look at the board or take an action. | John |
 | 2026-10-04 | D-006 | No separate PR/code reviewer is added to this project (the dev's tests and the PM's review are enough for now). The hardware expert stays on call. | John |
+| 2026-10-04 | DR-016 | Split pairs: split once, Y button, aces one card each, double after split OK, 21 after split pays 1:1. House edge about 0.55%. | John |
