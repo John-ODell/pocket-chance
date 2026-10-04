@@ -213,15 +213,26 @@ The owner's wishes for the first custom board: one integrated handheld, more RAM
 | GPIO | Use | Status |
 |---|---|---|
 | 0 | PSRAM chip-select (XIP_CS1n; the only option not used by the game, the others being 8 and 19) | Documented, pico-sdk function table |
-| 1 | spare | |
+| 1 | UART0 RX on the expansion header (serial GPS listen-only), spare | plan |
 | 2, 3, 16, 18, 20; 15, 17, 19, 21; 8 to 13 | joystick, buttons, screen, exactly as section 5 | Verified |
-| 4, 6, 7, 5, 14 | microSD over SPI0 (MISO, SCK, MOSI), chip-select, card-detect | Documented pin functions; plan reviewed, `hw/reviews/HR-P01.md` (fits) |
+| 4, 6, 7, 5 | microSD over SPI0 (MISO, SCK, MOSI), chip-select; no card-detect | Documented pin functions; reviewed `hw/reviews/HR-P01.md` (fits) |
+| 14 | IMU interrupt (wake on motion or step) | plan |
 | 22 | speaker, PWM audio | plan |
 | 23, 24, 25, 29 | RM2 wireless module, as the stock Pico 2 W firmware expects | Documented, pico-sdk `pico2_w.h` (HR-033) |
-| 26, 27 | fuel gauge I2C1 | plan |
-| 28 | battery voltage divider, ADC2 | plan |
+| 26, 27 | shared I2C1 bus: fuel gauge, RTC, IMU, STEMMA QT connector | plan |
+| 28 | battery voltage divider, ADC2, on the expansion header (also the only free UART0 TX, if the divider gives way to the fuel gauge) | plan |
+
+All 30 GPIO used. SWD uses dedicated pins. Full reasoning in DR-033 appendix I.
 
 Requirement E14 (new): a microSD slot in SPI mode on the pins above, with pull-ups, a bulk capacitor for write bursts (up to about 200 mA, estimate), ESD protection and a push-push surface-mount slot the fab stocks. The card is bulk storage and file transfer only; the game, its modules and its saves stay in internal flash. Source: owner's wish via the PM; details in DR-033 appendix H; all electrical values Unverified until the datasheets are read.
+
+Requirement E15 (new): a real-time clock that keeps time with the board off: DS3231-family I2C clock with a **non-rechargeable CR1220 coin cell** in a holder connected only to the clock's backup input, never to the 3.3 V rail or the LiPo charger. Source: owner's wish via the PM (D-012 discussion); DR-033 appendix I.2; part details Unverified until the datasheet is read.
+
+Requirement E16 (new): a 6-axis IMU on the shared I2C bus with its interrupt on a GPIO, for step counting and wake-on-motion (candidate LSM6DSOX, official MicroPython driver in micropython-lib). A STEMMA QT / Qwiic I2C connector, an expansion header (GP1, GP28, I2C, 3.3 V, GND) and an SWD header for everything else (temperature, humidity, GPS). Source: owner's wish via the PM; DR-033 appendix I.3 and I.4.
+
+## 11c. Fab constraints (PCBWay, chosen by the owner 2026-10-04; pages read the same day)
+
+Documented from pcbway.com (capabilities, assembly capabilities, assembly file requirements): minimum trace and space 0.1 mm; drill 0.15 to 6.0 mm (extra cost under 0.2 mm); annular ring 0.15 mm; 1 to 14 layers; thickness 0.2 to 3.2 mm; finishes include HASL and ENIG; assembly minimum 5 boards; passives to 0201 (with a 100-piece minimum per 0201 line); fine pitch to 0.25 mm; QFN, castellated, through-hole and double-sided placement offered; **assembly boards smaller than 50 x 100 mm are panelised**; turnkey, consigned or combo parts; files: Gerber RS274X, BOM (CSV/Excel, manufacturer name and part number), centroid (designator, X, Y, rotation, side). Prices only on the quote page.
 
 ## 11b. Owner's direction on form factor and design base (2026-10-04, in chat)
 
