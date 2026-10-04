@@ -184,7 +184,7 @@ add("C11", C, "10uF", C0603, (190, 60), {"1": "+3V3", "2": "GND"})          # 3.
 add("C12", C, "2.2uF", C0603, (190, 80), {"1": "ADC_AVDD", "2": "GND"})     # ADC supply filter (Pico 2 W: 201 R into 2.2 uF)
 add("R1", R, "200R", R0402, (205, 80), {"1": "+3V3", "2": "ADC_AVDD"})
 # on-chip 1.1 V switching regulator: design guide 2.1 (exact parts)
-add("L1", L, "3.3uH AOTA-B201610S3R3-101-T", "Inductor_SMD:L_0805_2012Metric", (130, 110), {"1": "VREG_LX", "2": "1V1"})
+add("L1", L, "3.3uH AOTA-B201610S3R3-101-T", "pcb_custom:AOTA-B201610S", (130, 110), {"1": "VREG_LX", "2": "1V1"})   # footprint from the Abracon land pattern (gen_fp.py)
 add("C13", C, "4.7uF", C0402, (145, 110), {"1": "+3V3", "2": "GND"})        # C6 regulator input
 add("C14", C, "4.7uF", C0402, (160, 110), {"1": "1V1", "2": "GND"})         # C7 regulator output
 add("R2", R, "33R", R0402, (175, 110), {"1": "+3V3", "2": "VREG_AVDD"})     # R3 AVDD filter
@@ -286,7 +286,10 @@ add("J4", ("Connector", "Conn_01x08_Socket"), "LCD 1.54in ST7789 module, JST-PH 
 PTS125 = "Button_Switch_SMD:SW_Push_1P1T_NO_CK_PTS125Sx43SMTR"
 for i, (ref, net) in enumerate([("SW4", "BTN_A"), ("SW5", "BTN_B"), ("SW6", "BTN_X"), ("SW7", "BTN_Y")]):
     add(ref, SWP, net[4:] + " PTS125SM43SMTR2LFS", PTS125, (480 + 20 * i, 130), {"1": net, "2": "GND"})
+# direction pad: five standard 6 mm tactile switches (PTS645) instead of a 5-way joystick part, because Alps serves
+# no drawing to scripts and John accepts buttons for the joystick; zero custom footprints (PARTS.md fallback row)
 for i, (ref, net) in enumerate([("SW8", "JOY_UP"), ("SW9", "JOY_DOWN"), ("SW10", "JOY_LEFT"), ("SW11", "JOY_RIGHT"), ("SW12", "JOY_PRESS")]):
+    add(ref, SWP, "DPAD " + net[4:] + " PTS645SM43SMTR92", PTS645, (480 + 20 * i, 155), {"1": net, "2": "GND"})
     add(ref, SWP, "JOY " + net[4:], "pcb_custom:Alps_SKRHABE010", (480 + 20 * i, 155), {"1": net, "2": "GND"})
 
 # ---- Block 5: audio --------------------------------------------------------------------
