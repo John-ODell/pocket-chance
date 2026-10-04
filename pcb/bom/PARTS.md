@@ -148,6 +148,7 @@ Each row: the cheaper or easier-to-source near-equivalent, whether it is a **dro
 | USB-C USB4085 | HRO TYPE-C-31-M-12 (16-pin, USB 2.0) | layout change (own KiCad footprint) | the cheapest widely stocked USB-C receptacle | drawing, through-board pegs |
 | Flash W25Q128JVSIQ | GD25Q128E (GigaDevice) or W25Q128JVSIM | drop-in (SOIC-8 208 mil; the guide says any 25-series part with 03h read and the listed commands works) | second source | continuous-read mode behaviour (guide 3.3) |
 | PSRAM APS6404L-3SQR-SN | ESP-PSRAM64H (Espressif, same SOIC-8 pinout) | drop-in (**verify** pinout) | often cheaper and stocked | pinout, speed grade |
+| Polyfuse MF-MSMF110/16X-2 | Littelfuse 1812L110/16 (same 1812 size, 1.1 A hold) | drop-in | second source | its datasheet's hold/trip and resistance |
 | Crystal ABM8-272-T3 | none recommended | | the design guide insists on this part | |
 
 ## Custom library work (phase 5)
