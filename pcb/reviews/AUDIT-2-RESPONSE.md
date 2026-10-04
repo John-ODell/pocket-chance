@@ -46,6 +46,6 @@ After the auditor's ON-state trace and the expert's concession, John chose optio
 Added F1, a resettable polyfuse in the cell's positive lead (between the socket pin and the ammeter link; charging and discharging both pass through it, USB does not): Bourns MF-MSMF110/16X-2, 1.10 A hold (0.77 A at 60 °C), 2.20 A trip, 16 V, 1812, about 0.3 USD (estimate). **It contains a shorted lead, a failed protection transistor or a board short, and limits the heat after a wiring mistake. It does NOT save the two chips a reversed cell destroys** (the DW01A and the charger's BAT pin). It costs a few tens of millivolts in the battery lead, so charging ends a few minutes later than it otherwise would. R20 changed from 0402 to 0603 so it survives the ~36 mA of a reversed cell with USB absent (HR-P05 part 7). Nothing else changed from rev 0.6.
 
 ## Final commit (what the next audit pass reviews)
-- **Schematic to review:** rev 0.6, last changed in commit **92f61d2**; content hash **`2ecde3da743110b36845f2ab9d73e33e5267dd44`**. Exports from exactly that file are in `pcb/kicad/exports/` (ERC 0 errors, 2 warnings: the IMU's address and auxiliary pins tied to ground, as its datasheet asks).
-- Footprints: `pcb/kicad/lib/pcb_custom.pretty/RM2.kicad_mod` (side pads y = -2.75 + 1.5k, commit 76949f0) and `AOTA-B201610S.kicad_mod`.
-- Verification by the expert: `pcb/reviews/HR-P05.md`, with the rev 0.6 battery-sheet re-check to follow.
+- **Schematic to review:** rev 0.7, last changed in commit **7765383**; content hash **`1abae791d6e39b4e3c84039a20fcecd3686cf349`**. Exports from exactly that file are in `pcb/kicad/exports/` (ERC 0 errors, 2 warnings: the IMU's address and auxiliary pins tied to ground, as its datasheet asks).
+- Footprints: `pcb/kicad/lib/pcb_custom.pretty/RM2.kicad_mod` (commit 76949f0) and `AOTA-B201610S.kicad_mod`.
+- Verification by the expert: `pcb/reviews/HR-P05.md`, with the rev 0.7 re-check to follow.
