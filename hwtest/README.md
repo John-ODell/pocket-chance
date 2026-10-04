@@ -24,6 +24,7 @@ Finish with `mpremote connect $P soft-reset`. Each script prints `RESULT key=val
 | pin_hunt.py | **needs John pressing one key**: every free GPIO as a pulled-up input for 30 s, reports which went low; finds a key's real pin. Skips LCD pins 8-13 and power pins 23-25, 29 | read-only |
 | clk_peri.py | which clock feeds the peripherals (why SPI is 24 MHz on v1.29.0); tries `machine.freq()` | reads `CLK_PERI_CTRL`; `machine.freq()` |
 | clk_peri_fix.py | re-sources `clk_peri` to `clk_sys` and times a frame at the real 62.5 MHz | **writes `CLK_PERI_CTRL`**; survives soft reset, cleared by power cycle |
+| split_play_bench.py | DR-016 as built: scripted deals until a pair, Y to split, plays both hands with a double, rigs an A-A split; times every redraw and key→banner | writes and removes `/_bench_save.*`; LCD; applies the clk_peri fix |
 | split_bench.py | DR-016: draws two player hands side by side (2+2, 3+2, 4+4 cards) with the dev's real code and times the 142-row band; RAM of a second hand; leaves the 4+4 layout on screen | LCD; applies the clk_peri fix |
 | unwedge.py | **Mac-side** (pyserial): recovers from "could not enter raw repl" after a killed mpremote run. Ctrl-C, Ctrl-B, Ctrl-D over the serial port | board soft reboot only |
 | pocket_bench.py | plays 8 blackjack hands with scripted keys using the dev's real `lib/` and `games/` on the board; times every redraw path and the save; per-module RAM. Needs UPLOAD.md step 1 uploaded | writes and removes `/_bench_save.*`; LCD; applies the clk_peri fix |
