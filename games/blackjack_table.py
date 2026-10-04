@@ -66,6 +66,17 @@ class Table:
         self.state = BROKE if self.bankroll.is_broke() else BETTING
         self.bankroll.clamp_bet()
 
+    def stakes(self):
+        """(chips to show as the bankroll, chips to show as the bet). While a hand is in play the
+        stake sits on the table, so it is shown taken off the bankroll; after a double it is 2x."""
+        bank = self.bankroll
+        r = self.round
+        if r is None:
+            return bank.balance, bank.bet
+        if self.state == PLAYING:
+            return bank.balance - r.bet, r.bet
+        return bank.balance, r.bet
+
     def refill(self):
         if self.state != BROKE:
             raise ValueError('not broke')
