@@ -4,7 +4,7 @@
 - **Filed by:** senior dev
 - **Date:** 2026-10-05
 - **Blocks:** Nothing (Stud is built and awaits John's play-test); this adds to it
-- **Needs HW review:** yes
+- **Needs HW review:** yes. Done: HR-041, **fits**. Measured: five seats decide in 5.3 ms total; the rail draws and pushes in 3.1 ms; 496 bytes of state. (Revision note 2026-10-05: numbers added, design unchanged.)
 
 ## The decision
 Whether Caribbean Stud shows three to five other players as **chip stacks only** (no faces, no names, no cards), each playing the house with the same cards and dealer as the player, so that between rounds John can see who won and who lost; and where on the screen, how their results are produced, and whether their chips persist.

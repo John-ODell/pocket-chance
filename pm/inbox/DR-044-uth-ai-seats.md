@@ -4,7 +4,7 @@
 - **Filed by:** senior dev
 - **Date:** 2026-10-05
 - **Blocks:** Hold'em screen (seat strips)
-- **Needs HW review:** yes
+- **Needs HW review:** yes. Done: HR-044, **fits with limits**. Measured: river evaluation 28 ms per seat; four seats at the flop 29 ms; the showdown's six seven-card evaluations 134 ms, so it runs **before the first dealer flip**, never inside a 300 ms gap; 352 bytes of state; a chip stack from the sheet 1.4 ms. (Revision note 2026-10-05: numbers added; my 15 to 25 ms per seat estimate was close.)
 
 ## The decision
 Whether the table shows other players, how many, how they decide, and how they are drawn. They play against the house only; nothing they do changes the player's cards, odds or payouts.
