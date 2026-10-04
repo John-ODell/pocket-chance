@@ -69,7 +69,7 @@ All Verified on the real board, 2026-10-04 (`hw/BOARD.md`). The expert found GP2
 
 ## 6. Fab constraints (what a factory can make)
 
-We have not yet read a fab's capabilities page (that download needs your approval, see section 10). What follows is general knowledge, **Unverified** until read:
+John chose **PCBWay** (2026-10-04) and its pages were read the same day (`requirements/REQUIREMENTS.md` section 11c has the numbers). The general picture below holds; PCBWay's specifics: traces and gaps down to 0.1 mm, assembly from 5 boards, parts down to 0201 and 0.25 mm pitch, and **boards under 50 x 100 mm are panelised for assembly** (a credit-card board is, at a small fee).
 - Cheap "standard" boards are **two copper layers**, 1.6 mm thick, with minimum trace width and spacing around 0.15 mm and minimum drill around 0.3 mm. The RP2040's 0.4 mm pin pitch fits inside these limits, but only just; the official design guide shows how.
 - Assembly services only place parts **they stock**. Choosing from their catalogue avoids waiting on parts.
 - Boards are priced by size, layers, quantity and options. Five to ten small two-layer boards is the cheap sweet spot.

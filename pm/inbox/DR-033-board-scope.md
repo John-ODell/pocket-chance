@@ -10,7 +10,7 @@
 Which chip, which wireless, which screen and which power blocks go on the **first** spin of one integrated handheld board, and which wait for a second spin.
 
 ## John's wishes (his words, via the PM, 2026-10-04)
-One board together with the HAT, no gap ("not a sandwich with a hole"). Resizable buttons; a power switch; LiPo charging and battery management; a small speaker; more RAM and storage for the multi-line slots that was shelved (D-009); wireless (an "RP2040 W" or any 2.4 GHz Wi-Fi/Bluetooth). Added later the same day: a **microSD card slot** (purpose not yet stated; appendix H). Trade-offs he accepts: button size, joystick replaced by buttons or a different style, a different or slightly larger screen (anything except e-ink). Footprint does not matter yet.
+One board together with the HAT, no gap ("not a sandwich with a hole"). Resizable buttons; a power switch; LiPo charging and battery management; a small speaker; more RAM and storage for the multi-line slots that was shelved (D-009); wireless (an "RP2040 W" or any 2.4 GHz Wi-Fi/Bluetooth). Added later the same day: a **microSD card slot** (appendix H; purposes now stated: a larger file system for code that need not run from flash, backgrounds and animations, music and sounds) and, via the PM (D-012 discussion): a **coin-cell backed real-time clock**, a **low-power mode**, **step counting**, a **6-axis IMU**, **temperature and humidity**, **GPS**, and **GPIO / STEMMA QT connectors and an SWD header**, with the sensors accessible rather than necessarily on the board (appendix I). Trade-offs he accepts: button size, joystick replaced by buttons or a different style, a different or slightly larger screen (anything except e-ink). Footprint does not matter yet.
 
 ## Owner's direction, 2026-10-04 (in the PCB maker's chat; for the PM to record)
 John's words, lightly tidied: the base is **a Pi Pico W style board**, designed from the official Raspberry Pi documents, not from Waveshare parts (the Waveshare board was only a Pico with 16 MB for prototyping). The board **needs to be faster**, and **if the RP2350 works out better, do that**. Spin 1 is a **flat "credit card" style board** (no stacking, nothing sitting on all the pins like the HAT) with the screen, buttons, joystick and the other features on it; the team learns from those boards what is really wanted and shrinks the footprint later. He cannot probe pins on the current board with the HAT attached.
@@ -142,6 +142,12 @@ Spin 1 carries the charger, protection, cell socket, power switch and regulator.
 | Speaker amplifier and speaker | footprint | populate and bring up |
 | Fuel gauge | footprint | populate |
 | microSD slot (SPI mode, GP4/5/6/7, card detect GP14) | yes: slot, pull-ups and capacitor placed by the fab; no software use yet | software: a `/sd` mount and whatever John names as its purpose |
+| STEMMA QT / Qwiic I2C connector and a small expansion header (GP1, GP28, I2C, 3V3, GND) | yes | yes |
+| SWD header (dedicated pins, no GPIO cost) | yes | yes |
+| Real-time clock (DS3231 family) with a CR1220 coin-cell holder | yes, populated | software: clock set from the menu, alarm wake |
+| 6-axis IMU (LSM6DSOX) with its interrupt on GP14 | yes, populated (cheap, on the shared I2C bus, cannot block anything) | software: step counting, wake on motion |
+| Low-power mode | hardware hooks only: backlight off, radio REG_ON, switched card supply, IMU/RTC wake lines | software |
+| Temperature and humidity, GPS | connector only (STEMMA QT for I2C sensors and I2C GPS; GP1 UART RX for a serial GPS) | plug in and write the driver |
 | SWD pads, test points, user LED | yes | yes |
 
 ## Appendix G: Assembly plan (John: "as many small parts as possible assembled by the fab")
@@ -165,7 +171,9 @@ Spin 1 carries the charger, protection, cell socket, power switch and regulator.
 | Logs | No (internal flash can log); harmless on a card | a few lines |
 | Music or sound files later | Yes if more than a few short clips; a 3-minute WAV is about 16 MB | the audio path (PWM or I2S) plus a streaming player; the biggest software job on this list |
 
-**(a) Pin budget on the RP2350A (30 GPIO, 0 to 29).** Everything John wants, with no verified pin moved:
+**John's stated purposes (2026-10-04, via the PM) and what each means:** (a) *a larger file system for code that does not need to execute from flash*: works as is; MicroPython loads every `.py` or `.mpy` into RAM when imported, nothing runs from flash in place, so a card at `/sd` on the module path holds games and libraries (the import is slower by the card's read time, once). (b) *backgrounds and animations*: the card is too slow to feed frames (about 300 ms per full-screen image, HR-P01), but with 8 MB of PSRAM the answer is load from the card **once per scene into RAM** (8 MB holds about 70 full-screen backgrounds) and draw from RAM; this is the combination that makes PSRAM and the card worth having together. (c) *music and sounds*: a WAV at 22 kHz, 8-bit mono is 22 KB/s, inside the card's few-hundred-KB/s bound; CD quality (176 KB/s) is at the edge. The limit is not the card but Python moving samples to the PWM pin in time; a DMA-fed player is the expert's job and is **Unverified**. Short sound effects simply load into RAM.
+
+**(a) Pin budget on the RP2350A (30 GPIO, 0 to 29).** Superseded by the full table in appendix I once the sensors were added; the microSD lines are unchanged. Original analysis, with no verified pin moved:
 
 | GPIO | Use | Why this pin |
 |---|---|---|
@@ -194,12 +202,79 @@ Result: **29 of 30 pins used, one spare.** It fits. Two consequences: I2S audio 
 
 **Recommendation for the slot: spin 1, populated.** It is cheap (slot, three resistors, two capacitors, an ESD part), the fab places it, it is electrically independent of everything else so it cannot stop the board working, and the pins are only free now because nothing else claims them. Software support comes when John says what the card is for; until then it is an empty slot. What would change my mind: if the pin review shows a better use for GP4 to GP7 and GP14, or if John's purpose turns out to be "more art", in which case the 16 MB flash already covers it and the slot can be a footprint only.
 
+## Appendix I: clock, coin cell, low power, IMU, sensors, connectors, and PCBWay (added 2026-10-04)
+
+### I.1 The full pin budget, every one of the 30 RP2350A GPIO
+
+| GPIO | Use | Notes |
+|---|---|---|
+| 0 | PSRAM chip-select | fixed by the chip (appendix A) |
+| 1 | UART0 RX, on the expansion header | a serial GPS only needs to be *listened to*; its sentences arrive on our RX. Also a general spare |
+| 2, 3, 16, 18, 20 | joystick | verified, unchanged |
+| 4, 6, 7, 5 | microSD MISO, SCK, MOSI, chip-select (SPI0) | appendix H; card-detect dropped, the software probes the card instead |
+| 8 to 13 | screen | verified, unchanged |
+| 14 | IMU interrupt (wake on motion or step) | the one pin freed by dropping card-detect |
+| 15, 17, 19, 21 | buttons | verified, unchanged |
+| 22 | speaker, PWM audio | |
+| 23, 24, 25, 29 | RM2 wireless | fixed by the stock firmware (HR-033) |
+| 26, 27 | **shared I2C1 bus**: fuel gauge, RTC, IMU, and the STEMMA QT connector for anything plugged in | one bus, many devices, each with its own address |
+| 28 | battery voltage divider (ADC2); on the expansion header | GP28 is also the only remaining UART0 TX option: if a GPS ever needs to be *talked to*, the divider gives way to the fuel gauge (HR-P01 already makes the gauge optional; this makes the two alternatives) |
+
+**30 of 30 used.** It fits because every sensor shares one I2C bus and the SWD header uses the chip's dedicated debug pins, not GPIO. What does not fit and is therefore off the table: I2S audio, a second UART, a hardware card-detect. Pin functions Documented (pico-sdk table, confirmed by HR-P01 for the earlier plan); the two new assignments (GP1 RX, GP14 IMU interrupt) are for the expert's addendum.
+
+### I.2 Real-time clock and the coin cell
+
+**Why an external clock chip.** The RP2040 has a clock peripheral and the RP2350 an always-on timer, but both stop when the board loses power and must be set again at every boot. A clock that survives being switched off needs its own tiny battery and a chip that runs from it.
+
+| Choice | What it is | Trade-offs | Status |
+|---|---|---|---|
+| **DS3231 family** (recommended) | I2C clock with a built-in temperature-compensated crystal, accurate to about 2 minutes a year, a backup-battery input and an alarm output | Slightly larger and dearer (a few dollars). No charging circuit at all, which is what we want. Dozens of MicroPython drivers exist (third-party, MIT; none in the official library), and the chip is simple enough that a 30-line driver is normal | Documented part; driver availability Unverified beyond "common" |
+| PCF8523 | Cheaper, smaller I2C clock with battery switch-over | Needs its own crystal; drifts more; has an optional trickle-charger that **must stay disabled** or it will try to charge the coin cell | Documented part |
+| Chip's own timer, no coin cell | free | time lost at every power-off; the game asks for the time at each boot. Fine for a prototype, not for a watch-like device | Verified behaviour |
+
+**The coin cell.** Use a **non-rechargeable lithium coin cell (CR1220, 3 V, about 40 mAh)** in a surface-mount holder. At the clock chip's few microamps it lasts years. Rules: it connects **only** to the clock chip's backup input, never to the 3.3 V rail, never to the LiPo charger. Charging a non-rechargeable lithium cell can make it leak or burst; the DS3231 has no charger and its backup input only draws, so the design cannot do this by accident. A rechargeable coin cell (ML1220 type) is possible but needs its own small charging circuit and a chip that supports it, and is not worth it on a first board. Mark the holder's polarity on the silkscreen. John would accept: fitting one CR1220 and replacing it every few years.
+
+**"A coin battery for low-power operation":** a coin cell cannot run this board. It can supply a few milliamps at most; the chip and screen need a hundred. Low-power operation runs from the **LiPo** with the chip asleep; the coin cell only keeps the clock.
+
+### I.3 Low-power mode, step counting, and the IMU
+
+- **Low power** is mostly software, with four hardware hooks on spin 1: backlight fully off (GP13 low), the radio's REG_ON low (GP23) which powers the RM2 down, the GPIO-switched card supply (HR-P01), and wake lines from the IMU (GP14) and the buttons. MicroPython on rp2 has `machine.lightsleep()`; the RP2350 adds a dormant mode that wakes on a pin or on its always-on timer. How low the whole board goes depends on the regulator's own idle current and the fuel gauge; expect milliamps, not microamps, on a first board. **Unverified** until measured.
+- **Step counting** belongs in the IMU, not in Python: the **LSM6DSOX** (ST, 6-axis, I2C, 2.5 x 3 mm) has a hardware pedometer and motion wake-up, runs at tens of microamps while the chip sleeps, and raises its interrupt line (GP14) when it has something to say. It is the IMU with an **official MicroPython driver** (`micropython-lib`, `micropython/drivers/imu/lsm6dsox`, checked 2026-10-04); `bmi270` is the other option in the same library. The old MPU6050 is common but has no pedometer and no official driver. Recommended: LSM6DSOX, populated on spin 1 (it sits alone on the I2C bus; if it fails, nothing else notices).
+
+### I.4 Temperature, humidity, GPS: connectors, not chips
+
+- **STEMMA QT / Qwiic connector** (a 4-pin JST-SH socket carrying 3.3 V, GND, SDA, SCL) on the shared I2C bus. Any of hundreds of ready-made sensor boards plugs in with a cable, no soldering. For temperature and humidity, the official library has drivers for the HTS221 and HS3003, both sold on such boards. **Connector only on spin 1.**
+- **GPS/GNSS**: most u-blox based modules speak I2C as well as serial, so they plug into the same connector; a serial-only module uses GP1 (RX) on the expansion header. GPS needs sky view and draws 20 to 40 mA while searching; nothing on the board changes for it. **Connector and one pin only on spin 1.**
+- **Expansion header**: GP1, GP28, SDA, SCL, 3.3 V, GND, plus the **SWD header** (SWCLK, SWDIO, GND, dedicated pins) for a debug probe. Pin headers are surface-mount or through-hole; a through-hole header is the one part PCBWay would solder as a through-hole job, or John leaves it unpopulated and fits it himself (it is the easiest soldering there is).
+
+### I.5 What spin 1 carries and what is deferred (keeping it learnable)
+
+On spin 1, populated: RTC and coin-cell holder, IMU, STEMMA QT connector, expansion and SWD headers. These share one bus, cost a few dollars, and cannot stop the core from working. Deferred to software or spin 2: low-power tuning, step counting, music playback, GPS, temperature and humidity, the choice between battery divider and fuel gauge on GP28. **If the schematic review finds the board crowded, the first things I would drop from spin 1 are, in order: the IMU (keep its footprint), the RTC (keep the footprint and holder), the speaker amplifier.** The card slot, battery, screen, buttons and radio footprint stay.
+
+### I.6 PCBWay: what the chosen fab can make (read 2026-10-04 from pcbway.com; record in SOURCES.md)
+
+| Item | PCBWay says | What it means for us |
+|---|---|---|
+| Layers, thickness | 1 to 14 layers; 0.2 to 3.2 mm, 1.6 mm standard | 2 layers, 1.6 mm, unless the RP2350 fan-out needs 4 (decide at layout) |
+| Trace and space | minimum 0.1 mm (4 mil) | the RP2350's 0.4 mm pitch is fine; we design at 0.15 mm or wider anyway |
+| Drill, annular ring | 0.15 to 6.0 mm (extra charge below 0.2 mm); ring 0.15 mm | use 0.3 mm vias, no extra charge |
+| Finish, colour | HASL, lead-free HASL, immersion gold (ENIG), others; ten mask colours | **ENIG** for the fine-pitch chip and the castellated module; colour is John's |
+| **Assembly minimum** | 5 boards; passives down to 0201; fine pitch to 0.25 mm; QFN and castellated parts routine; through-hole and both sides offered | everything on this board is placeable |
+| **Assembly board size** | **minimum 50 x 100 mm; smaller boards are panelised** (PCBWay adds break-away rails) | a credit-card board (85.6 x 54 mm) is under 100 mm long, so PCBWay panelises it; harmless, a small fee, and the rails snap off |
+| Parts | turnkey (they buy), consigned (we send), or combo | **turnkey**: choose parts PCBWay can buy from the usual distributors; 0201 parts carry a 100-piece minimum, so use 0402 or larger |
+| Files | Gerber RS274X (copper, silkscreen, paste), **BOM** as CSV or Excel with manufacturer name and part number per line, **centroid** file (designator, X, Y, rotation, side) for surface-mount parts | KiCad exports all of them; the BOM gets a manufacturer-part-number column from the start |
+| Stencil, testing | laser-cut steel stencil; X-ray for hidden pads | ask for X-ray on the RP2350 and the RM2 |
+
+Sources: pcbway.com/capabilities.html, pcbway.com/pcb_prototype/PCB_assembly_Capabilities.html, pcbway.com/assembly-file-requirements.html. Prices are not on these pages; the quote page gives them.
+
 ## Appendix F: Sources read for this request (online, 2026-10-04; nothing downloaded yet)
 - Raspberry Pi, "Microcontroller chips" (RP2040 and RP2350 variants, SRAM, PSRAM via QMI): raspberrypi.com/documentation/microcontrollers/microcontroller-chips.html
 - Raspberry Pi, Radio Module 2 documentation and datasheet: datasheets.raspberrypi.com/rm2/rm2-datasheet.pdf and the documentation repository's rm2.adoc
 - MicroPython, PR #15620 "rp2: Add PSRAM support" (merged 2025-04-08, in v1.25.0); micropython.org/download/?mcu=rp2350 (v1.29.0 builds, Pico 2 W listed)
 - Pimoroni, Pico Plus 2 W product page (RP2350B, 16 MB flash, 8 MB PSRAM, RM2)
 - Waveshare wiki, 2inch LCD Module and 1.54inch LCD Module pages
+- PCBWay capabilities, assembly capabilities and assembly file requirements pages (2026-10-04)
+- micropython-lib `micropython/drivers/imu` (bmi270, bmm150, lsm6dsox, lsm9ds1) and `sensor` (dht, ds18x20, hs3003, hts221, lps22h, mhz19) listings (2026-10-04); no RTC driver in the official library
 - docs.micropython.org, `machine.SDCard` (ports listed; rp2 absent) and the rp2 quickref; micropython-lib `sdcard.py` (SPI-mode driver)
 - pico-sdk `src/rp2_common/hardware_gpio/include/hardware/gpio.h` (RP2350 GPIO function table) and `src/rp2350/hardware_regs/include/hardware/regs/addressmap.h`
 - Espressif ESP32-S3-WROOM-1 module (via product listings; the datasheet is to be read if option C is chosen)
