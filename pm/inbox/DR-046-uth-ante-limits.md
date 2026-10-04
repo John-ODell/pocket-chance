@@ -1,4 +1,4 @@
-# DR-037: Ultimate Texas Hold'em: Ante limits against the 6x exposure
+# DR-046: Ultimate Texas Hold'em: Ante limits against the 6x exposure
 
 - **Status:** pending
 - **Filed by:** senior dev

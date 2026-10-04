@@ -1,4 +1,4 @@
-# DR-038: Ultimate Texas Hold'em: how the cards are turned
+# DR-047: Ultimate Texas Hold'em: how the cards are turned
 
 - **Status:** pending
 - **Filed by:** senior dev
@@ -15,7 +15,7 @@ The order and timing of turning the community cards and the dealer's cards.
 - Flop: the three community cards turn together (community band push, about 15 ms) after the pre-flop decision, with a 300 ms pause before the prompt changes.
 - Turn and river: the last two together (same band), after the flop decision.
 - Showdown: the dealer's two cards turn one at a time 300 ms apart (dealer band pushes), then the result (full redraw), then the save, then buttons drained (the Stud pattern, HR-029: schedule by the clock, nothing between flips).
-- AI seats update their status line with the phase they just acted in, in the same band push as the cards (DR-035).
+- AI seats update their status line with the phase they just acted in, in the same band push as the cards (DR-044).
 - Cons: about 1.5 s of pauses across a hand.
 
 ### B. Every card one by one

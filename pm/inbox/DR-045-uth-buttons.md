@@ -1,4 +1,4 @@
-# DR-036: Ultimate Texas Hold'em: button mapping
+# DR-045: Ultimate Texas Hold'em: button mapping
 
 - **Status:** pending
 - **Filed by:** senior dev

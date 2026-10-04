@@ -1,4 +1,4 @@
-# DR-040: Ultimate Texas Hold'em: menu label and art
+# DR-049: Ultimate Texas Hold'em: menu label and art
 
 - **Status:** pending
 - **Filed by:** senior dev

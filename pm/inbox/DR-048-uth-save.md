@@ -1,4 +1,4 @@
-# DR-039: Ultimate Texas Hold'em: when the bankroll is saved
+# DR-048: Ultimate Texas Hold'em: when the bankroll is saved
 
 - **Status:** pending
 - **Filed by:** senior dev

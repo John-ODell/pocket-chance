@@ -1,4 +1,4 @@
-# DR-034: Ultimate Texas Hold'em: screen layout for nine cards and seat strips
+# DR-043: Ultimate Texas Hold'em: screen layout for nine cards and seat strips
 
 - **Status:** pending
 - **Filed by:** senior dev
@@ -7,7 +7,7 @@
 - **Needs HW review:** yes
 
 ## The decision
-Where the dealer's two cards, the five community cards, the player's two cards, the hand names, the bets and the prompts go, and where seat strips for AI players (DR-035) would sit.
+Where the dealer's two cards, the five community cards, the player's two cards, the hand names, the bets and the prompts go, and where seat strips for AI players (DR-044) would sit.
 
 ## Why it matters
 Nine 40 x 56 cards in three rows is 168 px of the 240; only 48 px are left for everything else. The redraw cost must stay near blackjack's (45 ms full redraw; a card is 3.9 ms code-drawn, 3.4 ms from a sheet).
