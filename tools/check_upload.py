@@ -61,7 +61,8 @@ def main(argv):
     for repo_path, board_path in listed:
         problems += check_row(repo_path, board_path)
     listed_files = {r for r, _ in listed}
-    for m in sorted(board_modules() - listed_files):
+    mentioned = set(re.findall(r'`((?:lib|games)/\w+\.py|pocket\.py)`', text))   # incl. "Not on the board yet"
+    for m in sorted(board_modules() - listed_files - mentioned):
         problems.append('%s is a board module but is not in UPLOAD.md' % m)
     total = 0
     for repo_path, _ in listed:

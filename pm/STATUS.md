@@ -2,7 +2,7 @@
 
 _Updated by the senior dev at the end of each session. Written for John._
 
-**Last updated:** 2026-10-04 (night)
+**Last updated:** 2026-10-05
 
 ## Where we are
 Every decision for Phase 1 is approved (DR-001 to DR-015) and the first full version of the game is written. **It has never run on the board.** I have asked the expert to look it over on the bench first; after that the next step is yours: upload it following `UPLOAD.md` step 1 and tell the PM what you see.
@@ -38,6 +38,11 @@ The expert ran the build on the board. One blocker, now fixed: the image-loader 
 1. **`UPLOAD.md` step 1** (after the expert's bench check): upload 13 files, run `/pocket.py`, play a hand, copy the `RESULT` lines to the PM. If the screen is dark or garbled, flip `FAST_SPI` to `False` and tell the PM.
 2. **Art:** make the four pilot images (`c_AS`, `c_back`, `chip_5`, `table`) at the sizes in `assets/ASSETS.md`, drawn the right way up as described there. Then `UPLOAD.md` step 2.
 3. Nothing else is waiting on you.
+
+## Slots: seven decision requests filed (DR-017 to DR-023)
+You approved slots next (D-008). Before I build the screen I need your rulings on: the reel layout (one payline, three reels, 8 symbols); the paytable (I recommend 93.8% return to player, a win on 28% of spins, a 1000x jackpot about once in 32,768 spins; the numbers are exact, not estimates); bets (same chips, 5 to 100 a spin); how the reels spin and stop (the expert reviews the redraw cost); how wins are shown (gold frame, amount, jackpot banner, a paytable screen on X, no auto-spin); the menu for five games (a scrolling list); and the final Phase 2 art list (window positions fixed, `sym_blur` dropped). The slots engine itself is already built and tested (`games/slots_rules.py`); the rulings only set its parameters.
+
+Also built, for the two poker games later: a poker hand evaluator (`lib/poker.py`, 5 to 7 cards) with tests. Not uploaded yet.
 
 ## Your menu background (D-007)
 Your casino photo is behind the main menu. Because the middle of the photo is bright (the lights), the words sit on small dark plates and the selected row is a solid dark-blue box, so everything stays readable; the photo shows in the margins and inside the other rows. Moving the joystick redraws only the two rows that change. The converter warned that the top strip and the first row are bright, which is why the plates are there. Files for the expert: `UPLOAD.md` step 1d (`pocket.py` and `assets/out/menu_background.565`).

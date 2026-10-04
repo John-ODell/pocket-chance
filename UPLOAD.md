@@ -92,5 +92,8 @@ Upload `pocket.py` a second time, named `/main.py` on the board. Unplug and plug
 ## Not run anywhere yet
 All of this has run only on the Mac, against stand-in `machine` and `framebuf` modules (96 tests). Nothing has run under MicroPython or on the board. Timing, colours on the panel and RAM use are what step 1 finds out.
 
+## Not on the board yet
+Built and tested on the Mac, waiting for rulings or a later step. Do not upload: `lib/poker.py` (poker hand evaluator for the later card games), `games/slots_rules.py` (slots engine, DR-017/018 pending).
+
 ## Restore the old version
 Upload `main_monolith.py` and name it `/main.py` on the board.
