@@ -39,6 +39,9 @@ The expert ran the build on the board. One blocker, now fixed: the image-loader 
 2. **Art:** make the four pilot images (`c_AS`, `c_back`, `chip_5`, `table`) at the sizes in `assets/ASSETS.md`, drawn the right way up as described there. Then `UPLOAD.md` step 2.
 3. Nothing else is waiting on you.
 
+## Your menu background (D-007)
+Your casino photo is behind the main menu. Because the middle of the photo is bright (the lights), the words sit on small dark plates and the selected row is a solid dark-blue box, so everything stays readable; the photo shows in the margins and inside the other rows. Moving the joystick redraws only the two rows that change. The converter warned that the top strip and the first row are bright, which is why the plates are there. Files for the expert: `UPLOAD.md` step 1d (`pocket.py` and `assets/out/menu_background.565`).
+
 ## Your table background
 You said you want to draw the felt yourself. `assets/ASSETS.md` now has a "Readability" section with the exact pixel boxes where text and cards sit, so you know which areas to keep dark and calm. The converter warns (but still converts) if a text area of your table is too light or busy. Upload just `assets/out/table.565` and the game uses it at the next start; no code changes.
 
