@@ -36,7 +36,7 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 | R8, R9 | CC pull-downs | 5.1 kΩ | 0402 | `Device:R` | USB-C sink requirement (general; **the Pico 2 W schematic in `refs/pico-2-w-datasheet.pdf` to confirm**) | |
 | R10, R11 | D+ and D- series | 27 Ω | 0402 | `Device:R` | design guide 5.1: "27 Ω series termination resistors, placed close to the chip" | |
 | U-ESD | USB ESD array | USBLC6-2SC6 (ST) | SOT-23-6 | `Power_Protection:USBLC6-2SC6` / `Package_TO_SOT_SMD:SOT-23-6` | general practice | stock |
-| F/D-VBUS | input protection | optional polyfuse or none (BQ24074 has 28 V OVP) | | | PCB-001 | decide at schematic |
+| (none) | VBUS input protection: none fitted; the BQ24074 suspends operation above its 6.6 V OVP threshold and its IN pin is rated to 28 V absolute maximum (datasheet section 8.1; "up to 26 V without damage, operation suspended" in the pin table) | | | | PCB-001; `refs/parts/bq24074.pdf` | |
 
 ## Block 3: power (PCB-001, pending)
 
@@ -50,7 +50,7 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 | J-BAT | pouch cell socket, **3 pins**: 1 = + (red), 2 = -, 3 = cell thermistor (TS); a 2-wire cell uses pins 1-2 | S3B-PH-SM4-TB (JST PH, 2 mm, SMD) | SMD | `Connector:Conn_01x03_Socket` / `Connector_JST:JST_PH_S3B-PH-SM4-TB_1x03-1MP_P2.00mm_Horizontal` | PCB-001; AUDIT-2 #7/#8 | stock |
 | (no part) | reverse-polarity guard: **none on spin 1** (John, 2026-10-04, option B after AUDIT-3). The rev 0.3 single FET was unsafe with USB present; the rev 0.5 polarity sensor latched on after a cell swap with USB attached; no passive two-wire circuit can do both jobs. Protection is procedural: keyed plug, silkscreen "+ RED WIRE", one approved cell listing, protected cell, wire check before plugging in, USB unplugged for swaps, current-limited first plug-in | | | | PCB-001; AUDIT-2-RESPONSE rev 0.6 | |
 | SW-PWR | power switch on the regulator enable | PCM12SMTR (C&K) slide | SMD | `Switch:SW_SPDT` / `Button_Switch_SMD:SW_SPDT_PCM12` | HR-033 | stock |
-| R-DIV | battery divider to GP28, **gated**: Q4 AO3401A high-side switch on BAT+, driven through Q3 2N7002 from the 3.3 V rail, R39 100 kΩ holds Q4 off when the board is off | 100 kΩ + 100 kΩ, 100 nF; AO3400A (Q3); AO3401A (Q4) | 0402, SOT-23 | `Device:R`, `Device:C`, `Transistor_FET:AO3400A`, `Transistor_FET:AO3401A` | HR-P01; AUDIT-2 #2 (fix mirrors the Pico W's gated VSYS sense) | stock |
+| R-DIV | battery divider to GP28, **gated**: Q4 AO3401A high-side switch on BAT+, driven through Q3 AO3400A from the 3.3 V rail, R39 100 kΩ holds Q4 off when the board is off | 100 kΩ + 100 kΩ, 100 nF; AO3400A (Q3); AO3401A (Q4) | 0402, SOT-23 | `Device:R`, `Device:C`, `Transistor_FET:AO3400A`, `Transistor_FET:AO3401A` | HR-P01; AUDIT-2 #2 (fix mirrors the Pico W's gated VSYS sense) | stock |
 | R-TS | thermistor-pin resistor, **fitted by default = cell temperature check bypassed** (John's decision 2026-10-04); remove when a thermistor cell is on J-BAT pin 3 | 10 kΩ | 0402 | `Device:R` | PCB-001; AUDIT-2 #8; BQ24074 ds Table 7-1 | |
 | (none) | fuel gauge: **dropped from spin 1** (the gated ADC divider is used instead; no symbol, no footprint) | MAX17048 remains a spin-2 option | | | HR-P01, HR-P02 | |
 
