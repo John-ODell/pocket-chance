@@ -4,7 +4,10 @@
 - **Type:** finding, blocks step 1 of `UPLOAD.md`. One-line fix for the dev; nothing for John to decide beyond accepting a module rename.
 - **Severity:** the game does not start. Found before John uploaded anything.
 
-## What happens
+## STATUS: FIXED and verified on the board, 2026-10-04
+The dev renamed `lib/assets.py` to `lib/art.py` (commit `0ed9a55`) and added a test that fails if any module is ever named like a board folder. Re-bench with the 13 files exactly as `UPLOAD.md` lists them, from a power-cycled board with the empty `/assets` folder present, **no `sys.path` change**: all imports resolve, 8 scripted hands played with no errors (`hwtest/pocket_bench.py`). Numbers from the re-bench are in `hw/BUDGET.md`.
+
+## What happens (original finding)
 With the 13 files in place exactly as `UPLOAD.md` lists them, running `/pocket.py` stops at line 29:
 
 ```
