@@ -206,6 +206,23 @@ Listed in section 8's last block (pull-ups, test points, LED, RESET). Also: whet
 - The game assumes a PWM-capable backlight pin. Every RP2040 GPIO can be a PWM output (general knowledge, Unverified in this repo; the header drawing labels all GP pins "GPIO, PIO, and PWM", Doc p.4).
 - No network or radio is used (`CLAUDE.md`).
 
+## 11a. Stage 2 wishes (owner, 2026-10-04, via the PM) and the resulting pin plan
+
+The owner's wishes for the first custom board: one integrated handheld, more RAM, LiPo with charging and management, a power switch, a small speaker, wireless, a microSD slot, possibly a larger screen. The analysis and the staged proposal are in `pm/inbox/DR-033-board-scope.md` (expert review `hw/reviews/HR-033.md`). The pin plan that comes out of it, for an RP2350A, keeps every pin in section 5 and uses 29 of 30 GPIO:
+
+| GPIO | Use | Status |
+|---|---|---|
+| 0 | PSRAM chip-select (XIP_CS1n; the only option not used by the game, the others being 8 and 19) | Documented, pico-sdk function table |
+| 1 | spare | |
+| 2, 3, 16, 18, 20; 15, 17, 19, 21; 8 to 13 | joystick, buttons, screen, exactly as section 5 | Verified |
+| 4, 6, 7, 5, 14 | microSD over SPI0 (MISO, SCK, MOSI), chip-select, card-detect | Documented pin functions; plan Unverified (awaiting HR review) |
+| 22 | speaker, PWM audio | plan |
+| 23, 24, 25, 29 | RM2 wireless module, as the stock Pico 2 W firmware expects | Documented, pico-sdk `pico2_w.h` (HR-033) |
+| 26, 27 | fuel gauge I2C1 | plan |
+| 28 | battery voltage divider, ADC2 | plan |
+
+Requirement E14 (new): a microSD slot in SPI mode on the pins above, with pull-ups, a bulk capacitor for write bursts (up to about 200 mA, estimate), ESD protection and a push-push surface-mount slot the fab stocks. The card is bulk storage and file transfer only; the game, its modules and its saves stay in internal flash. Source: owner's wish via the PM; details in DR-033 appendix H; all electrical values Unverified until the datasheets are read.
+
 ## 12. Acceptance (what "done" means for the first board)
 
 Still unconfirmed by the owner (source: `pcb/PLAN.md`).
