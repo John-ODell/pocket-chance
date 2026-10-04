@@ -8,10 +8,11 @@ better; if not, the Ante pushes. Player wins: Ante (if dealer qualifies) and Pla
 by the table below for a straight or better and pushes otherwise. Player loses: all three lost.
 Tie: all push. Reference: 2.185% of the Ante with optimal play; the Wizard's simple strategy 2.43%.
 
-The strategy here is the Wizard's simple strategy WITHOUT the river "fewer than 21 dealer outs"
-rule (which needs a 990-combination count per hand): river decision = raise 1x with a hidden pair
-or better, else fold. That is a strategy a casual player can actually follow and is what the game's
-help screen will show. Run:  python3 tools/uth_edge.py [hands]
+Two strategies are measured: the Wizard's simple strategy in full (river: raise 1x with a hidden
+pair or better, or when fewer than 21 of the 45 unseen cards would give the dealer a better hand
+than yours; else fold), and the same without the outs count (river: hidden pair or better, else
+fold), which is what a player can follow with no help from the device.
+Run:  python3 tools/uth_edge.py [hands]
 """
 import os
 import random
@@ -80,7 +81,27 @@ def flop_raise(hole, board):
     return False
 
 
-def play(deck, rng, four_x=True):
+def dealer_outs(hole, board):
+    """Wizard's count: of the 45 unseen cards, how many would give the dealer (that card plus the
+    board) a hand that beats the player's seven-card hand."""
+    pv = evaluate(hole + board)
+    seen = set(hole + board)
+    outs = 0
+    for c in range(52):
+        if c in seen:
+            continue
+        if evaluate([c] + board) > pv:
+            outs += 1
+    return outs
+
+
+def river_raise(hole, board, use_outs):
+    if hidden_pair_or_better(hole, board):
+        return True
+    return use_outs and dealer_outs(hole, board) < 21
+
+
+def play(deck, rng, four_x=True, use_outs=False):
     rng.shuffle(deck)
     hole = deck[:2]
     dealer = deck[2:4]
@@ -90,7 +111,7 @@ def play(deck, rng, four_x=True):
         play_bet = 4 if four_x else 3
     elif flop_raise(hole, board[:3]):
         play_bet = 2
-    elif hidden_pair_or_better(hole, board):
+    elif river_raise(hole, board, use_outs):
         play_bet = 1
     else:
         return -2, 2                                  # fold: lose Ante and Blind
@@ -111,14 +132,14 @@ def play(deck, rng, four_x=True):
 
 
 def run(args):
-    label, four_x, hands, seed = args
+    label, four_x, use_outs, hands, seed = args
     rng = random.Random(seed)
     deck = list(range(52))
     net = 0.0
     staked = 0
     folds = 0
     for _ in range(hands):
-        n, s = play(deck, rng, four_x)
+        n, s = play(deck, rng, four_x, use_outs)
         net += n
         staked += s
         if s == 2:
@@ -127,9 +148,23 @@ def run(args):
 
 
 if __name__ == '__main__':
-    hands = int(sys.argv[1]) if len(sys.argv) > 1 else 400000
-    configs = [('simple strategy, 4x pre-flop raise', True), ('simple strategy, 3x pre-flop raise', False)]
+    hands = int(sys.argv[1]) if len(sys.argv) > 1 else 200000
+    configs = [('Wizard simple strategy (with river outs)', True, True),
+               ('simple strategy without the outs count', True, False),
+               ('without outs, 3x pre-flop raise', False, False)]
+    # split each config over several seeds so all cores work
+    jobs = []
+    for i, (l, f, o) in enumerate(configs):
+        for k in range(8):
+            jobs.append((l, f, o, hands // 8, 900 + 10 * i + k))
     with Pool() as p:
-        for label, per_ante, per_staked, folds in p.imap(run, [(l, f, hands, 900 + i) for i, (l, f) in enumerate(configs)]):
+        results = {}
+        for label, per_ante, per_staked, folds in p.imap(run, jobs):
+            results.setdefault(label, []).append((per_ante, per_staked, folds))
+        for label, _, _ in configs:
+            rs = results[label]
+            per_ante = sum(r[0] for r in rs) / len(rs)
+            per_staked = sum(r[1] for r in rs) / len(rs)
+            folds = sum(r[2] for r in rs) / len(rs)
             print('%-40s house edge %.2f%% of the ante  (%.2f%% of all chips staked)  folds %.1f%%'
                   % (label, -per_ante, -per_staked, folds))
