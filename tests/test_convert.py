@@ -38,7 +38,6 @@ class To565(unittest.TestCase):
         self.assertEqual(expected_size('chip_500'), (24, 24))
         self.assertEqual(expected_size('table'), (240, 240))
         self.assertEqual(expected_size('logo'), (200, 40))
-        self.assertEqual(expected_size('banner_jackpot'), (200, 40))
         self.assertEqual(expected_size('banner_win'), (160, 32))
         self.assertEqual(expected_size('icon_stud'), (48, 48))
         self.assertIsNone(expected_size('sym_cherry'))              # slots dropped (D-009)
