@@ -46,7 +46,7 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 | U-BB | 3.3 V buck-boost | TPS63001DRCR (TI) | VSON-10, 3 x 3 mm (DRC) | `Regulator_Switching:TPS63001` / `Package_SON:Texas_DRC0010J_ThermalVias` (KiCad's own assignment) | `refs/parts/tps63001.pdf`: 2.2 µH, 10 µF in/out, PS/SYNC low = power save, EN high ≥ 1.2 V | stock |
 | L-BB | buck-boost inductor | 2.2 µH, 2 A class, 3 x 3 mm | | `Device:L` / `Inductor_SMD:L_1210_3225Metric` or vendor | TPS63001 datasheet | pick after datasheet |
 | U-PROT | cell protection | DW01A (Fortune) | SOT-23-6 | `Battery_Management:DW01A` / `Package_TO_SOT_SMD:SOT-23-6` | HR-033, HR-P01 | datasheet (official); stock |
-| Q-PROT | protection dual MOSFET | FS8205A | TSSOP-8 or SOT-23-6 per vendor | `Transistor_FET_Dual:` generic dual N-MOSFET / per package | HR-033 | datasheet; package; stock |
+| Q-PROT | protection dual MOSFET, common drain | FS8205A (Fortune) | TSSOP-8 (`refs/parts/fs8205a.pdf`: 1/8 D12, 2/3 S1, 4 G1, 5 G2, 6/7 S2; 20 V, 6 A, 25 mΩ) | `pcb_custom:FS8205A` (drawn from the datasheet) / `Package_SO:TSSOP-8_4.4x3mm_P0.65mm` | HR-033; HR-P03 (rating vs 0.4 A: 6 A, fine) | stock |
 | J-BAT | pouch cell socket, pin 1 = +, polarity on the silkscreen | S2B-PH-SM4-TB (JST PH, 2 mm, SMD) | SMD | `Connector:Conn_01x02_Socket` / `Connector_JST:JST_PH_S2B-PH-SM4-TB_1x02-1MP_P2.00mm_Horizontal` | PCB-001 | stock |
 | Q-RPP | reverse-polarity guard, P-MOSFET in the cell's positive lead | AO3401A (Alpha & Omega; -30 V, 4 A, about 50 mΩ; the most common hobby P-FET) | SOT-23 | `Transistor_FET:AO3401A` / `Package_TO_SOT_SMD:SOT-23` | PCB-001 revised (JST-only, John 2026-10-04) | datasheet (official Diodes); pin order; stock |
 | SW-PWR | power switch on the regulator enable | PCM12SMTR (C&K) slide | SMD | `Switch:SW_SPDT` / `Button_Switch_SMD:SW_SPDT_PCM12` | HR-033 | stock |
@@ -85,7 +85,7 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 |---|---|---|---|---|---|---|
 | U-RTC | real-time clock | DS3231MZ+ (Analog Devices) | SOIC-8 | `Timer_RTC:DS3231MZ` / `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | HR-P02 | datasheet (official ADI); stock |
 | BT-RTC | CR1220 holder | 3001 (Keystone, 12 mm) | SMD | `Device:Battery_Cell` / `Battery:BatteryHolder_Keystone_3001_1x12mm` | DR-033 app. I.2 | **verify** 3001 takes a CR1220 (12.5 mm); Keystone drawing |
-| U-IMU | 6-axis IMU | LSM6DSOXTR (ST) | LGA-14, 2.5 x 3 mm | **custom symbol** (KiCad has LSM6DSL/DSM; pin map to compare) / **custom footprint** from the ST drawing | HR-P02; micropython-lib driver | datasheet (official ST); stock |
+| U-IMU | 6-axis IMU | LSM6DSOXTR (ST) | LGA-14, 3 x 2.5 x 0.83 mm, 0.5 mm pitch (same package as the LSM6DSL/DSM in KiCad's library) | `Sensor_Motion:LSM6DSM` symbol (same family pinout) / `Package_LGA:LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y` | HR-P02; micropython-lib driver | **phase 5: pin map and land pattern vs the ST datasheet** (st.com blocks scripted downloads; John can save it from his browser into `pcb/refs/parts/`); stock |
 | J-QT | STEMMA QT / Qwiic | SM04B-SRSS-TB (JST SH, 1 mm) | SMD | `Connector:Conn_01x04_Socket` / `Connector_JST:JST_SH_SM04B-SRSS-TB_1x04-1MP_P1.00mm_Horizontal` | DR-033 app. I.4 | stock |
 | R-I2C | I2C pull-ups | 4.7 kΩ x2 | 0402 | `Device:R` | HR-P02 | |
 | J-EXP | expansion header: GP1, GP28, SDA, SCL, 3V3, GND | 1 x 6, 2.54 mm | SMD or THT | `Connector:Conn_01x06_Pin` / `Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical` | DR-033 app. I.4 | |
@@ -126,7 +126,7 @@ Each row: the cheaper or easier-to-source near-equivalent, whether it is a **dro
 | Crystal ABM8-272-T3 | none recommended | | the design guide insists on this part | |
 
 ## Custom library work (phase 5)
-RM2 (symbol + footprint), LSM6DSOX (symbol + footprint), Alps 5-way joystick (footprint), MAX17048 (symbol, if kept), RP2350A land pattern check. All drawn from the official datasheets, saved in `pcb/kicad/lib/`.
+RM2 (footprint from the datasheet's section 2.4; symbol done), Alps 5-way joystick (footprint), Abracon AOTA inductor land pattern, RP2350A land pattern check, LSM6DSOX pin map check against the ST datasheet. MAX17048 dropped from spin 1 (HR-P01/P02: ADC divider instead). All drawn from the official datasheets, saved in `pcb/kicad/lib/`.
 
 ## Datasheets to download next (official sources, John's approval needed)
 BQ24074 and TPS63001 (ti.com), DW01A (Fortune), FS8205A, APS6404L (AP Memory), ABM8-272 and AOTA-B201610S3R3 (Abracon), USB4085 (GCT), USBLC6-2SC6 (ST), PAM8302A (Diodes), 104031-0811 (Molex), DS3231MZ (ADI), LSM6DSOX (ST), SKRHABE010 (Alps), Keystone 1042 and 3001, JST PH and SH drawings, PTS645 (C&K), PCM12 (C&K).

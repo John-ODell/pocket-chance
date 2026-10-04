@@ -13,6 +13,7 @@
 	(lib (name "Jumper")(type "KiCad")(uri "${KICAD10_FOOTPRINT_DIR}/Jumper.pretty")(options "")(descr ""))
 	(lib (name "LED_SMD")(type "KiCad")(uri "${KICAD10_FOOTPRINT_DIR}/LED_SMD.pretty")(options "")(descr ""))
 	(lib (name "Package_DFN_QFN")(type "KiCad")(uri "${KICAD10_FOOTPRINT_DIR}/Package_DFN_QFN.pretty")(options "")(descr ""))
+	(lib (name "Package_LGA")(type "KiCad")(uri "${KICAD10_FOOTPRINT_DIR}/Package_LGA.pretty")(options "")(descr ""))
 	(lib (name "Package_SO")(type "KiCad")(uri "${KICAD10_FOOTPRINT_DIR}/Package_SO.pretty")(options "")(descr ""))
 	(lib (name "Package_SON")(type "KiCad")(uri "${KICAD10_FOOTPRINT_DIR}/Package_SON.pretty")(options "")(descr ""))
 	(lib (name "Package_TO_SOT_SMD")(type "KiCad")(uri "${KICAD10_FOOTPRINT_DIR}/Package_TO_SOT_SMD.pretty")(options "")(descr ""))

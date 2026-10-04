@@ -136,11 +136,11 @@ RM2_PINS = [  # from pcb/refs/rm2-datasheet.pdf, Table 2 (2026-10-04)
     (18, "WL_GPIO1", "bidirectional", "R", 6), (19, "NC", "no_connect", "R", 7), (20, "NC", "no_connect", "R", 8),
     (21, "GND", "passive", "R", 9),
 ]
-# FS8205A dual N-MOSFET, common-drain protection pair. Pin order per the common TSSOP-8 datasheet
-# (S1 G1 S2 G2 D2 D2 D1 D1): VERIFY against the official datasheet before footprints (PARTS.md).
+# FS8205A dual N-MOSFET, common-drain protection pair. Pin assignment read from the Fortune datasheet
+# (pcb/refs/parts/fs8205a.pdf, section 4, TSSOP-8 top view, 2026-10-04): 1 D12, 2 S1, 3 S1, 4 G1, 5 G2, 6 S2, 7 S2, 8 D12.
 FS8205A_PINS = [
-    (1, "S1", "passive", "L", 0), (2, "G1", "input", "L", 1), (3, "S2", "passive", "L", 2), (4, "G2", "input", "L", 3),
-    (5, "D2", "passive", "R", 0), (6, "D2", "passive", "R", 1), (7, "D1", "passive", "R", 2), (8, "D1", "passive", "R", 3),
+    (1, "D12", "passive", "L", 0), (2, "S1", "passive", "L", 1), (3, "S1", "passive", "L", 2), (4, "G1", "input", "L", 3),
+    (5, "G2", "input", "R", 3), (6, "S2", "passive", "R", 2), (7, "S2", "passive", "R", 1), (8, "D12", "passive", "R", 0),
 ]
 
 CUSTOM = {
@@ -260,7 +260,9 @@ add("R20", R, "100R", R0402, (340, 335), {"1": "BAT+", "2": "PROT_VCC"})
 add("C27", C, "100nF", C0402, (355, 335), {"1": "PROT_VCC", "2": "BAT-"})
 add("R21", R, "1k", R0402, (370, 335), {"1": "PROT_CS", "2": "GND"})
 add("Q1", ("pcb_custom", "FS8205A"), "FS8205A", "Package_SO:TSSOP-8_4.4x3mm_P0.65mm", (340, 365),
-    {"1": "BAT-", "2": "PROT_OD", "3": "GND", "4": "PROT_OC", "5": "FET_D", "6": "FET_D", "7": "FET_D", "8": "FET_D"})
+    {"1": "FET_D", "8": "FET_D", "2": "BAT-", "3": "BAT-", "4": "PROT_OD", "5": "PROT_OC", "6": "GND", "7": "GND"})
+# S1 = cell negative (BAT-), gate 1 from DW01A OD (discharge control); S2 = board ground, gate 2 from OC (charge control);
+# the common drain D12 is internal, net FET_D is only the two package pins tied together.
 # one protected LiPo pouch cell on a JST-PH socket (owner's choice 2026-10-04, no 18650 holder).
 # Reverse-polarity guard: P-MOSFET in the positive lead (body diode conducts at power-up, FET then turns on;
 # a reversed cell holds it off). Drain to the cell, source to BAT+, gate to the cell's negative.  VERIFY pinout.
@@ -314,7 +316,9 @@ add("C35", C, "100nF", C0402, (520, 365), {"1": "+3V3", "2": "GND"})
 add("BT2", ("Device", "Battery_Cell"), "CR1220", "Battery:BatteryHolder_Keystone_3001_1x12mm", (535, 380), {"1": "RTC_VBAT", "2": "GND"})
 add("JP2", ("Jumper", "SolderJumper_2_Open"), "RTC INT to GP14", "Jumper:SolderJumper-2_P1.3mm_Open_Pad1.0x1.5mm", (560, 380),
     {"1": "RTC_INT", "2": "IMU_INT"})
-add("U10", ("Sensor_Motion", "LSM6DSM"), "LSM6DSOXTR", "pcb_custom:ST_LGA-14_2.5x3mm", (480, 440), {
+# LSM6DSOX drawn with KiCad's LSM6DSM symbol and its ST LGA-14 3x2.5 mm footprint (same package family);
+# phase 5: compare pin map and land pattern with the ST LSM6DSOX datasheet (John to fetch; st.com blocks scripts).
+add("U10", ("Sensor_Motion", "LSM6DSM"), "LSM6DSOXTR", "Package_LGA:LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y", (480, 440), {
     "1": "GND", "2": "NC", "3": "NC", "4": "IMU_INT", "5": "+3V3", "6": "GND", "7": "GND", "8": "+3V3", "9": "NC",
     "10": "NC", "11": "NC", "12": "+3V3", "13": "SCL", "14": "SDA"})
 add("C36", C, "100nF", C0402, (520, 430), {"1": "+3V3", "2": "GND"})

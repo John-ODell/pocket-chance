@@ -489,7 +489,7 @@
 			(pin passive line
 				(at -11.43 3.81 0)
 				(length 3.81)
-				(name "S1"
+				(name "D12"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -504,10 +504,10 @@
 					)
 				)
 			)
-			(pin input line
+			(pin passive line
 				(at -11.43 1.27 0)
 				(length 3.81)
-				(name "G1"
+				(name "S1"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -525,7 +525,7 @@
 			(pin passive line
 				(at -11.43 -1.27 0)
 				(length 3.81)
-				(name "S2"
+				(name "S1"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -543,7 +543,7 @@
 			(pin input line
 				(at -11.43 -3.81 0)
 				(length 3.81)
-				(name "G2"
+				(name "G1"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -558,10 +558,10 @@
 					)
 				)
 			)
-			(pin passive line
-				(at 11.43 3.81 180)
+			(pin input line
+				(at 11.43 -3.81 180)
 				(length 3.81)
-				(name "D2"
+				(name "G2"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -577,9 +577,9 @@
 				)
 			)
 			(pin passive line
-				(at 11.43 1.27 180)
+				(at 11.43 -1.27 180)
 				(length 3.81)
-				(name "D2"
+				(name "S2"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -595,9 +595,9 @@
 				)
 			)
 			(pin passive line
-				(at 11.43 -1.27 180)
+				(at 11.43 1.27 180)
 				(length 3.81)
-				(name "D1"
+				(name "S2"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -613,9 +613,9 @@
 				)
 			)
 			(pin passive line
-				(at 11.43 -3.81 180)
+				(at 11.43 3.81 180)
 				(length 3.81)
-				(name "D1"
+				(name "D12"
 					(effects
 						(font
 							(size 1.27 1.27)
