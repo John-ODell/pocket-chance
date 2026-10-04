@@ -318,11 +318,12 @@ add("C35", C, "100nF", C0402, (520, 365), {"1": "+3V3", "2": "GND"})
 add("BT2", ("Device", "Battery_Cell"), "CR1220", "Battery:BatteryHolder_Keystone_3001_1x12mm", (535, 380), {"1": "RTC_VBAT", "2": "GND"})
 add("JP2", ("Jumper", "SolderJumper_2_Open"), "RTC INT to GP14", "Jumper:SolderJumper-2_P1.3mm_Open_Pad1.0x1.5mm", (560, 380),
     {"1": "RTC_INT", "2": "IMU_INT"})
-# LSM6DSOX drawn with KiCad's LSM6DSM symbol and its ST LGA-14 3x2.5 mm footprint (same package family);
-# phase 5: compare pin map and land pattern with the ST LSM6DSOX datasheet (John to fetch; st.com blocks scripts).
 add("U10", ("Sensor_Motion", "LSM6DSM"), "LSM6DSOXTR", "Package_LGA:LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y", (480, 440), {
-    "1": "GND", "2": "NC", "3": "NC", "4": "IMU_INT", "5": "+3V3", "6": "GND", "7": "GND", "8": "+3V3", "9": "NC",
+    "1": "GND", "2": "GND", "3": "GND", "4": "IMU_INT", "5": "+3V3", "6": "GND", "7": "GND", "8": "+3V3", "9": "NC",
     "10": "NC", "11": "NC", "12": "+3V3", "13": "SCL", "14": "SDA"})
+# LSM6DSOX ds (pcb/refs/parts/lsm6dsox.pdf, pin table, 2026-10-04): pin map identical to KiCad's LSM6DSM symbol;
+# SDx/SCx "connect to VDDIO or GND" (GND here), OCS_Aux "leave unconnected", SDO_Aux "connect to VDDIO or leave
+# unconnected", CS high = I2C mode, SA0 low = address 1101010b (0x6A). Package LGA-14L 2.5 x 3.0 x 0.83 mm.
 add("C36", C, "100nF", C0402, (520, 430), {"1": "+3V3", "2": "GND"})
 add("C37", C, "100nF", C0402, (535, 430), {"1": "+3V3", "2": "GND"})
 add("R31", R, "4.7k", R0402, (555, 430), {"1": "+3V3", "2": "SDA"})
