@@ -11,6 +11,7 @@ Board coordinates below are millimetres from the board's top-left corner, y down
 Rotation is KiCad's: degrees counter-clockwise. Spin 1 is a prototype: size is not a constraint, probing room is.
 Placement only: tracks and zones come later. Re-running replaces the whole board file.
 """
+import json
 import pathlib
 import sys
 import xml.etree.ElementTree as ET
@@ -251,7 +252,12 @@ def main():
     t2.SetPosition(mm(75, 1.8))
     t2.SetTextSize(pcbnew.VECTOR2I(pcbnew.FromMM(1.0), pcbnew.FromMM(1.0)))
     board.Add(t2)
-    board.Save(str(OUT))
+    pro = OUT.with_suffix(".kicad_pro")
+    before = json.loads(pro.read_text())
+    board.Save(str(OUT))                    # this also rewrites the project file with only board settings
+    after = json.loads(pro.read_text())
+    before["board"] = after["board"]        # keep the schematic/ERC settings, take the new board rules
+    pro.write_text(json.dumps(before, indent=2) + "\n")
     print(f"wrote {OUT.relative_to(ROOT)}: {len(comps)} footprints, {len(netobj)} nets, outline {W} x {H} mm")
     if missing:
         print("NOT PLACED (parked below the board):", " ".join(missing))
