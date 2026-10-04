@@ -22,7 +22,7 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 | C6, C7, C9 | regulator input, output, AVDD caps | 4.7 µF | 0402 | `Device:C` | design guide 2.1 | |
 | R3 | VREG_AVDD filter | 33 Ω | 0402 | `Device:R` | design guide 2.1 (33 Ω + 4.7 µF) | |
 | C-dec | decoupling, one per power pin, pins 53/54 share one | 100 nF | 0402 | `Device:C` | design guide 2.2.1 | count after the symbol is placed |
-| C-bulk | 3.3 V bulk | 10 µF | 0603 | `Device:C` / `Capacitor_SMD:C_0603_1608Metric` | general practice | |
+| C-bulk | 3.3 V bulk and the buck-boost in/out capacitors | 10 µF; regulator caps 0805 X5R 10 V (3.3 V side) and 16 V (VSYS side) so the effective capacitance under DC bias stays near 10 µF | 0603 / 0805 | `Device:C` | general practice; AUDIT-2 #10 | |
 | SW-BOOT, SW-RESET | tactile buttons | PTS645SM43SMTR92 (C&K) | 6 x 6 mm SMD | `Switch:SW_Push` / `Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92` | design guide 5.4 | stock |
 | D-LED, R-LED | user LED and 1 kΩ | 0603 LED | 0603 | `Device:LED` / `LED_SMD:LED_0603_1608Metric` | | GPIO: none free; LED driven from the RM2's wireless GPIO as on the Pico 2 W (HR-033) or omitted |
 | TP1.. | test points | pad | 1.5 mm | `Connector:TestPoint` / `TestPoint:TestPoint_Pad_D1.5mm` | PLAN phase 7 | 3V3, VBAT, VSYS, GND x2, RUN, SWD |
@@ -42,16 +42,16 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 
 | Ref | Part | MPN | Package | KiCad symbol / footprint | Source | To check |
 |---|---|---|---|---|---|---|
-| U-CHG | power-path charger | BQ24074RGTR (TI) | VQFN-16, 3 x 3 mm (RGT) | `Battery_Management:BQ24074RGT` / `Package_DFN_QFN:VQFN-16-1EP_3x3mm_P0.5mm_EP1.68x1.68mm_ThermalVias` (TI's RGT land pattern: 1.68 mm centre pad, 0.6 x 0.24 mm pins at 0.5 mm pitch, thermal vias; KiCad's generic pins are longer, which is normal for reflow: checked 2026-10-04) | `refs/parts/bq24074.pdf`: EN table (00 USB100, 01 USB500), K_ISET 890 AΩ, TS 10 kΩ fixed when unused, ITERM open = 10 %, TMR 18 to 72 kΩ | stock |
+| U-CHG | power-path charger; **mode: EN1 high (10 k to VBUS), EN2 low = USB500, 500 mA input limit; R15 (ILIM) not fitted** (AUDIT-2 #13) | BQ24074RGTR (TI) | VQFN-16, 3 x 3 mm (RGT) | `Battery_Management:BQ24074RGT` / `Package_DFN_QFN:VQFN-16-1EP_3x3mm_P0.5mm_EP1.68x1.68mm_ThermalVias` (TI's RGT land pattern: 1.68 mm centre pad, 0.6 x 0.24 mm pins at 0.5 mm pitch, thermal vias; KiCad's generic pins are longer, which is normal for reflow: checked 2026-10-04) | `refs/parts/bq24074.pdf`: EN table (00 USB100, 01 USB500), K_ISET 890 AΩ, TS 10 kΩ fixed when unused, ITERM open = 10 %, TMR 18 to 72 kΩ | stock |
 | U-BB | 3.3 V buck-boost | TPS63001DRCR (TI) | VSON-10, 3 x 3 mm (DRC) | `Regulator_Switching:TPS63001` / `Package_SON:Texas_DRC0010J_ThermalVias` (KiCad's own assignment) | `refs/parts/tps63001.pdf`: 2.2 µH, 10 µF in/out, PS/SYNC low = power save, EN high ≥ 1.2 V | stock |
-| L-BB | buck-boost inductor | 2.2 µH, 2 A class, 3 x 3 mm | | `Device:L` / `Inductor_SMD:L_1210_3225Metric` or vendor | TPS63001 datasheet | pick after datasheet |
+| L-BB | buck-boost inductor | ASPIAIG-F4020-2R2M (Abracon, 2.2 µH, 4 x 4 x 2 mm shielded) | 4020 | `Device:L` / `Inductor_SMD:L_Abracon_ASPIAIG-F4020` | TPS63001 ds (2.2 µH); AUDIT-2 #10 | **saturation current (need > 2 A) and DCR from the Abracon datasheet** (download pending); stock |
 | U-PROT | cell protection | DW01A (Fortune) | SOT-23-6 | `Battery_Management:DW01A` / `Package_TO_SOT_SMD:SOT-23-6` | HR-033, HR-P01 | datasheet (official); stock |
 | Q-PROT | protection dual MOSFET, common drain | FS8205A (Fortune) | TSSOP-8 (`refs/parts/fs8205a.pdf`: 1/8 D12, 2/3 S1, 4 G1, 5 G2, 6/7 S2; 20 V, 6 A, 25 mΩ) | `pcb_custom:FS8205A` (drawn from the datasheet) / `Package_SO:TSSOP-8_4.4x3mm_P0.65mm` | HR-033; HR-P03 (rating vs 0.4 A: 6 A, fine) | stock |
-| J-BAT | pouch cell socket, pin 1 = +, polarity on the silkscreen | S2B-PH-SM4-TB (JST PH, 2 mm, SMD) | SMD | `Connector:Conn_01x02_Socket` / `Connector_JST:JST_PH_S2B-PH-SM4-TB_1x02-1MP_P2.00mm_Horizontal` | PCB-001 | stock |
+| J-BAT | pouch cell socket, **3 pins**: 1 = + (red), 2 = -, 3 = cell thermistor (TS); a 2-wire cell uses pins 1-2 | S3B-PH-SM4-TB (JST PH, 2 mm, SMD) | SMD | `Connector:Conn_01x03_Socket` / `Connector_JST:JST_PH_S3B-PH-SM4-TB_1x03-1MP_P2.00mm_Horizontal` | PCB-001; AUDIT-2 #7/#8 | stock |
 | Q-RPP | reverse-polarity guard, P-MOSFET in the cell's positive lead | AO3401A (Alpha & Omega; -30 V, 4 A, about 50 mΩ; the most common hobby P-FET) | SOT-23 | `Transistor_FET:AO3401A` / `Package_TO_SOT_SMD:SOT-23` | PCB-001 revised (JST-only, John 2026-10-04) | datasheet (official Diodes); pin order; stock |
 | SW-PWR | power switch on the regulator enable | PCM12SMTR (C&K) slide | SMD | `Switch:SW_SPDT` / `Button_Switch_SMD:SW_SPDT_PCM12` | HR-033 | stock |
-| R-DIV | battery divider to GP28 | 100 kΩ + 100 kΩ, 100 nF | 0402 | `Device:R`, `Device:C` | HR-P01: 100 kΩ or more total | |
-| R-TS | thermistor-pin resistor | 10 kΩ (or a 10 k NTC footprint) | 0402 | `Device:R` | PCB-001 | |
+| R-DIV | battery divider to GP28, **gated**: Q4 AO3401A high-side switch on BAT+, driven through Q3 2N7002 from the 3.3 V rail, R39 100 kΩ holds Q4 off when the board is off | 100 kΩ + 100 kΩ, 100 nF; 2N7002 (SOT-23, standard); AO3401A | 0402, SOT-23 | `Device:R`, `Device:C`, `Transistor_FET:2N7002`, `Transistor_FET:AO3401A` | HR-P01; AUDIT-2 #2 (fix mirrors the Pico W's gated VSYS sense) | 2N7002 datasheet (official); stock |
+| R-TS | thermistor-pin resistor, **fitted by default = cell temperature check bypassed** (John's decision 2026-10-04); remove when a thermistor cell is on J-BAT pin 3 | 10 kΩ | 0402 | `Device:R` | PCB-001; AUDIT-2 #8; BQ24074 ds Table 7-1 | |
 | U-GAUGE | fuel gauge (optional, footprint only) | MAX17048G+T10 | TDFN-8, 2 x 2 mm | custom symbol / `Package_DFN_QFN:` 2x2 DFN-8 to verify | HR-P01: optional | deferred unless time allows |
 
 ## Block 4: screen and input
@@ -96,6 +96,14 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 | Ref | Part | MPN | Package | KiCad symbol / footprint | Source | To check |
 |---|---|---|---|---|---|---|
 | U-RF | Raspberry Pi Radio Module 2 | RM2 (SC1169) | 21 castellated pads, 1.5 mm pitch, 14.5 x 16.5 mm | **custom symbol and footprint** from `refs/rm2-datasheet.pdf` | ruling item 3; HR-033 pins GP23/24/25/29 | pad map and antenna keep-out from the datasheet; stock (about 4 USD) |
+
+## Added by AUDIT-2 fixes (commit 808ccf1)
+| Ref | Part | Why |
+|---|---|---|
+| C40 | 4.7 µF 0402 on the 1.1 V core rail at DVDD pin 23 | RP2350 datasheet: second 4.7 µF on VOUT at the far DVDD pin, away from LX/COUT (#11) |
+| C41, C42, R44 | 1 µF local amplifier bypass; 47 kΩ + 1 µF on the amplifier's SD pin (about 30 ms delayed enable) | PAM8302A datasheet p.8 (#12) |
+| R42, R43 | 10 kΩ pull-up on the RTC interrupt (open-drain); 1 kΩ in series through JP2 | DS3231M INT/SQW is open-drain; limits contention if the IMU is still push-pull when JP2 is closed (#9) |
+| Q3, Q4, R39 | gated battery divider | (#2) |
 
 ## Fallbacks (John, 2026-10-04: "if there are units we are close to that are cheaper, have those as fallbacks")
 

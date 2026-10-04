@@ -467,6 +467,13 @@ def build():
             ["comment", 2, Q("Blocks left to right: core | USB, power | screen, input, audio, card, sensors | wireless.")]],
            lib_symbols]
     sch.extend(items)
+    note = ("BATTERY (PCB-001, owner decision 2026-10-04): one protected LiPo pouch cell, 1000 mAh or more, rated 0.5 C charge, "
+            "charge temperature 0 to 45 C, JST-PH plug, + on pin 1 (red wire). Charge current 494 mA (R14 1.8k; 3.6k for 500 mAh). "
+            "The charger does NOT sense the cell's temperature with a two-wire cell (R12 10k fitted = check bypassed); it relies on the cell's "
+            "own protection board and the 0.5 C rate. A cell with a thermistor lead goes on pin 3: then remove R12. "
+            "First power-ups: current-limited supply, no cell; then cell alone; then both. Charge on a non-flammable surface, never unattended.")
+    sch.append(["text", Q(note), ["exclude_from_sim", "no"], ["at", 290, 470, 0],
+                ["effects", ["font", ["size", 1.5, 1.5]], ["justify", "left", "top"]], ["uuid", U()]])
     sch.append(["sheet_instances", ["path", Q("/"), ["page", Q("1")]]])
     sch.append(["embedded_fonts", "no"])
     OUT.write_text(sexp.write(sch) + "\n")
