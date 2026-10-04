@@ -21,7 +21,7 @@ import sys
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 ROW = re.compile(r'^\|\s*\d+\s*\|\s*`([^`]+)`\s*\|\s*`([^`]+)`', re.M)
-BOARD_FOLDERS = {'lib': '/lib', 'games': '/games', 'assets/out': '/assets'}
+BOARD_FOLDERS = {'lib': '/lib', 'games': '/games', 'assets/out': '/assets', 'archive/slots': '/games'}
 RECORD_ROW = re.compile(r'^\|\s*`(/[^`]+)`\s*\|\s*`([^`]+)`\s*\|\s*(\S+)\s*\|\s*([0-9a-f]{7,40})\s*\|', re.M)
 IMPORT = re.compile(r'^\s*(?:from\s+(\w+)\s+import|import\s+(\w+))', re.M)
 ATTR_CALL = re.compile(r'\b(assets|lcd|font|buttons|store|bankroll)\.(\w+)\(')
@@ -171,8 +171,9 @@ def main(argv):
         problems.append('%s is a board module but is not in UPLOAD.md' % m)
     total = 0
     for repo_path, _ in listed:
-        if '*' not in repo_path:
-            total += os.path.getsize(os.path.join(ROOT, repo_path))
+        full = os.path.join(ROOT, repo_path)
+        if '*' not in repo_path and os.path.isfile(full):
+            total += os.path.getsize(full)
     print('%d upload rows, %d bytes of code' % (len(listed), total))
     rec_problems, rec_warnings = check_record(text)
     problems += rec_problems

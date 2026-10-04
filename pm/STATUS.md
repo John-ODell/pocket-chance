@@ -2,7 +2,7 @@
 
 _Updated by the senior dev at the end of each session. Written for John._
 
-**Last updated:** 2026-10-05 (afternoon)
+**Last updated:** 2026-10-05 (evening)
 
 ## Where we are
 Every decision for Phase 1 is approved (DR-001 to DR-015) and the first full version of the game is written. **It has never run on the board.** I have asked the expert to look it over on the bench first; after that the next step is yours: upload it following `UPLOAD.md` step 1 and tell the PM what you see.
@@ -38,6 +38,11 @@ The expert ran the build on the board. One blocker, now fixed: the image-loader 
 1. **`UPLOAD.md` step 1** (after the expert's bench check): upload 13 files, run `/pocket.py`, play a hand, copy the `RESULT` lines to the PM. If the screen is dark or garbled, flip `FAST_SPI` to `False` and tell the PM.
 2. **Art:** make the four pilot images (`c_AS`, `c_back`, `chip_5`, `table`) at the sizes in `assets/ASSETS.md`, drawn the right way up as described there. Then `UPLOAD.md` step 2.
 3. Nothing else is waiting on you.
+
+## Slots dropped (D-009): what changed
+As you decided, slots is out. The code is parked in `archive/slots/` with a note; the menu is Blackjack, Caribbean, Hold'em, Off; the art list no longer mentions slot symbols or a cabinet. The sprite sheets stay for cards, chips, banners and icons. I kept the memory fixes the expert's slots bench taught us (no allocations in the screen driver and sheet reader, a slimmer sheet list), which help blackjack too. The expert benches the smaller build (`UPLOAD.md` step 1i) and reports the free memory and timings; most of the memory slots used comes back.
+
+**Next: Caribbean Stud.** The poker hand evaluator is already built and tested. I am filing the rules, screen, buttons, bet-limit, animation, save and art requests next.
 
 ## Sprite sheets built (DR-024, approved), upload step 1h
 Your pictures now travel to the board as one file per family: `cards.565` (all 53), `chips.565`, `banners.565`, `icons.565`, `symbols.565`. You still draw one BMP per picture; `python3 tools/convert_assets.py` packs them and lists what is missing (missing ones are transparent placeholders, so a few drawn cards already show). Why: the expert measured 3 ms to open any file on the board, so 53 card files would have made blackjack slower than the plain drawn cards; from a sheet a card takes 2.9 ms and the slot reels read rows in 0.26 ms. `assets/ASSETS.md` has the table of sheets. Five files for the expert in `UPLOAD.md` step 1h.

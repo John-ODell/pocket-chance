@@ -41,9 +41,9 @@ def write_565(path, w, h, colour):
 def write_sheet(adir, sheet, colours):
     """A sheet whose member i is the solid colour colours[i] (magenta where None)."""
     import sheets as sh
-    w, h, names = sh.SHEETS[sheet]
+    w, h, count = sh.SHEETS[sheet]
     px = []
-    for i in range(len(names)):
+    for i in range(count):
         c = colours.get(i) if isinstance(colours, dict) else colours[i]
         px.extend([c or (255, 0, 255)] * (w * h))
     data, _ = to_565(px, w, h * len(names))
@@ -196,11 +196,14 @@ class AssetsTests(unittest.TestCase):
         a = Assets(self.dir)
         s = a.sheet('cards')
         self.assertIsNotNone(s)
-        self.assertEqual((s.w, s.h, len(s.names)), (40, 56, 53))
+        self.assertEqual((s.w, s.h, s.count), (40, 56, 53))
+        self.assertTrue(s.present(0))
+        self.assertFalse(s.present(5))
+        self.assertTrue(s.present(52))
         self.lcd.fill(rgb(0, 90, 40))
         self.assertTrue(s.blit(self.lcd, 0, 10, 10))
         self.assertEqual(self.lcd.pixel(15, 15), rgb(200, 10, 10))
-        self.assertTrue(s.blit(self.lcd, 5, 100, 10))                 # a placeholder: all key, nothing drawn
+        self.assertFalse(s.blit(self.lcd, 5, 100, 10))                # a placeholder: not drawn, caller falls back
         self.assertEqual(self.lcd.pixel(105, 15), rgb(0, 90, 40))
         buf = bytearray(4480)
         self.assertTrue(s.read(52, buf))
@@ -216,7 +219,8 @@ class AssetsTests(unittest.TestCase):
         self.lcd.fill(0)
         self.assertTrue(a.blit(self.lcd, 'c_AS', 0, 0))
         self.assertEqual(self.lcd.pixel(5, 5), rgb(200, 10, 10))
-        self.assertTrue(a.blit(self.lcd, 'c_7C', 50, 0))               # placeholder member: drawn (nothing visible)
+        self.assertFalse(a.blit(self.lcd, 'c_7C', 50, 0))              # placeholder member: False, code-drawn card follows
+        self.assertIsNone(a.load('c_7C', buf))
         self.assertEqual(a.load('c_back', buf), (40, 56))
         self.assertIsNone(a.load('c_back', bytearray(10)))
         a.release_sheets()
@@ -228,7 +232,7 @@ class AssetsTests(unittest.TestCase):
         a = Assets(self.dir)
         self.assertIsNone(a.sheet('cards'))
         self.assertIsNone(a.sheet('not_a_sheet'))
-        write_565(os.path.join(self.dir, 'icons.565'), 48, 48 * 4, (1, 2, 3))
+        write_565(os.path.join(self.dir, 'icons.565'), 48, 48 * 3, (1, 2, 3))
         self.assertIsNotNone(a.sheet('icons'))
 
     def test_wrong_size_background_rejected(self):
