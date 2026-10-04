@@ -86,4 +86,17 @@ class FrameBuffer:
                     self.pixel(x + xx, y + yy, p)
 
     def scroll(self, dx, dy):
-        pass
+        """Shift the contents by (dx, dy); the vacated area is left unchanged (like MicroPython)."""
+        src = bytes(self.buf[:self.w * self.h * 2])
+        for y in range(self.h):
+            sy = y - dy
+            if not (0 <= sy < self.h):
+                continue
+            for x in range(self.w):
+                sx = x - dx
+                if not (0 <= sx < self.w):
+                    continue
+                i = self._idx(x, y)
+                j = (sy * self.w + sx) * 2
+                self.buf[i] = src[j]
+                self.buf[i + 1] = src[j + 1]

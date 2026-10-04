@@ -79,6 +79,12 @@ class Assets:
         f.close()
         return (w, h) if ok else None
 
+    def open_sprite(self, name):
+        """Open a validated sprite positioned at its first pixel: (file, w, h) or None. The caller
+        reads rows with seek/readinto and must close it. For animations that stream a symbol in
+        over several frames (slots, HR-020) without re-opening per frame."""
+        return self._open(name)
+
     def size(self, name):
         r = self._open(name)
         if r is None:
