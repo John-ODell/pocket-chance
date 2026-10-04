@@ -13,8 +13,8 @@ To be filled in before purchase: seller, listing name, capacity, protection boar
 - Optional, better: a cell with a **third wire, a thermistor**. It plugs into pin 3 of the board's socket and lets the charger stop when the cell is too hot or too cold. If you fit one, the resistor R12 is removed (tell the PCB maker).
 
 ## Before plugging in, every time
-0. **Unplug USB first.** With USB plugged in the socket is live from the charger. So: USB out, swap the battery, USB back in.
-1. Look at the socket's silkscreen: **+ RED WIRE** on pin 1, **-** on pin 2. Hold the plug next to it and check that the red wire goes to the + side. Cells from different sellers are wired both ways. **There is no electronic guard on this board** (decided after the audit: none can be made safe with a two-wire plug), so a reversed cell can destroy the protection chip and the charger. This check is the protection. Buy from the one approved listing below, which has its wire colours recorded.
+0. **Unplug USB first.** With USB plugged in the socket's + pin is live at about 4.2 V from the charger even with no battery in it. So: USB out, swap the battery, USB back in.
+1. Look at the socket's silkscreen: **+ RED WIRE** on pin 1, **-** on pin 2. Hold the plug next to it and check that the red wire goes to the + side. Cells from different sellers are wired both ways. **There is no electronic guard on this board** (decided after the audit: none can be made safe with a two-wire plug). A reversed cell puts a wrong-way voltage on the protection chip and the charger the instant the plug seats, and with USB connected the cell then drives current through the damaged chips, limited only by the cell's own protection board (the charger's limit does not apply in that loop). This check, and a protected cell from the approved listing, are the protection. Buy from the one approved listing below, which has its wire colours recorded.
 2. Make sure the cell is not swollen, dented or warm.
 
 ## First power-ups, in order (with the expert on the line)
