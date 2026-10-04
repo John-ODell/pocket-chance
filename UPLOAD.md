@@ -48,6 +48,17 @@ Three files changed after your feedback: the menu was laid out again (each highl
 
 **Test line:** menu rows are three boxed lines (Blackjack, Slots soon, Off), each word centred inside its box, nothing cut off. In blackjack, the "Dealer 17" and "You 21" lines are whole; after dealing, the top line shows your chips minus the bet; press X on your first two cards and the bet on the top line doubles, the total line says DOUBLED x2, and the result pays or takes twice the bet.
 
+## Step 1c: splitting pairs (DR-016), 2026-10-04
+Three files changed. Y splits a pair; the two hands sit side by side; the hand in play has a gold line under its total.
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `games/blackjack_rules.py` | `/games/blackjack_rules.py` |
+| 2 | `games/blackjack_table.py` | `/games/blackjack_table.py` |
+| 3 | `games/blackjack.py` | `/games/blackjack.py` |
+
+**Test line:** deal until you get a pair (two of the same rank, e.g. two 8s; a king and a jack do not count). The prompt shows "Y split". Press Y: the bet on the top line doubles, two hands appear side by side with the left one marked, A/B/X play the left hand then the right. The result line shows each hand, e.g. "WIN +10   LOSE -10". Two aces: Y deals one card to each and the round ends at once.
+
 ## Step 2: pilot image test (after you have made the 4 pilot images)
 On the Mac, from the repo folder:
 

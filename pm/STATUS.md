@@ -2,12 +2,15 @@
 
 _Updated by the senior dev at the end of each session. Written for John._
 
-**Last updated:** 2026-10-04 (evening)
+**Last updated:** 2026-10-04 (night)
 
 ## Where we are
 Every decision for Phase 1 is approved (DR-001 to DR-015) and the first full version of the game is written. **It has never run on the board.** I have asked the expert to look it over on the bench first; after that the next step is yours: upload it following `UPLOAD.md` step 1 and tell the PM what you see.
 
 The board currently boots to a blank screen because the old program was erased at your request (D-003). The new game installs as `/pocket.py` and you start it by hand from Viper IDE; it does not take over the boot file until you say so (`UPLOAD.md` step 3).
+
+## Splitting pairs is built (DR-016, approved)
+Y splits a pair of the same rank into two hands, each with its own bet (the bankroll must cover the second bet). The two hands sit side by side; a gold line marks the one you are playing. Aces get one card each and stand. You can double after a split. A 21 after a split pays even money. The result line shows both hands. 25 new tests cover the engine, the table and the screen, and the text test now checks the split layouts too. House edge drops to about 0.55%. Files to upload are in `UPLOAD.md` step 1c; the expert can do it.
 
 ## Your first play (2026-10-04) and what I did about it
 - **"Double seems off":** the arithmetic was right (the expert confirmed it on the bench: bet doubled, one card, balance moved by exactly twice the bet). What was wrong is what you saw: the top line kept showing the original bet, and nothing said the hand had been doubled. Now the top line shows your chips minus the stake while a hand is in play, the bet doubles on screen when you press X, the total line says "DOUBLED x2", and the result line reads "DOUBLED: bet 20, +20". 16 new tests cover every step of the double path. If you saw something else, tell the PM what happened and I will chase it.
@@ -37,9 +40,7 @@ The expert ran the build on the board. One blocker, now fixed: the image-loader 
 3. Nothing else is waiting on you.
 
 ## Waiting on a decision
-- **DR-016** splitting pairs (needs the expert's look at the redraw cost first).
-
-Otherwise nothing. I will file a request before any new work on slots (Phase 2), and for making `pocket.py` the boot file if you prefer it decided here rather than in `UPLOAD.md`.
+Nothing. Next up at the PM's request: a readability guide for your table background art, and a converter warning when the text areas of a table image are too light. I will file a request before any new work on slots (Phase 2), and for making `pocket.py` the boot file if you prefer it decided here rather than in `UPLOAD.md`.
 
 ## What I plan next
 - Fix whatever the bench check and step 1 turn up.
