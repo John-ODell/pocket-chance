@@ -31,7 +31,7 @@ Without the fix the game runs at 20 fps full-redraw and 78 fps for a 48-row band
 | 40 MHz | 31.25 MHz | 35.7 ms | 25.8 Mbit/s |
 | 20 MHz | 15.625 MHz | 70.7 ms | 13.0 Mbit/s |
 
-measured, `spi_clock.py`, **v1.22.2**. On **v1.29.0 as shipped** the same script gives: any request from 31.25 to 100 MHz → **24 MHz, 46.2 ms per frame, 20.0 Mbit/s**; 20 MHz → 12 MHz, 91.8 ms. After the `clk_peri` fix: 17.2 ms per frame (58 fps), `clk_peri_fix.py`. The panel took the full 62.5 MHz on both firmwares without error (visual confirmation from John still pending).
+measured, `spi_clock.py`, **v1.22.2**. On **v1.29.0 as shipped** the same script gives: any request from 31.25 to 100 MHz → **24 MHz, 46.2 ms per frame, 20.0 Mbit/s**; 20 MHz → 12 MHz, 91.8 ms. After the `clk_peri` fix: 17.2–18.3 ms per frame (55–58 fps), `clk_peri_fix.py`, `fast_pattern.py`. **The panel is clean at a real 62.5 MHz on v1.29.0: John eyeballed colour bars, a 1-px checkerboard, text and a 1-px border on 2026-10-04 and reported no speckles, tearing or wrong colours.**
 
 **Hard ceiling: 55–58 fps with the fix, 21 fps without.** No drawing strategy beats the wire time.
 
