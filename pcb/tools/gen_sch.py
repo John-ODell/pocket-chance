@@ -230,23 +230,22 @@ add("U4", ("Power_Protection", "USBLC6-2SC6"), "USBLC6-2SC6", "Package_TO_SOT_SM
 # ---- Block 3: power (PCB-001, HR-P03) ---------------------------------------------------
 add("U5", ("Battery_Management", "BQ24074RGT"), "BQ24074RGTR", "Package_DFN_QFN:VQFN-16-1EP_3x3mm_P0.5mm_EP1.6x1.6mm", (300, 180), {
     "13": "VBUS", "10": "VSYS", "11": "VSYS", "2": "BAT+", "3": "BAT+", "1": "TS", "4": "GND",
-    "6": "CHG_EN1", "5": "GND", "7": "NC", "9": "CHG_STAT", "12": "ILIM", "14": "TMR", "15": "ITERM", "16": "ISET", "8": "GND", "17": "GND"})
+    "6": "CHG_EN1", "5": "GND", "7": "NC", "9": "CHG_STAT", "12": "ILIM", "14": "TMR", "15": "NC", "16": "ISET", "8": "GND", "17": "GND"})
 add("C20", C, "1uF", C0603, (340, 160), {"1": "VBUS", "2": "GND"})
 add("C21", C, "10uF", C0603, (355, 160), {"1": "VSYS", "2": "GND"})
 add("C22", C, "10uF", C0603, (370, 160), {"1": "BAT+", "2": "GND"})
-add("R12", R, "10k", R0402, (340, 185), {"1": "TS", "2": "GND"})            # fixed 10k: cell has no thermistor (HR-P03)
-add("R13", R, "10k", R0402, (355, 185), {"1": "VBUS", "2": "CHG_EN1"})      # EN1 high, EN2 low: 500 mA USB input limit  VERIFY in datasheet
-add("R14", R, "1.8k", R0402, (370, 185), {"1": "ISET", "2": "GND"})         # ~500 mA charge (K_ISET/R)  VERIFY value in datasheet
-add("R15", R, "3.0k", R0402, (340, 210), {"1": "ILIM", "2": "GND"})         # used only if EN2 is high  VERIFY
-add("R16", R, "47k", R0402, (355, 210), {"1": "TMR", "2": "GND"})           # safety timer  VERIFY
-add("R17", R, "1.5k", R0402, (370, 210), {"1": "ITERM", "2": "GND"})        # termination current  VERIFY
+add("R12", R, "10k", R0402, (340, 185), {"1": "TS", "2": "GND"})            # BQ24074 ds Table 7-1: "connect a 10-kΩ fixed resistor from TS to VSS" when TS is unused
+add("R13", R, "10k", R0402, (355, 185), {"1": "VBUS", "2": "CHG_EN1"})      # BQ24074 ds Table 7-2: EN2=0, EN1=1 = USB500 (500 mA input limit); EN pins have ~285k internal pull-downs
+add("R14", R, "1.8k", R0402, (370, 185), {"1": "ISET", "2": "GND"})         # I_CHG = K_ISET/R_ISET, K_ISET 890 AΩ typ (797-975): 494 mA. 3.6k for a 500 mAh cell (247 mA)
+add("R15", R, "3.0k", R0402, (340, 210), {"1": "ILIM", "2": "GND"})         # only used in ILIM mode (EN2=1, EN1=0); ds allows 1.1k to 8k
+add("R16", R, "47k", R0402, (355, 210), {"1": "TMR", "2": "GND"})           # ds: 18k to 72k programs the timers; t_MAXCHG = 10 x R x K_TMR(48 s/kΩ) = about 6.3 h
 add("R18", R, "1k", R0402, (340, 235), {"1": "VSYS", "2": "CHG_LED"})
 add("D1", ("Device", "LED"), "CHG", "LED_SMD:LED_0603_1608Metric", (355, 235), {"2": "CHG_LED", "1": "CHG_STAT"})
 # 3.3 V buck-boost
 add("U6", ("Regulator_Switching", "TPS63001"), "TPS63001DRCR", "Package_SON:Texas_DRC0010J_ThermalVias", (300, 290), {
     "5": "VSYS", "8": "VSYS", "6": "PWR_EN", "7": "GND", "4": "BB_L1", "2": "BB_L2", "1": "+3V3", "10": "+3V3",
     "3": "GND", "11": "GND", "9": "GND"})
-add("L2", L, "2.2uH", "Inductor_SMD:L_1210_3225Metric", (340, 270), {"1": "BB_L1", "2": "BB_L2"})
+add("L2", L, "2.2uH", "Inductor_SMD:L_1210_3225Metric", (340, 270), {"1": "BB_L1", "2": "BB_L2"})   # TPS63001 ds typical application: 2.2 uH, 10 uF in and out
 add("C23", C, "10uF", C0603, (355, 270), {"1": "VSYS", "2": "GND"})
 add("C24", C, "100nF", C0402, (370, 270), {"1": "VSYS", "2": "GND"})        # VINA
 add("C25", C, "10uF", C0603, (385, 270), {"1": "+3V3", "2": "GND"})
@@ -289,7 +288,8 @@ for i, (ref, net) in enumerate([("SW8", "JOY_UP"), ("SW9", "JOY_DOWN"), ("SW10",
     add(ref, SWP, "JOY " + net[4:], "pcb_custom:Alps_SKRHABE010", (480 + 20 * i, 155), {"1": net, "2": "GND"})
 
 # ---- Block 5: audio --------------------------------------------------------------------
-add("U8", ("Amplifier_Audio", "PAM8302AAS"), "PAM8302AASCR", "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm", (480, 220), {
+# PAM8302A ds ordering table: PAM8302AASCR = MSOP-8, PAM8302AADCR = SO-8. SO-8 chosen (larger, easier to inspect).
+add("U8", ("Amplifier_Audio", "PAM8302AAD"), "PAM8302AADCR", "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm", (480, 220), {
     "1": "+3V3", "2": "NC", "3": "AUDIO_INP", "4": "AUDIO_INN", "5": "SPK+", "8": "SPK-", "6": "+3V3", "7": "GND"})
 add("R25", R, "1k", R0402, (520, 200), {"1": "AUDIO_PWM", "2": "AUDIO_FILT"})
 add("C29", C, "10nF", C0402, (535, 200), {"1": "AUDIO_FILT", "2": "GND"})

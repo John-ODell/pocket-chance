@@ -12,13 +12,13 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 |---|---|---|---|---|---|---|
 | U1 | RP2350A microcontroller | RP2350A (Raspberry Pi) | QFN-60, 7 x 7 mm, 0.4 mm pitch | `MCU_RaspberryPi:RP2350A` / `Package_DFN_QFN:QFN-60-1EP_7x7mm_P0.4mm_EP3.4x3.4mm` | `refs/rp2350-datasheet.pdf`; design guide | pad and paste design against the datasheet's land pattern; stock |
 | U2 | 16 MB QSPI flash | W25Q128JVSIQ (Winbond) | SOIC-8, 208 mil (5.3 x 5.3 mm) | `Memory_Flash:W25Q128JVS` / `Package_SO:SOIC-8_5.3x5.3mm_P1.27mm` | `refs/W25Q128JV-datasheet.pdf`; design guide 3.1 and 3.3 (supported chip) | stock |
-| U3 | 8 MB PSRAM | APS6404L-3SQR-SN (AP Memory) | SOP-8 | `Memory_RAM:APS6404L-3SQRx-SN` / `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` (**verify** the SN package is the 150 mil body) | Pimoroni Pico Plus 2 W uses it; design guide 3.2 | datasheet download (official AP Memory); package; stock |
+| U3 | 8 MB PSRAM | APS6404L-3SQR-SN (AP Memory; 3.0 V, 64 Mbit) | SOP-8L (150 mil), package code SN: confirmed in `refs/parts/aps6404l-3sqn.pdf` section 4.1 | `Memory_RAM:APS6404L-3SQRx-SN` / `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | Pimoroni Pico Plus 2 W uses it; design guide 3.2 | exact ordering variant (3SQR vs 3SQN) at quote; stock |
 | R9, R13 | PSRAM chip-select link and pull-up | 0 Ω, 10 kΩ | 0402 | `Device:R` / `Resistor_SMD:R_0402_1005Metric` | design guide 3.2: GPIO0 is XIP_CS1n; "the pull-up on the chip select pin is definitely needed" | |
 | R-QSPI | flash chip-select 1 kΩ series to BOOT button, optional 10 kΩ pull-up | 1 kΩ, 10 kΩ | 0402 | same | design guide 3.1 (R6 1 kΩ to USB_BOOT) | |
 | Y1 | 12 MHz crystal | ABM8-272-T3 (Abracon) | 3.2 x 2.5 mm | `Device:Crystal_GND24` / `Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm` | design guide 4.1: "we highly recommend using this crystal"; 10 pF load, 30 ppm, 50 Ω ESR max | stock |
 | C3, C4 | crystal load capacitors | 15 pF, C0G | 0402 | `Device:C` / `Capacitor_SMD:C_0402_1005Metric` | design guide 4: 15 pF each gives 10.5 pF with trace parasitics | |
 | R2 | crystal series resistor | 1 kΩ | 0402 | `Device:R` | design guide 4: prevents over-driving | |
-| L1 | core regulator inductor | AOTA-B201610S3R3-101-T (Abracon, 3.3 µH, polarity dot) | 0806 (2016 metric) | `Device:L` / `Inductor_SMD:L_0806_2016Metric` (**verify** against the Abracon drawing) | design guide 2.1: the exact part, oriented per the dot | stock (the guide says newly available); footprint |
+| L1 | core regulator inductor | AOTA-B201610S3R3-101-T (Abracon, 3.3 µH, polarity dot) | 2.0 x 1.6 x 1.0 mm (`refs/parts/aota-b201610s.pdf`) | `Device:L` / placeholder `Inductor_SMD:L_0805_2012Metric`; **phase 5: footprint from Abracon's land pattern** | design guide 2.1: the exact part, oriented per the dot | stock |
 | C6, C7, C9 | regulator input, output, AVDD caps | 4.7 µF | 0402 | `Device:C` | design guide 2.1 | |
 | R3 | VREG_AVDD filter | 33 Ω | 0402 | `Device:R` | design guide 2.1 (33 Ω + 4.7 µF) | |
 | C-dec | decoupling, one per power pin, pins 53/54 share one | 100 nF | 0402 | `Device:C` | design guide 2.2.1 | count after the symbol is placed |
@@ -42,8 +42,8 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 
 | Ref | Part | MPN | Package | KiCad symbol / footprint | Source | To check |
 |---|---|---|---|---|---|---|
-| U-CHG | power-path charger | BQ24074RGTR (TI) | VQFN-16, 3 x 3 mm | `Battery_Management:BQ24074RGT` / `Package_DFN_QFN:VQFN-16-1EP_3x3mm_P0.5mm_EP1.68x1.68mm` (**verify** EP size vs RGT drawing) | ti.com product page 2026-10-04 | datasheet download; stock; ISET/ILIM/TMR resistor values |
-| U-BB | 3.3 V buck-boost | TPS63001DRCR (TI) | VSON-10, 3 x 3 mm | `Regulator_Switching:TPS63001` / `Package_SON:VSON-10-1EP_3x3mm_P0.5mm_EP1.2x2mm` (**verify** EP vs DRC drawing) | ti.com product page 2026-10-04 | datasheet; inductor value (2.2 µH typical, **verify**); stock |
+| U-CHG | power-path charger | BQ24074RGTR (TI) | VQFN-16, 3 x 3 mm (RGT) | `Battery_Management:BQ24074RGT` / `Package_DFN_QFN:VQFN-16-1EP_3x3mm_P0.5mm_EP1.6x1.6mm` (KiCad's own assignment; EP vs RGT drawing at phase 5) | `refs/parts/bq24074.pdf`: EN table (00 USB100, 01 USB500), K_ISET 890 AΩ, TS 10 kΩ fixed when unused, ITERM open = 10 %, TMR 18 to 72 kΩ | stock |
+| U-BB | 3.3 V buck-boost | TPS63001DRCR (TI) | VSON-10, 3 x 3 mm (DRC) | `Regulator_Switching:TPS63001` / `Package_SON:Texas_DRC0010J_ThermalVias` (KiCad's own assignment) | `refs/parts/tps63001.pdf`: 2.2 µH, 10 µF in/out, PS/SYNC low = power save, EN high ≥ 1.2 V | stock |
 | L-BB | buck-boost inductor | 2.2 µH, 2 A class, 3 x 3 mm | | `Device:L` / `Inductor_SMD:L_1210_3225Metric` or vendor | TPS63001 datasheet | pick after datasheet |
 | U-PROT | cell protection | DW01A (Fortune) | SOT-23-6 | `Battery_Management:DW01A` / `Package_TO_SOT_SMD:SOT-23-6` | HR-033, HR-P01 | datasheet (official); stock |
 | Q-PROT | protection dual MOSFET | FS8205A | TSSOP-8 or SOT-23-6 per vendor | `Transistor_FET_Dual:` generic dual N-MOSFET / per package | HR-033 | datasheet; package; stock |
@@ -66,7 +66,7 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 
 | Ref | Part | MPN | Package | KiCad symbol / footprint | Source | To check |
 |---|---|---|---|---|---|---|
-| U-AMP | class-D mono amplifier | PAM8302AASCR (Diodes) | SOP-8 | `Amplifier_Audio:PAM8302AAS` / `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | HR-033, HR-P02 | datasheet (official Diodes); package; stock |
+| U-AMP | class-D mono amplifier | **PAM8302AADCR** (Diodes; the AAD suffix is the SO-8 package, AAS is MSOP-8: datasheet ordering table, read 2026-10-04) | SO-8 | `Amplifier_Audio:PAM8302AAD` / `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | HR-033, HR-P02; `refs/parts/pam8302a.pdf` | stock |
 | R/C-AUD | PWM to analog filter from GP22 | 1 kΩ + 100 nF (approx.) | 0402 | `Device:R`, `Device:C` | general practice | values at schematic |
 | J-SPK | speaker connector | JST PH 2-pin SMD (same as J-BAT, different silkscreen) | SMD | as J-BAT | ruling item 4 | |
 
@@ -113,7 +113,7 @@ Each row: the cheaper or easier-to-source near-equivalent, whether it is a **dro
 | Charger BQ24074RGT | MCP73871 (Microchip) | layout change (QFN-20 4 x 4) | the other common power-path part | full re-review of the power sheet |
 | Regulator TPS63001 | TPS63000 (adjustable; same footprint, two feedback resistors) | drop-in plus 2 resistors (place footprints now) | often better stocked | feedback divider values |
 | Regulator TPS63001 | MP28164 (what Waveshare uses) | layout change | cheap, proven on the Plus | its datasheet layout; John said no Waveshare-specific parts, but this is a generic MPS part |
-| Speaker amp PAM8302AAS | PAM8302AAD (same chip, MSOP-8) | layout change (MSOP-8 footprint) | whichever package PCBWay stocks | package |
+| Speaker amp PAM8302AAD (SO-8) | PAM8302AASCR (same chip, MSOP-8) | layout change (MSOP-8 footprint) | whichever package PCBWay stocks | package |
 | Speaker amp PAM8302AAS | PAM8403 (stereo, SOP-16; use one channel) | layout change | the most-stocked cheap class-D part | pinout, shutdown pin |
 | Battery socket S2B-PH-SM4-TB | JST S2B-PH-K-S (through-hole) | layout change | cheaper, stronger | through-hole fee |
 | Battery socket | generic "PH2.0 2P SMD" clones | drop-in | cents | polarity marking is on our silkscreen, not the part |
