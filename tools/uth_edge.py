@@ -21,88 +21,9 @@ from multiprocessing import Pool
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 import tests.context  # noqa: E402,F401
-from poker import evaluate, evaluate5, rank_value, PAIR, TWO_PAIR, STRAIGHT, FLUSH, FULL_HOUSE, QUADS, STRAIGHT_FLUSH, ROYAL_FLUSH, HIGH_CARD  # noqa: E402
-
-BLIND_PAY = {STRAIGHT: (1, 1), FLUSH: (3, 2), FULL_HOUSE: (3, 1), QUADS: (10, 1), STRAIGHT_FLUSH: (50, 1), ROYAL_FLUSH: (500, 1)}
-
-
-def suited(a, b):
-    return a // 13 == b // 13
-
-
-def preflop_raise(hole):
-    """Wizard simple strategy, large raise: any pair but 2s; any ace; K-2s+ / K-5o+; Q-6s+ / Q-8o+;
-    J-8s+ / J-10o."""
-    a, b = sorted([rank_value(c) for c in hole], reverse=True)
-    s = suited(hole[0], hole[1])
-    if a == b:
-        return a >= 3
-    if a == 14:
-        return True
-    if a == 13:
-        return b >= 2 if s else b >= 5
-    if a == 12:
-        return b >= 6 if s else b >= 8
-    if a == 11:
-        return b >= 8 if s else b >= 10
-    return False
-
-
-def hidden_pair_or_better(hole, board):
-    """Wizard: "any pair with at least one card in your hole cards". With five board cards the
-    player's best hand must beat what the board makes on its own in CATEGORY (or, for a pair / two
-    pair, be a different pair), so a board pair with a better kicker does not count."""
-    v = evaluate(hole + board)
-    if v[0] < PAIR:
-        return False
-    if len(board) == 3:
-        board_pair = len(set(c % 13 for c in board)) < 3
-        return not (v[0] == PAIR and board_pair)
-    bv = evaluate5(board)
-    if v[0] > bv[0]:
-        return True
-    if v[0] == PAIR and bv[0] == PAIR:
-        return v[1] != bv[1]
-    if v[0] == TWO_PAIR and bv[0] == TWO_PAIR:
-        return (v[1], v[2]) != (bv[1], bv[2])
-    return False
-
-
-def flop_raise(hole, board):
-    """Medium raise: two pair or better, hidden pair (except pocket 2s), or four to a flush with a
-    hidden ten or better."""
-    v = evaluate(hole + board)
-    if v[0] >= 2:
-        return True
-    if hidden_pair_or_better(hole, board):
-        if not (hole[0] % 13 == hole[1] % 13 and rank_value(hole[0]) == 2):
-            return True
-    cards = hole + board
-    for suit in range(4):
-        same = [c for c in cards if c // 13 == suit]
-        if len(same) >= 4 and any(c in hole and rank_value(c) >= 10 for c in same):
-            return True
-    return False
-
-
-def dealer_outs(hole, board):
-    """Wizard's count: of the 45 unseen cards, how many would give the dealer (that card plus the
-    board) a hand that beats the player's seven-card hand."""
-    pv = evaluate(hole + board)
-    seen = set(hole + board)
-    outs = 0
-    for c in range(52):
-        if c in seen:
-            continue
-        if evaluate([c] + board) > pv:
-            outs += 1
-    return outs
-
-
-def river_raise(hole, board, use_outs):
-    if hidden_pair_or_better(hole, board):
-        return True
-    return use_outs and dealer_outs(hole, board) < 21
+from poker import evaluate, PAIR  # noqa: E402
+from holdem_rules import (BLIND_PAY, preflop_raise, flop_raise, hidden_pair_or_better,  # noqa: E402,F401
+                          dealer_outs, river_raise)
 
 
 def play(deck, rng, four_x=True, use_outs=False):
@@ -115,7 +36,7 @@ def play(deck, rng, four_x=True, use_outs=False):
         play_bet = 4 if four_x else 3
     elif flop_raise(hole, board[:3]):
         play_bet = 2
-    elif river_raise(hole, board, use_outs):
+    elif river_raise(hole, board, dealer_outs(hole, board) if use_outs else None):
         play_bet = 1
     else:
         return -2, 2                                  # fold: lose Ante and Blind
