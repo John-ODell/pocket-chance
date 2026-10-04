@@ -160,3 +160,5 @@ Carries the ~110 µA standby drain with a cell fitted and the board off, and the
 
 ## Verdict for AUDIT-3 at rev 0.5
 The reversed-cell path with USB present is closed by the polarity sensor, with the tripped-pack wake path added; R15 is fitted; the charge-rate wording is correct. One 0.5 mm question on the RM2 side-pad y remains between the designer and me, with the measurement that settles it named above. Everything else from Parts 1–4 is resolved or carried in the open list (L2 ratings, DW01A/DS3231M datasheets, L1 orientation, module BL drive, coin-cell holder drawing, layout items, board current).
+
+**Part 5 follow-up:** the RM2 side-pad y is resolved. The designer measured the figure (body top to first side-pad top 5.2 mm, bottom margin 1.34, pitch 1.52, pad 0.98 at a 42.7 px/mm raster), agreed the +0.5 mm was an error in the generator, and committed the footprint with side pads at y = −2.75 + 1.5k, x = ±6.75, 2.0 × 1.0 (pcb-design 76949f0; schematic hash unchanged 9c68738…). Verified from the committed pad lines. Nothing open between the designer and me on rev 0.5; the 1:1 print against a real RM2 remains the final arbiter.
