@@ -273,14 +273,12 @@ add("Q1", ("pcb_custom", "FS8205A"), "FS8205A", "Package_SO:TSSOP-8_4.4x3mm_P0.6
 # the assumed cell (protected 1000 mAh+ pouch, 0.5 C charge, 0 to 45 C charging) and the owner warning.
 add("J3", ("Connector", "Conn_01x03_Socket"), "LiPo JST-PH 2.0mm (1 = + RED, 2 = -, 3 = NTC)", "Connector_JST:JST_PH_S3B-PH-SM4-TB_1x03-1MP_P2.00mm_Horizontal",
     (300, 400), {"1": "CELL_P", "2": "BAT-", "3": "TS"})
-add("Q2", ("Transistor_FET", "AO3401A"), "AO3401A", "Package_TO_SOT_SMD:SOT-23", (340, 400),
-    {"1": "GUARD_G", "2": "CELL_G", "3": "CELL_P"})   # 1 G, 2 S = board side (BAT+ via R22), 3 D = cell positive
-add("R45", R, "100k", R0402, (355, 385), {"1": "BAT+", "2": "GUARD_G"})      # holds Q2 off unless Q5 pulls the gate down
-add("Q5", ("Transistor_FET", "AO3400A"), "AO3400A", "Package_TO_SOT_SMD:SOT-23", (370, 400), {"1": "GUARD_C", "2": "GND", "3": "GUARD_G"})
-add("R46", R, "10k", R0402, (385, 385), {"1": "CELL_P", "2": "GUARD_C"})     # Q5's gate follows the connector's + pin: 0.91 Vcell (2.7 V at an empty 3.0 V cell) vs Vgs(th) max 1.45 V
-add("R47", R, "47k", R0402, (400, 385), {"1": "GUARD_C", "2": "GND"})        # no cell: Q5 off, Q2 off, connector dead. 47k: Q2 leakage up to 10 uA hot gives 0.57 V at Q5's gate, below its 0.65 V minimum threshold (HR-P05 part 4)
-add("R22", R, "0R", "Resistor_SMD:R_0603_1608Metric", (395, 400), {"1": "CELL_G", "2": "BAT+"})   # ammeter link (HR-P03)
-add("R48", R, "1M", R0402, (415, 385), {"1": "BAT+", "2": "CELL_P"})          # wakes a protection-tripped pack (0 V until a charger voltage appears): ~4 uA reaches the pack, it shows Vcell, Q5 turns on. No cell: CELL_P 0.23 V, Q5 off. Reversed: 8 uA. (HR-P05 part 4)
+# Reverse-polarity guard REMOVED in rev 0.6 (John, 2026-10-04, option B after AUDIT-3): no passive two-wire circuit can
+# both block a reversed cell with USB present and release when the cell is removed (the rev 0.5 guard latched on). The
+# board relies, like the Pico W and Pico 2 W, on the keyed JST-PH plug, the "+ RED WIRE" silkscreen, a protected cell,
+# one approved cell listing, checking the wires before plugging in, unplugging USB before swapping cells, and a
+# current-limited first plug-in. Honest residual: a mis-wired cell can damage the DW01A and the charger's BAT pin (-0.3 V).
+add("R22", R, "0R", "Resistor_SMD:R_0603_1608Metric", (395, 400), {"1": "CELL_P", "2": "BAT+"})   # ammeter link in the cell lead (HR-P03)
 # Reverse-polarity guard, rev 0.4 (AUDIT-3 #1 and HR-P05 part 4; the rev 0.3 single P-FET referenced to BAT- was not
 # enough with USB present, because the charger powers the DW01A, Q1 is on, BAT- sits at ground, and a reversed cell then
 # turned Q2 on). Now Q2's gate is pulled to BAT+ by R45 and only pulled down by Q5, whose gate (R46 10k from CELL_P, R47 47k to ground)
@@ -292,9 +290,16 @@ add("R48", R, "1M", R0402, (415, 385), {"1": "BAT+", "2": "CELL_P"})          # 
 #    negative -> Q5 off -> Q2 gate at BAT+ (4.2 V) = source -> Q2 off; body diode (drain at -3.7 V, source 4.2 V) reverse
 #    biased. No current. R46 limits Q5's gate current; Vgs = -3.7 V is inside the AO3400A's +/-12 V rating.
 #  Reversed cell, no USB: nothing powers BAT+; Q5 off; Q2 off; isolated.
-#  No cell: R47 holds Q5 off, Q2 off: the connector carries only R48's 0.23 V.
+#  No cell, cold (USB plugged in after the cell was removed, or never a cell): R47 holds Q5 off, Q2 off, socket at 0.23 V.
+#  LATCH (AUDIT-3 finding, confirmed): once a correct cell has turned the guard on with USB present, removing the cell
+#    does NOT turn it off: the charger holds CELL_P at BAT+ through Q2's own channel, so Q5 stays on. The socket stays
+#    live until USB is removed (BAT+ collapses) or the charger's battery-detection dip pulls BAT+ low enough (unverified,
+#    to be measured at bring-up). A reversed cell inserted during that window meets an ON guard: the rev 0.3 fault path.
+#    No passive circuit on a 2-wire connector can distinguish 'cell present' from 'guard holding the pin up'. Owner rule:
+#    UNPLUG USB BEFORE CHANGING THE BATTERY (BATTERY.md, silkscreen). Decision on a stronger interlock: PCB-002.
 #  Protection-tripped pack (0 V at its terminals): R48 feeds the charger voltage to the pack at ~4 uA so its PCM can
-#    re-enable (general practice, unverified for the chosen cell); the pack then shows Vcell and the guard turns on.
+#    re-enable; but with R46+R47 loading it the pack only sees about 0.23 V, so this wake is NOT established (AUDIT-3);
+#    R48 stays as a harmless bleed. A tripped pack may need a moment on a plain charger; documented in BATTERY.md.
 # AUDIT-2 finding 2 (fixed): the divider is connected only while the 3.3 V rail is up. Q3 (N-FET, gate on +3V3) pulls the
 # P-FET's gate low (AO3400A, Vgs(th) <= 1.45 V); with the board off, R39 holds Q4's gate at BAT+, Q4 is off, and R24 holds the ADC pin at 0 V, so GPIO28
 # never sees voltage with IOVDD at 0 V (RP2350 ds: IO limit IOVDD + 0.5 V). Same idea as the Pico W's WL_CS-gated VSYS divider.
@@ -474,17 +479,19 @@ def build():
                           ["effects", ["font", ["size", 1.27, 1.27]], ["justify", "left"]], ["uuid", U()]])
     sch = ["kicad_sch", ["version", 20250114], ["generator", Q("eeschema")], ["generator_version", Q("9.0")],
            ["uuid", root_uuid], ["paper", Q("A1")],
-           ["title_block", ["title", Q("Pocket Chance board, spin 1")], ["date", Q("2026-10-04")], ["rev", Q("0.5")],
+           ["title_block", ["title", Q("Pocket Chance board, spin 1")], ["date", Q("2026-10-04")], ["rev", Q("0.6")],
             ["company", Q("Pocket Chance")],
             ["comment", 1, Q("Generated by pcb/tools/gen_sch.py from the connection table. Label-based: every pin carries its net name.")],
             ["comment", 2, Q("Blocks left to right: core | USB, power | screen, input, audio, card, sensors | wireless.")]],
            lib_symbols]
     sch.extend(items)
-    note = ("BATTERY (PCB-001, owner decision 2026-10-04): one protected LiPo pouch cell, 1000 mAh or more, rated 0.5 C charge, "
-            "charge temperature 0 to 45 C, JST-PH plug, + on pin 1 (red wire). Charge current 494 mA (R14 1.8k; 3.6k for 500 mAh). "
-            "The charger does NOT sense the cell's temperature with a two-wire cell (R12 10k fitted = check bypassed); it relies on the cell's "
-            "own protection board and the 0.5 C rate. A cell with a thermistor lead goes on pin 3: then remove R12. "
-            "First power-ups: current-limited supply, no cell; then cell alone; then both. Charge on a non-flammable surface, never unattended.")
+    note = ("BATTERY (PCB-001, owner decisions 2026-10-04): one protected LiPo pouch cell, 1000 mAh or more, rated 0.5 C charge, "
+            "charging 0 to 45 C, JST-PH plug, + on pin 1 = RED WIRE, pin 3 = cell thermistor (remove R12 if used). Charge current 494 mA "
+            "(R14 1.8k; 3.6k for 500 mAh). NO ON-BOARD REVERSE-POLARITY GUARD (rev 0.6, as on the Pico W): the keyed plug, the silkscreen, "
+            "one approved cell listing and checking the wire colours BEFORE plugging in are the protection; a mis-wired cell can damage "
+            "the DW01A and the charger's BAT pin (-0.3 V limits). UNPLUG USB BEFORE SWAPPING CELLS. The charger does not sense the cell's "
+            "temperature with a two-wire cell (R12 10k fitted = check bypassed): the cell's protection board and the 0.5 C rate protect it. "
+            "First power-ups: current-limited supply, no cell; then cell alone with the meter; then both. Charge on a non-flammable surface, never unattended.")
     sch.append(["text", Q(note), ["exclude_from_sim", "no"], ["at", 290, 470, 0],
                 ["effects", ["font", ["size", 1.5, 1.5]], ["justify", "left", "top"]], ["uuid", U()]])
     sch.append(["sheet_instances", ["path", Q("/"), ["page", Q("1")]]])
