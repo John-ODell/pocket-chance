@@ -220,7 +220,7 @@ class AssetsTests(unittest.TestCase):
         a = Assets(self.dir)
         self.assertIsNone(a.sheet('cards'))
         self.assertIsNone(a.sheet('not_a_sheet'))
-        write_565(os.path.join(self.dir, 'icons.565'), 48, 48 * 3, (1, 2, 3))
+        write_565(os.path.join(self.dir, 'icons.565'), 48, 48 * 4, (1, 2, 3))
         self.assertIsNotNone(a.sheet('icons'))
 
     def test_wrong_size_background_rejected(self):

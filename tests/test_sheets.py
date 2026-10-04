@@ -38,7 +38,7 @@ class Sheets(unittest.TestCase):
         self.assertEqual(sheets.offset('cards', 0), 4)
         self.assertEqual(sheets.offset('cards', 1), 4 + 4480)
         self.assertEqual(sheets.file_size('cards'), 4 + 53 * 4480)
-        self.assertEqual(sheets.file_size('icons'), 4 + 3 * 48 * 48 * 2)
+        self.assertEqual(sheets.file_size('icons'), 4 + 4 * 48 * 48 * 2)
 
     def test_names_unique_across_sheets(self):
         seen = set()
