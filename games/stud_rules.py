@@ -81,6 +81,18 @@ def rank_word(v):
     return {14: 'ace', 13: 'king', 12: 'queen', 11: 'jack'}.get(v, str(v))
 
 
+def resolve(pv, dv, ante, rules):
+    """Showdown after a raise of ante x raise_mult: (outcome, net chips)."""
+    r = ante * rules.raise_mult
+    if not qualifies(dv, rules):
+        return NOQUALIFY, ante
+    if pv > dv:
+        return WIN, ante + r * rules.raise_pay[pv[0]]
+    if pv < dv:
+        return LOSE, -(ante + r)
+    return PUSH, 0
+
+
 class Round:
     def __init__(self, shoe, rules, ante):
         self.shoe = shoe
@@ -118,16 +130,9 @@ class Round:
     def raise_(self):
         """Raise exactly raise_mult x ante and show down. Caller checks the bankroll."""
         self._need_decision()
-        r = self.ante * self.rules.raise_mult
-        self.raise_bet = r
-        if not qualifies(self.dv, self.rules):
-            self._finish(NOQUALIFY, self.ante)
-        elif self.pv > self.dv:
-            self._finish(WIN, self.ante + r * self.rules.raise_pay[self.pv[0]])
-        elif self.pv < self.dv:
-            self._finish(LOSE, -(self.ante + r))
-        else:
-            self._finish(PUSH, 0)
+        self.raise_bet = self.ante * self.rules.raise_mult
+        outcome, net = resolve(self.pv, self.dv, self.ante, self.rules)
+        self._finish(outcome, net)
         return self
 
     def dealer_qualifies(self):
