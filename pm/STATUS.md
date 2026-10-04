@@ -4,6 +4,35 @@ _Updated by the senior dev at the end of each session. Written for John._
 
 **Last updated:** 2026-10-06
 
+## Baccarat: ten requests filed (DR-051 to DR-060), nothing built yet
+You picked baccarat. The requests cover the rules and pays (standard punto banco, eight decks, Banker 5% commission, Tie 8:1; our new simulator `tools/baccarat_edge.py` reproduces the published edges exactly: Banker 1.06%, Player 1.24%, Tie 14.36%, and gives the alternatives: Tie 9:1 4.84%, no-commission Banker 1.46%), the screen (Caribbean's bands, three card slots per hand, three bet boxes along the bottom, cards dealt one at a time 300 ms apart), the buttons (joystick left/right picks Player, Tie or Banker, up/down the stake, A deals and A again repeats the bet, X pays, B menu), stakes 5 to 100, five chip-stack seats along the bottom each with its own betting habit, the save, the menu word "Baccarat" with a fourth icon slot, a one-screen help text, how the 5% commission rounds to whole chips (19 for 20 rounded down; exact 1.06% at 20, 40, 60, 80, 100 and dearer at 5 or 10, table in DR-059), and a row of twelve coloured squares showing the last results. I build when the rulings land.
+
+## How much room is left, and could another game fit? (your question, 2026-10-06)
+Short answer: **yes, easily.** Storage is almost empty and memory has room for one more game of any size we have built so far. The numbers below come from the expert's benches (`hw/BUDGET.md`) and the upload record (`UPLOAD.md`).
+
+**Storage (flash).** The board has 15 MB for files. The whole project on it today is 24 code files totalling about 121 KB (the three games are 57 KB of that: blackjack 25 KB, Caribbean 23 KB, Hold'em 32 KB; the shared libraries 30 KB; the menu 10 KB), plus your menu photo at 115 KB and two tiny save files. Call it 350 KB once the filing system's own overhead is counted. **About 15.3 MB is free.** All the card, chip, banner and icon art together, when you draw it, is under 1 MB. Storage will never be the limit.
+
+**Memory (RAM) is the only limit, and it is per game, not in total.** Only one game is loaded at a time, so each game is measured on its own against the same ceiling. Free memory measured: at the menu about 68 KB (78 KB when the game is run plainly from Viper); inside blackjack about 54 KB; Caribbean with five seats about 52 KB; Hold'em with four seats 47 to 49 KB. The alarm line is 20 KB free, so even Hold'em, the biggest, has more than twice the margin it needs. What a game costs while it runs: blackjack about 14 KB (12 KB of code), Caribbean about 16 KB (11 KB of screen code plus rules, table, seats and the poker evaluator), Hold'em about 20 KB (14 KB of screen code plus four modules). A new game of Hold'em's size would therefore settle around 47 KB free; one as simple as blackjack around 55 KB. Both fit. A game would have to be roughly twice Hold'em's size before I would worry.
+
+**Menu.** Four rows today (Blackjack, Caribbean, Hold'em, Off) with three on screen at a time, scrolling. Adding a game is one line in the list plus a 48 by 48 icon slot in the icons sheet; the list has no practical limit. Labels must be nine characters or fewer. Each extra game is one more joystick press to reach Off, so after six or seven games I would ask you whether Off should move to a button instead.
+
+**Which games could be next.** Sizes are my estimates of new code; memory figures are what would be free in play. Edges are the published figures for the standard rules; I would measure each with a simulator before you rule, as I did for the three games we have.
+
+| Game | How it plays | New code | Free RAM in play | House edge | Screen | Fit |
+|---|---|---|---|---|---|---|
+| **Baccarat** | Bet Player, Banker or Tie; no decisions after the bet; cards follow fixed rules | ~15 KB | ~56 KB | Banker 1.06%, Player 1.24%, Tie 14.4% (8:1) | Two hands of two or three cards; blackjack's layout as is | Easiest build; shallowest game |
+| **Three Card Poker** | Ante, see three cards, raise or fold; optional Pair Plus side bet; dealer needs queen high | ~20 KB | ~52 KB | 3.4% of the Ante; Pair Plus 7.3% (1-4-6-30-40 pays) | Three cards each; Caribbean's layout, seats and flow reused | Natural fit; most code reused |
+| **Let It Ride** | Three equal bets, three cards, pull one back or let it ride as two table cards turn | ~18 KB | ~53 KB | 3.5% of one bet | Three cards plus two table cards; Hold'em's rows | Good fit; gentle pace |
+| **Casino War** | One card each, high card wins; tie: go to war or surrender | ~10 KB | ~58 KB | 2.9% (six decks, always go to war) | Two cards; trivial | Tiny; little to it |
+| **Video Poker (Jacks or Better)** | Five cards, choose which to hold with the joystick, draw once | ~18 KB | ~54 KB | 0.46% (9/6 pays, perfect play); 1.5% with a simple hold guide | Five cards in a row with a hold cursor; a new input pattern | Best odds of anything; the hold strategy help is long |
+| **Roulette** | Place chips on a board, spin the wheel | ~28 KB + wheel art | ~45 KB | 2.7% (single zero) | A spinning wheel animation and a betting board with a cursor; the slots problems again (animation, RAM, art) | Fits, but the riskiest and largest; not now |
+| **Pai Gow Poker** | Seven cards set into two hands | too big | | 2.7% | Fourteen cards on a 240-pixel panel | Does not fit the screen |
+| **The game from your app** | Rules pending from you | likely Hold'em-sized | ~47 to 49 KB | to measure | Hold'em's layout, probably | Fits; most of Hold'em reused |
+
+**My recommendation: Three Card Poker.** It is the most played casino poker game after Hold'em, it reuses Caribbean's whole pattern (ante, look, raise or fold, dealer qualifies, the chip-stack seats, the poker evaluator), so it is the least new code for a full game, its strategy is one line ("raise with queen-six-four or better"), and the Pair Plus side bet gives you a second thing to play for. Memory lands near Caribbean's 52 KB, well inside the budget. Second choice is Video Poker if you would rather have the best odds and a different feel; baccarat if you want the quickest build. Roulette I would leave until the art pipeline is fully in use.
+
+**Risks.** Memory is the one hard limit and these all clear it; the expert measures every build before it reaches you. Each new game adds a step to `UPLOAD.md`, one icon to draw, and about a dozen tests to keep. Nothing here is built; when you pick, I file the decision requests (rules and pays with the measured edge, layout, buttons, seats, save, menu label) the way I did for the other three.
+
 ## Where we are
 Every decision for Phase 1 is approved (DR-001 to DR-015) and the first full version of the game is written. **It has never run on the board.** I have asked the expert to look it over on the bench first; after that the next step is yours: upload it following `UPLOAD.md` step 1 and tell the PM what you see.
 
