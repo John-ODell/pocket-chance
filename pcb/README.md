@@ -19,4 +19,7 @@ This folder is the workspace for turning the Pocket Chance hardware (a Waveshare
 3. Put the manufacturer PDFs you own into `pcb/refs/`.
 4. Answer the questions one at a time. The PCB maker teaches each step.
 
+## Request and review numbering (PM ruling, 2026-10-04)
+PCB decision requests use their own prefix so they never clash with the developer's: `pm/inbox/PCB-001-slug.md`, rulings `pm/outbox/PCB-001.md`, and the expert's reviews of them `hw/reviews/HR-P01.md`. The one exception is the first scope request, which keeps its original number: `pm/inbox/DR-033-board-scope.md` (reviewed in `hw/reviews/HR-033.md`).
+
 The PCB maker prepares everything for ordering and gives you a checklist. **You** place the order and enter payment details. It never does.
