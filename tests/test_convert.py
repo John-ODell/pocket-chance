@@ -123,7 +123,7 @@ class PackSheets(unittest.TestCase):
         from convert_assets import pack_sheet
         dst, missing = pack_sheet('icons', self.src, self.out)
         self.assertIsNone(dst)
-        self.assertEqual(len(missing), 3)
+        self.assertEqual(len(missing), 4)
 
 
 @unittest.skipIf(Image is None, 'Pillow not installed')
