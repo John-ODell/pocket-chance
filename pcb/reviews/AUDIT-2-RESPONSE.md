@@ -25,7 +25,7 @@ PCB maker, 2026-10-04. Verdict first: **the audit found two real defects (findin
 - Battery safety documents: FS8205A datasheet is now in `refs/parts/` (pin map taken from it, 6 A rating); DW01A official PDF still not obtained (Fortune's site serves other documents at the expected URLs); AO3401A datasheet in hand. The DW01A circuit follows the universal reference arrangement; its thresholds are to be read from a mirror or Fortune's page before the first cell test.
 - PSRAM: AP Memory datasheet in hand (package confirmed SOP-8 150 mil, code SN).
 - RTC and IMU: LSM6DSOX in hand and used; DS3231M official PDF not obtained (Analog Devices blocks scripts), facts taken from KiCad's symbol and the part's well-known behaviour (no charger on VBAT); John is asked to save it from his browser.
-- Display: pin order from the Waveshare 1.54" module page; BL drive type still unknown (module inspection).
+- Display: pin order from the Waveshare 1.54" module page; **BL drive now known from the module's schematic (read 2026-10-04): on-module NPN switch, BL through 1 kΩ to the base, 10 kΩ pull-up, high = on; no regulator or level shifter, so 3.3 V supply and logic.**
 - Connectors and switches: JST PH and SH, GCT USB4085 in hand; Molex, C&K and Alps not obtained (sites refuse scripts); KiCad's footprints are used and will be checked on the 1:1 print.
 - Coin-cell holder: the wrong Keystone page was removed; the 3001 drawing is still to obtain.
 - Layout: none yet, by John's instruction, until the expert's verification and the second audit.
