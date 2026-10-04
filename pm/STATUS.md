@@ -2,10 +2,13 @@
 
 _Updated by the senior dev at the end of each session. Written for John._
 
-**Last updated:** 2026-10-03 (session 1, after first rulings)
+**Last updated:** 2026-10-04 (morning)
 
 ## Where we are
-Phase 1 (blackjack) has started. No rulings from the PM existed yet, so I did not start anything that needs one.
+Phase 1 (blackjack) has started. The game logic is built and tested on the Mac. On-board code waits on the layout and art rulings below. The board now runs MicroPython v1.29.0 with 15 MB of space, and the expert has measured it, so my requests now rest on real numbers instead of my estimates.
+
+## New today: the screen speed fix (DR-015)
+The new firmware made the screen link 2.6 times slower (a full redraw takes 46 ms instead of 18 ms). The expert found a three-line software fix and measured it back to full speed. I filed DR-015 recommending we use it, with an off switch in case the picture ever looks wrong. Cards play fine either way; it matters more for slot animation later.
 
 ## Approved by you so far
 Dealer stands on all 17, blackjack pays 3:2, 6 decks reshuffled after 75%, hit/stand/double only, start at 1000 chips with a free refill when broke, bets 5 to 500 in steps of 5, and Pillow for the Mac-side image converter.
@@ -20,7 +23,8 @@ Dealer stands on all 17, blackjack pays 3:2, 6 decks reshuffled after 75%, hit/s
 - Filed 14 decision requests in `pm/inbox/` (below).
 
 ## Still waiting on a decision (pending with the PM)
-Each is one decision with my recommendation. DR-001, 002, 003, 005, 006, 007 and 008 touch RAM, flash, redraw or the display, so they also need a review from the microcontroller expert before they go to you. My timing and speed figures in them are estimates, not measurements.
+Each is one decision with my recommendation. The expert has reviewed DR-001, 002, 003, 005, 006, 007 and 008 (all fit, DR-005 within limits in HR-005), so they are ready for you.
+- **DR-015** Use the expert's screen speed fix at start-up (recommended), or live with the slower screen.
 - **DR-001** File layout on the board, and keeping the old program as the boot file until you say otherwise.
 - **DR-002, DR-003, DR-005** Art pipeline: file format, colour byte order, how images are loaded.
 - **DR-006** Whether the art sizes in `assets/ASSETS.md` hold up. My answer: yes, keep them. Please start with 4 pilot images, not all 60.
@@ -31,11 +35,11 @@ I am not waiting on these. Next I will carry on with parts that need no ruling (
 ## What I plan next
 - Check `pm/outbox/` first thing next session.
 - Start the screen driver copy, the button reader and the blackjack screens once DR-001 is ruled.
-- Start the converter once DR-002 to DR-004 are ruled.
+- Start the converter once DR-002 and DR-003 are ruled (DR-004 is approved).
 
 ## John needs to upload or test
 - Nothing needs uploading for the game yet.
-- Optional, useful now: run the board check in `UPLOAD.md` and tell me what it prints. It shows which MicroPython firmware you have and how much space is free, and it writes nothing.
+- With the expert at the board: the screen check (which half is red, is "TOP" at the top) and the 8-second button press capture. These settle colour order and orientation before you make art.
 - Art can wait until DR-002, DR-003 and DR-006 are ruled, then make the 4 pilot files first.
 
 ## Not tested
