@@ -6,6 +6,12 @@ A first-PCB roadmap. Each phase ends with something you can check. The PCB maker
 
 A new dev board that does what the Waveshare RP2040-Plus plus the 1.3" LCD HAT do together, built around the same RP2040 chip so the game's software keeps working. The exact scope is your first decision (below).
 
+## Two stages (the owner's order of work)
+
+**Stage 1: Understand. No design choices yet.** The PCB maker learns what we have (the Waveshare board, the HAT, the software that depends on them), how a board like this becomes a manufactured PCB, and every constraint we face: electrical, mechanical, software, fab, tools, budget and skill. The result is `pcb/CONSTRAINTS.md` and a short primer, `pcb/HOW_A_BOARD_IS_MADE.md`, both written for a beginner. Nothing is chosen, bought or drawn.
+
+**Stage 2: First design.** Only after the owner has read Stage 1 do they say what to add: the scope, screen approach, battery, extras. The decisions below belong to Stage 2.
+
 ## Decisions the owner must make first
 
 The PCB maker asks these one at a time, recommends an answer, and records each in `pm/outbox/` once ruled.
