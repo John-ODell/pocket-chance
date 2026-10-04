@@ -25,6 +25,7 @@ Finish with `mpremote connect $P soft-reset`. Each script prints `RESULT key=val
 | pins_reserved.py | read-only: GPIO 0,1,4-7,14,22-29 with pull-up then pull-down (floating vs driven), ADC on 26-29; which pins the Plus reserves | inputs only |
 | load_hold.py | for John's multimeter: backlight 100 %, full-frame pushes for 60 s, then backlight back to 20000 | LCD |
 | freq_peri.py | HR-F05: does `machine.freq(125_000_000, 125_000_000)` replace the `CLK_PERI_CTRL` poke? State found, reported SPI baud, timed frame, backlight PWM, then back to (125M, 48M), then restores the state found | clock settings only; LCD |
+| pico2_check.py | **Pico 2 / RP2350 only**: firmware, clock, flash, RAM, clk_peri source at the RP2350 register (read-only), SPI granted and full-frame time as shipped / freq(125M,125M) / freq(150M,150M), restores the shipped clocks. Never run clk_peri_fix.py or lib/clocks.py on an RP2350 | reads a register; LCD; `machine.freq` |
 | clk_peri.py | which clock feeds the peripherals (why SPI is 24 MHz on v1.29.0); tries `machine.freq()` | reads `CLK_PERI_CTRL`; `machine.freq()` |
 | clk_peri_fix.py | re-sources `clk_peri` to `clk_sys` and times a frame at the real 62.5 MHz | **writes `CLK_PERI_CTRL`**; survives soft reset, cleared by power cycle |
 | slots_spin_bench.py | DR-020 as described: per frame, two `Assets.blit` reads from flash per reel into a 56x56 compose, copy to framebuffer, `show_rect`; 3 reels and 1 reel; DR-021 blink; same at 24 MHz | writes and removes `/assets/_bench_sym0/1.565`; LCD; toggles clk_peri and restores it |
