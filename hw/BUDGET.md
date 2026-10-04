@@ -117,6 +117,8 @@ Scripts: `hwtest/pocket_bench.py` (8 scripted hands), plus a per-module import r
 | **Key press → result banner on screen** (fixed build) | **82 ms mean, 97 ms max.** A result scene draws 6+ cards; each code-drawn card is ~5 ms of size-2 text. With card art, a blit is ~1 ms, so this drops to ~45 ms by itself |
 | Save with `.bak` (write tmp, rename old → bak, rename tmp → json) | 54 ms mean / 102 ms max on a near-empty filesystem; **77 ms mean / 151 ms max** once `save.json`, `save.bak` and bench files exist. LittleFS housekeeping varies; budget **up to ~250 ms** for the whole end-of-round, once per round |
 | `Double`: bet doubles, one card, round resolves, balance moves by exactly the doubled bet | correct in 8 of 8 hands (bench pressed X whenever allowed) |
+| Re-banded screen (commit `2c930a9`, four non-overlapping bands), re-bench | unchanged within noise: `draw_all` 45 ms, bet band 16 ms, key→banner 82.5 / 101 ms, save 62 / 119 ms, 63.3 KB after 8 hands |
+| John playing the real game (`pocket.py` RESULT lines) | boot 82,800 free; inside blackjack 58,736; after leaving 74,080; second entry costs only ~8 KB because the rules modules stay cached |
 | Split layout (DR-016), two hands in the 142-row player band, code-drawn cards | 2+2 cards 38 ms; 3+2 42 ms; **4+4 worst 52.6 ms** vs 36.6 ms for one 4-card hand today; one code-drawn card 3.9 ms; second hand 64 bytes RAM (`split_bench.py`, HR-016) |
 
 Everything fits the budget. Notes for the dev: size-2 text is the main Python cost (~1 ms per character), so the menu, card faces and banners are where art pays off; the menu label `Slots (soon)` at size 2 is 192 px wide from x=92 and runs 44 px off the right edge, which is what John saw as "messy".
