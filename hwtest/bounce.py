@@ -1,14 +1,15 @@
-# bounce.py: button/joystick bounce and press length. Samples every input at ~20 kHz for 8 s
+# bounce.py: button/joystick bounce and press length. Samples every input at ~4 kHz for DUR_S s
 # while a human presses keys, and logs every edge with a microsecond stamp. Reports, per pin,
 # how many edges came within 5 ms of a previous edge (bounce) and press durations.
 from machine import Pin
 import utime
+DUR_S = 30
 names = {15:'A',17:'B',19:'X',21:'Y',2:'up',18:'down',16:'left',20:'right',3:'press'}
 pins = [(g, Pin(g, Pin.IN, Pin.PULL_UP)) for g in names]
 last = {g: 1 for g in names}
 edges = []  # (us, gpio, value)
-print("PRESS KEYS NOW for 8 seconds")
-t_end = utime.ticks_add(utime.ticks_us(), 8_000_000)
+print("PRESS KEYS NOW for %d seconds" % DUR_S)
+t_end = utime.ticks_add(utime.ticks_us(), DUR_S * 1_000_000)
 n = 0
 while utime.ticks_diff(t_end, utime.ticks_us()) > 0:
     now = utime.ticks_us()
@@ -17,7 +18,11 @@ while utime.ticks_diff(t_end, utime.ticks_us()) > 0:
         if v != last[g]:
             edges.append((now, g, v)); last[g] = v
     n += 1
-print("RESULT samples=%d rate_Hz=%d edges=%d" % (n, n // 8, len(edges)))
+print("RESULT samples=%d rate_Hz=%d edges=%d" % (n, n // DUR_S, len(edges)))
+first = {}
+for t, g, v in edges:
+    if v == 0 and g not in first: first[g] = t
+print("RESULT press_order=%s" % [names[g] for g, t in sorted(first.items(), key=lambda kv: kv[1])])
 by = {}
 for t, g, v in edges: by.setdefault(g, []).append((t, v))
 for g, ev in by.items():
