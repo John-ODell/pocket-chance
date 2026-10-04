@@ -4,7 +4,7 @@
 - **Filed by:** PCB maker. Numbering note: this is the only PCB request with a DR number; later PCB requests are `PCB-001`, `PCB-002`, ... and their reviews `HR-P01`, ... (PM, 2026-10-04).
 - **Date:** 2026-10-04
 - **Blocks:** PCB phase 2 (parts choice) and everything after. Phase 1 (install KiCad) can go ahead.
-- **Needs HW review:** yes. **Done: `hw/reviews/HR-033.md` (2026-10-04), verdict "fits, Option B, with limits."** The limits are folded in below (marked "HR-033").
+- **Needs HW review:** yes. **Done: `hw/reviews/HR-033.md` (fits, Option B, with limits), `HR-P01.md` (microSD and pin plan, fits), `HR-P02.md` (sensors, RTC, coin cell, full pin budget, fits), all 2026-10-04.** The limits are folded in below.
 
 ## The decision
 Which chip, which wireless, which screen and which power blocks go on the **first** spin of one integrated handheld board, and which wait for a second spin.
@@ -246,6 +246,8 @@ Result: **29 of 30 pins used, one spare.** It fits. Two consequences: I2S audio 
 - **STEMMA QT / Qwiic connector** (a 4-pin JST-SH socket carrying 3.3 V, GND, SDA, SCL) on the shared I2C bus. Any of hundreds of ready-made sensor boards plugs in with a cable, no soldering. For temperature and humidity, the official library has drivers for the HTS221 and HS3003, both sold on such boards. **Connector only on spin 1.**
 - **GPS/GNSS**: most u-blox based modules speak I2C as well as serial, so they plug into the same connector; a serial-only module uses GP1 (RX) on the expansion header. GPS needs sky view and draws 20 to 40 mA while searching; nothing on the board changes for it. **Connector and one pin only on spin 1.**
 - **Expansion header**: GP1, GP28, SDA, SCL, 3.3 V, GND, plus the **SWD header** (SWCLK, SWDIO, GND, dedicated pins) for a debug probe. Pin headers are surface-mount or through-hole; a through-hole header is the one part PCBWay would solder as a through-hole job, or John leaves it unpopulated and fits it himself (it is the easiest soldering there is).
+
+**HR-P02 (expert, 2026-10-04): the pin plan fits.** Additions taken as design rules: keep the battery divider on GP28 for spin 1; one set of 4.7 kΩ pull-ups on the shared I2C bus (the addresses do not clash: DS3231 0x68, LSM6DSOX 0x6A or 0x6B); prefer the **DS3231MZ** over the PCF8523 because the PCF8523's trickle charger is one wrong register away from charging the coin cell; and, since no pin is left for an RTC wake line, the RTC's open-drain alarm output joins the IMU's interrupt on GP14 through a **solder jumper** (wired-OR), and the firmware asks each chip which one fired. Low power: milliamps on a first board, measure before promising.
 
 ### I.5 What spin 1 carries and what is deferred (keeping it learnable)
 
