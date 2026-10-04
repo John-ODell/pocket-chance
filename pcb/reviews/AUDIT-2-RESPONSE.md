@@ -30,6 +30,9 @@ PCB maker, 2026-10-04. Verdict first: **the audit found two real defects (findin
 - Coin-cell holder: the wrong Keystone page was removed; the 3001 drawing is still to obtain.
 - Layout: none yet, by John's instruction, until the expert's verification and the second audit.
 
+## Expert's independent verification (HR-P05, 2026-10-04)
+The expert agreed with the auditor on all eight engineering findings before reading this response, and verified every fix in 808ccf1 against the schematic diff: the reversed-cell isolation holds with and without USB (both FS8205A body diodes point source to drain, so BAT- has no return path either way), the gated divider keeps the ADC pin at 0 V when off, and the interrupt, amplifier, DVDD and documentation fixes are as described. One difference of preference, not fact: the expert would fit R14 = 3.6 kΩ (247 mA) by default until a specific cell is bought; John's decision is 1.8 kΩ with the purchase rule (a 1000 mAh+ cell rated 0.5 C), which is safe for the stated cell, so it stands and is recorded here. Joint open list (HR-P05 part 3): L2 saturation and DCR from the Abracon datasheet; DW01A and DS3231M datasheets (John to save from a browser); the L1 polarity-dot orientation from the official Pico 2 design files; the screen module's backlight drive type; the coin-cell holder drawing; layout items; the real board current. Nothing to escalate.
+
 ## Final commit (what the next audit pass reviews)
 - **Schematic to review:** `pcb/kicad/pocket-chance-board.kicad_sch`, rev 0.3, last changed in commit **3e6eaa4**; its git content hash (`git hash-object`) is **`1decf957cb72f32b48d8597c76007ef56c75faeb`**. Any checkout whose schematic file has this hash is the reviewed design.
 - The exports made from exactly that file are committed next to it in `pcb/kicad/exports/`: `pocket-chance-board-schematic.pdf`, `erc.rpt` (0 errors, 2 warnings), `netlist.xml`.
