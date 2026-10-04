@@ -3,17 +3,29 @@
 Written for John, 2026-10-04. The decisions behind it are in `pm/inbox/PCB-001-battery-and-power-path.md` and the audit response in `pcb/reviews/AUDIT-2-RESPONSE.md`.
 
 ## The fuse
-The board has a self-resetting fuse in the battery lead (rev 0.7, your decision). It trips if a battery lead, a protection transistor or the board shorts, and it limits the heat after a wiring mistake. It does not save the two chips a reversed battery destroys: the wire check above is still the protection. It costs a few tens of millivolts, so a charge finishes a few minutes later. To reset it, **unplug the battery**: a tripped fuse stays warm and keeps passing a small current as long as the battery is connected; it resets within a minute of being unplugged, once it has cooled. Then find the fault before plugging the battery back in.
+The board has a self-resetting fuse in the battery lead (1.5 A hold, your decision). It trips if a battery lead, a protection transistor or the board shorts, and it limits the heat after a wiring mistake. It does not save the two chips a reversed battery destroys: the wire check above is still the protection. It costs a few tens of millivolts, so a charge finishes a few minutes later. To reset it, **unplug the battery**: a tripped fuse stays warm and keeps passing a small current as long as the battery is connected; it resets within a minute of being unplugged, once it has cooled. Then find the fault before plugging the battery back in.
 
-## Approved cell listing
-To be filled in before purchase: seller, listing name, capacity, protection board (yes), plug type (JST-PH 2.0 mm), and **which pin the red wire is on in the listing's photo**. One listing only; a different listing is a new check.
+## Approved test battery (John, 2026-10-04)
+**JLJLUP 3.7 V 2000 mAh LiPo, 2-pack (Amazon listing B0FH7G1WPG):** 34 x 10 x 52 mm, 34 g, integrated protection circuit, JST-PH 2.0 mm two-wire plug, rated 1 C discharge (about 2 A). Fits the standard-cell specification below except thickness (10 mm instead of 5 to 6), which is fine for the spin 1 dev board; the enclosure question comes with spin 2.
+- Charging at this board's 494 mA is 0.25 C, gentle for the cell. A full charge from empty takes about 4.5 to 5 hours (longer when the board is also drawing from the same 500 mA USB budget), which is close to the safety timer's shortest possible setting with the current resistor; the next revision raises the timer resistor (R16 47 k to 68 k, about 9 h nominal, 6.8 h minimum) so a full charge always completes. Until then a charge that stops short simply restarts when USB is re-plugged.
+- Discharge: the cell's 2 A rating covers the board's worst all-on draw (about 1 A from an empty cell) and the fuse (1.5 A hold, 3 A trip) with margin.
+- **The listing itself warns that the plug's polarity is not universal.** Before the first plug-in of each cell: hold the plug against the socket and check that the red wire sits at the + mark.
+
+## The standard test cell specification (any seller)
+Any cell that matches all of this is approved for the first boards:
+- single-cell 3.7 V lithium-polymer pouch, **1000 to 1200 mAh**;
+- **with its own protection board** (the listing says "protected", "with PCM" or "with protection circuit");
+- **JST-PH 2.0 mm two-wire plug**;
+- size **503450** (5 x 34 x 50 mm) or **603048** (6 x 30 x 48 mm).
+
+Because sellers wire the plug both ways, the rule stands for **every new cell, every time**: hold the plug against the socket and check that the red wire sits at the **+** mark before plugging in. That check is the protection; there is no electronic guard.
 
 ## What to buy
 - A single **LiPo pouch cell, 3.7 V, 1000 to 1200 mAh, WITH a protection board** (the listing says "protected", "with PCM" or "with protection circuit"). Sizes that fit a flat credit-card board: 503450 (5 x 34 x 50 mm) or 603048 (6 x 30 x 48 mm).
 - With a **JST-PH 2.0 mm plug** (two wires, red and black). This is the plug most hobby cells come with.
 - Rated for at least 0.5 C charging (1000 mAh cell: 500 mA). Nearly all pouch cells are; the cell's own listing is the authority.
 - A battery whose own protection has tripped (it shows 0 V) may not wake on this board; charge it briefly on an ordinary single-cell charger first, then use it here.
-- Optional, better: a cell with a **third wire, a thermistor**. It plugs into pin 3 of the board's socket and lets the charger stop when the cell is too hot or too cold. If you fit one, the resistor R12 is removed (tell the PCB maker).
+- Cells with a third thermistor wire cannot be used on this board (the socket has two pins); a later spin may add that.
 
 ## Before plugging in, every time
 0. **Unplug USB first.** With USB plugged in the socket's + pin is live at about 4.2 V from the charger even with no battery in it. So: USB out, swap the battery, USB back in.
