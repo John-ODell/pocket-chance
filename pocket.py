@@ -307,6 +307,32 @@ def menu_select(ctx, old, new, top):
     return new_top
 
 
+ERROR_LOG = '/error.log'
+
+
+def game_error(ctx, modname, e):
+    """Print the traceback, keep it in /error.log for the PM, save the chips, say so on screen."""
+    gc.collect()
+    pe = getattr(sys, 'print_exception', None)
+    try:
+        if pe:
+            pe(e)
+        with open(ERROR_LOG, 'w') as f:
+            f.write('%s: ' % modname)
+            if pe:
+                pe(e, f)
+            else:
+                f.write('%s %r\n' % (type(e).__name__, e))
+    except Exception:
+        pass
+    try:
+        ctx.store.save(ctx.bankroll.balance)
+    except Exception:
+        pass
+    message('%s stopped: %s\nsaved to %s\nback to the menu' % (modname, type(e).__name__, ERROR_LOG), 4000)
+    ctx.buttons.poll()                                # drop presses made during the message
+
+
 def play(ctx, modname):
     ctx.assets.release_sheets()                       # the game opens its own sheets
     gc.collect()
@@ -316,6 +342,8 @@ def play(ctx, modname):
     print('RESULT import %s mem_free before=%d after=%d' % (modname, before, gc.mem_free()))
     try:
         mod.run(ctx)
+    except Exception as e:                            # a game error would leave the last frame up
+        game_error(ctx, modname, e)                   # with no USB to show it: report, back to menu
     finally:
         del mod
         if modname in sys.modules:
