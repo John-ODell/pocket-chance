@@ -156,17 +156,17 @@ class CaribbeanScreen(unittest.TestCase):
         seen, restore = drawn_strings(s)
         s.handle('A')                                                  # next hand: betting with the banner
         restore()
-        self.assertIn('x3 CALL WIN NEXT HAND', seen)
+        self.assertIn('x3 PAYOUT NEXT HAND', seen)
         stack(s, 'AS AH', '4D 4C', '7S 8H KD TC 2S', '5S 5H 6S 6H QS QH JS JH')
         seen, restore = drawn_strings(s)
         s.handle('A')
         restore()
-        self.assertIn('call win pays x3 this hand', seen)
+        self.assertIn('a win pays x3 this hand', seen)
         seen, restore = drawn_strings(s)
-        s.handle('Y')                                                  # low 20, x3 -> 60, Ante 10
+        s.handle('Y')                                                  # low 20 + Ante 10, all x3
         restore()
-        self.assertEqual(s.table.round.net, 70)
-        self.assertIn('WIN +70 (x3)', seen)
+        self.assertEqual(s.table.round.net, 90)
+        self.assertIn('WIN +90 (x3)', seen)
 
     def test_broke_and_refill(self):
         ctx = make_ctx(self.adir, self.sdir, balance=25)

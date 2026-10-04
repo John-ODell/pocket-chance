@@ -21,7 +21,7 @@ class CaribbeanTable:
         self.shoe = Shoe(1, rng, penetration=0.0)        # a fresh deck every hand
         self.round = None
         self.seats = Seats(seats)
-        self.armed = False                                # the NEXT hand's call wins mult_cap times
+        self.armed = False                                # the NEXT hand's winners are paid mult_cap times
         self._fit_ante()
         self.state = BROKE if self.is_broke() else BETTING
 
@@ -52,7 +52,7 @@ class CaribbeanTable:
         return self.bankroll.bet
 
     def multiplier(self):
-        """The multiplier on the call win of the hand being dealt: N players at the table, capped."""
+        """The multiplier on a win in the hand being dealt: N players at the table, capped (3)."""
         if not self.armed:
             return 1
         return max(1, min(self.rules.mult_cap, self.seats.count + 1))

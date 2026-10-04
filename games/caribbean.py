@@ -175,7 +175,7 @@ class Screen:
             font.text_centred(lcd, 'Ante: joystick', 120, LINE_Y[0], GREY, 1)
             font.text_centred(lcd, 'A deal   X help   B menu', 120, LINE_Y[1], WHITE, 1)
             if mult > 1:
-                font.text_centred(lcd, 'x%d CALL WIN NEXT HAND' % mult, 120, LINE_Y[2], GOLD, 1)
+                font.text_centred(lcd, 'x%d PAYOUT NEXT HAND' % mult, 120, LINE_Y[2], GOLD, 1)
         elif st == DECIDING:
             r = t.round
             if self.board_shown == 0:
@@ -184,7 +184,7 @@ class Screen:
             font.text_centred(lcd, 'A high %d  Y low %d  B fold' % (a * t.rules.high, a * t.rules.low),
                               120, LINE_Y[1], WHITE, 1)
             if r.mult > 1:
-                font.text_centred(lcd, 'call win pays x%d this hand' % r.mult, 120, LINE_Y[2], GOLD, 1)
+                font.text_centred(lcd, 'a win pays x%d this hand' % r.mult, 120, LINE_Y[2], GOLD, 1)
             else:
                 font.text_centred(lcd, 'X help', 120, LINE_Y[2], GREY, 1)
         elif st == RESULT:

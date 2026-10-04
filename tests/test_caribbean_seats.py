@@ -54,7 +54,7 @@ class SeatsLogic(unittest.TestCase):
         board = cards('KD 5C 8S 7C 2D')
         seats.act(board[:3], rules)
         seats.settle(board, evaluate(cards('6S 6H') + board), 10, rules, mult=3)
-        self.assertEqual(seats.delta, [10 + 40 * 3])
+        self.assertEqual(seats.delta, [(10 + 40) * 3])
 
     def test_unqualified_dealer_pushes_the_seats(self):
         rules = Rules()

@@ -6,10 +6,12 @@
 # Best five of seven. The dealer qualifies with a pair of fours or better; if not, EVERY bet pushes
 # (John's ruling). Qualified and beaten: the Ante pays by ANTE_PAY and the call 1:1. Dealer wins:
 # Ante and call lost. Tie: push.
-# Multiplier (John's WSOP rule, toned down): when the player and every seat beat a qualified dealer,
-# the next hand's call bet wins MULT_CAP times (3x); it fires about one hand in 28.
+# Multiplier (John's WSOP rule, toned down, his ruling of 2026-10-06): when the player and every seat
+# beat a qualified dealer, the next hand pays its winners three times the whole win (Ante table pay
+# and call together). It lasts exactly one hand, never stacks and is never saved; a hand that does
+# not win gets nothing extra. It fires about one hand in 25.
 # Also here: the strategy the help screen teaches and the seats play, and the simulator's numbers
-# (tools/casino_holdem_edge.py): about 8% of the Ante with this strategy, see pm/STATUS.md.
+# (tools/casino_holdem_edge.py): about 5% of the Ante with this strategy, see pm/STATUS.md.
 
 from poker import evaluate, evaluate5, rank_value, PAIR, TWO_PAIR, FLUSH, FULL_HOUSE, QUADS, STRAIGHT_FLUSH, ROYAL_FLUSH
 
@@ -31,7 +33,7 @@ class Rules:
         self.low = low                    # call multiples, in Antes
         self.high = high
         self.qualify_pair = qualify_pair  # dealer needs at least a pair of this rank
-        self.mult_cap = mult_cap          # the armed multiplier on the call bet's win (0 = off)
+        self.mult_cap = mult_cap          # the armed multiplier on a winning hand's whole payout (0 = off)
 
 
 def qualifies(dv, rules):
@@ -50,7 +52,7 @@ def resolve(pv, dv, ante, call, rules, mult=1):
     if not qualified:
         return PUSH, 0, False
     if pv > dv:
-        return WIN, ante_win(ante, pv[0]) + call * mult, True
+        return WIN, (ante_win(ante, pv[0]) + call) * mult, True
     if pv < dv:
         return LOSE, -(ante + call), True
     return PUSH, 0, True
@@ -102,7 +104,7 @@ class Round:
         self.shoe = shoe
         self.rules = rules
         self.ante = ante
-        self.mult = mult                   # the armed multiplier for this hand's call win
+        self.mult = mult                   # the armed multiplier for this hand's whole win
         self.call = 0
         self.player = []
         self.dealer = []
