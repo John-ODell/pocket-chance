@@ -15,3 +15,12 @@ Maintained by the PM. Newest at the bottom. Format: `DD-Mon | DR-NNN | decision 
 | 2026-10-03 | DR-013 | Start at 1000 chips; free refill when broke | John |
 | 2026-10-03 | DR-014 | Bets 5 to 500 in steps of 5; `chip_1` art not needed | John |
 | 2026-10-03 | HR-F01 | Reflash board to MicroPython v1.29.0 RP2040-Plus 16 MB build (done by John; main.py restored from backup). Resulting SPI clock regression under investigation. | John |
+| 2026-10-04 | DR-001 | Layout A: `/lib`, `/games`, thin entry; new entry installs as `/pocket.py` | John |
+| 2026-10-04 | DR-002 | Raw RGB565 with 4-byte size header, `.565` | John |
+| 2026-10-04 | DR-003 | Big-endian RGB565, no swap on load. Confirmed on the panel (left half red); orientation upright landscape | John |
+| 2026-10-04 | DR-005 | Stream assets from flash; one 16 KB scratch; push bands, not full frames | John |
+| 2026-10-04 | DR-006 | Art sizes stand; 4 pilot images first | John |
+| 2026-10-04 | DR-007 | `/save.json`, atomic write once per round | John |
+| 2026-10-04 | DR-008 | Fall back to `/save.bak`, then fresh start, with messages | John |
+| 2026-10-04 | DR-015 | Fast SPI fix at boot via `lib/clocks.py`, off switch `FAST_SPI`; fallback request is 12_000_000 | John |
+| 2026-10-04 | D-003 | Erase the old `main.py` from the board (John: backed up as `backups/2026-10-03/main.py`, same as `main_monolith.py` in git and on GitHub). Expert verifies the hash first. | John |
