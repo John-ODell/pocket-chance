@@ -1,5 +1,7 @@
 # hwtest: board measurement scripts
 
+**Note (step 1n onward):** `lib/clocks.py` no longer exists on the board (DR-050). Benches that `from clocks import fast_peripherals` need `machine.freq(125_000_000, 125_000_000)` instead, or a staged `clocks.py`; `baccarat_bench.py` and `pico2_check.py` already use `machine.freq`.
+
 Run from the Mac, from the repo root, with Viper IDE disconnected **and its tab closed** (Chrome holds the port otherwise; `lsof /dev/cu.usbmodem*` shows who has it). Nothing is stored on the board: the folder is mounted read-only over the serial link and the scripts import from it.
 
     P=/dev/cu.usbmodem112301
@@ -25,6 +27,7 @@ Finish with `mpremote connect $P soft-reset`. Each script prints `RESULT key=val
 | pins_reserved.py | read-only: GPIO 0,1,4-7,14,22-29 with pull-up then pull-down (floating vs driven), ADC on 26-29; which pins the Plus reserves | inputs only |
 | load_hold.py | for John's multimeter: backlight 100 %, full-frame pushes for 60 s, then backlight back to 20000 | LCD |
 | freq_peri.py | HR-F05: does `machine.freq(125_000_000, 125_000_000)` replace the `CLK_PERI_CTRL` poke? State found, reported SPI baud, timed frame, backlight PWM, then back to (125M, 48M), then restores the state found | clock settings only; LCD |
+| pico2_check.py | **Pico 2 / RP2350 only**: firmware, clock, flash, RAM, clk_peri source at the RP2350 register (read-only), SPI granted and full-frame time as shipped / freq(125M,125M) / freq(150M,150M), restores the shipped clocks. Never run clk_peri_fix.py or lib/clocks.py on an RP2350 | reads a register; LCD; `machine.freq` |
 | clk_peri.py | which clock feeds the peripherals (why SPI is 24 MHz on v1.29.0); tries `machine.freq()` | reads `CLK_PERI_CTRL`; `machine.freq()` |
 | clk_peri_fix.py | re-sources `clk_peri` to `clk_sys` and times a frame at the real 62.5 MHz | **writes `CLK_PERI_CTRL`**; survives soft reset, cleared by power cycle |
 | slots_spin_bench.py | DR-020 as described: per frame, two `Assets.blit` reads from flash per reel into a 56x56 compose, copy to framebuffer, `show_rect`; 3 reels and 1 reel; DR-021 blink; same at 24 MHz | writes and removes `/assets/_bench_sym0/1.565`; LCD; toggles clk_peri and restores it |
@@ -36,6 +39,7 @@ Finish with `mpremote connect $P soft-reset`. Each script prints `RESULT key=val
 | stage_from.sh | `./hwtest/stage_from.sh <ref> <paths…>`: copies files from a git ref into `hwtest/stage/` for a bench-before-upload | local |
 | stud_play_bench.py | Caribbean Stud as built: real `stud.Screen` with scripted keys; deal redraw, reveal flip spacing (stamps `show_band`), raise/fold/next, paytable load/drop retention, save; drawn and with a temp card sheet | writes and removes `/_bench_save.*` and `/assets/cards.565`; LCD |
 | stage_bench_stud.py (+ fakes_stud/) | real `pocket.py` end to end with a Stud key script (enter, hands, paytable, back), RAM and gc pause at chosen pauses; staged files if `hwtest/stage/` exists, else the board's. **Note:** a reveal drains one press, so do not script a key right after a raise | LCD; snapshots/restores John's saves |
+| baccarat_bench.py | DR-052/055/060 before the baccarat screen exists: Stud's bands, three cards per hand, bet boxes, prompt, history squares, seat rail; full redraw, deal-step bands, clocked deal cadence, bottom band, seats' habit/settle; drawn and with a temp card sheet. Uses `machine.freq` (no `clocks.py` on the step-1n board) | LCD; writes and removes `/assets/cards.565` |
 | stud_bench.py | DR-026/029 before the Stud screen exists: ten cards in DR-026's bands with the real blackjack card primitives; full redraw, reveal step with a forced gc in the 300 ms gap, raise/fold bands, `poker.evaluate`; code-drawn and with a temp card sheet. Stages `lib/poker.py` from `hwtest/stage/` | LCD; writes and removes `/assets/cards.565` |
 | stage_bench.py, stage_pocket_bench.py, stage_micro.py (+ fakes_bj/) | bench a build BEFORE uploading it: copy the candidate `lib/*.py` and `pocket.py` into `hwtest/stage/` (not committed; create it per run), they go first on `sys.path` from the mount so the real program runs them while the board's files stay put. `stage_micro` writes and removes a temp `/assets/cards.565` | LCD; temp `/assets/cards.565` |
 | pocket_scripted.py (+ fakes/buttons.py) | runs the REAL `/pocket.py` end to end with scripted keys in place of the pin reader, so the game's own RESULT lines are the true RAM figures with zero harness overhead. snapshots and restores `/save.json` and `/save.bak` around the run | LCD; writes `/save.json` via the game |
