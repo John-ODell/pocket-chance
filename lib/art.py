@@ -6,6 +6,8 @@
 # readinto straight into the framebuffer, on scene entry only, never per frame; big reads.
 # Every loader returns False instead of raising when a file is missing or malformed, so the game
 # falls back to code-drawn shapes while John's art is unfinished (DR-006).
+# HR-F03: os.stat and the header read cost ~4-5 ms per call on LittleFS, so the size check runs
+# once per asset per boot and is cached; later opens go straight to the pixels.
 
 import framebuf
 import os
@@ -22,14 +24,25 @@ class Assets:
         self.scratch = bytearray(scratch_size)
         self.hdr = bytearray(HDR)
         self.missing = {}        # names we failed to open, so we don't retry every draw
+        self.known = {}          # name -> (w, h) once the file has passed the length check (HR-F03)
 
     def path(self, name):
         return self.root + '/' + name + '.565'
 
     def _open(self, name):
-        """Open and validate; return (file, w, h) or None."""
+        """Open and validate; return (file, w, h) positioned at the first pixel, or None."""
         if name in self.missing:
             return None
+        known = self.known.get(name)
+        if known is not None:
+            try:
+                f = open(self.path(name), 'rb')
+                f.seek(HDR)
+            except OSError:
+                del self.known[name]
+                self.missing[name] = 1
+                return None
+            return f, known[0], known[1]
         try:
             p = self.path(name)
             size = os.stat(p)[6]
@@ -48,7 +61,23 @@ class Assets:
             f.close()
             self.missing[name] = 1
             return None
+        self.known[name] = (w, h)
         return f, w, h
+
+    def load(self, name, buf):
+        """Read a sprite's pixels into `buf` (a bytearray or memoryview of at least w*h*2 bytes),
+        for callers that keep sprites in RAM (slots, HR-020). Returns (w, h) or None."""
+        r = self._open(name)
+        if r is None:
+            return None
+        f, w, h = r
+        n = w * h * 2
+        if n > len(buf):
+            f.close()
+            return None
+        ok = f.readinto(memoryview(buf)[:n]) == n
+        f.close()
+        return (w, h) if ok else None
 
     def size(self, name):
         r = self._open(name)
