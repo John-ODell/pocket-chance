@@ -21,7 +21,8 @@ import sys
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 ROW = re.compile(r'^\|\s*\d+\s*\|\s*`([^`]+)`\s*\|\s*`([^`]+)`', re.M)
-BOARD_FOLDERS = {'lib': '/lib', 'games': '/games', 'assets/out': '/assets', 'archive/slots': '/games'}
+BOARD_FOLDERS = {'lib': '/lib', 'games': '/games', 'assets/out': '/assets', 'archive/slots': '/games',
+                 'archive/stud': '/games'}
 RECORD_ROW = re.compile(r'^\|\s*`(/[^`]+)`\s*\|\s*`([^`]+)`\s*\|\s*(\S+)\s*\|\s*([0-9a-f]{7,40})\s*\|', re.M)
 IMPORT = re.compile(r'^\s*(?:from\s+(\w+)\s+import|import\s+(\w+))', re.M)
 ATTR_CALL = re.compile(r'\b(assets|lcd|font|buttons|store|bankroll)\.(\w+)\(')

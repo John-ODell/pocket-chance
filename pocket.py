@@ -7,9 +7,9 @@ FAST_SPI = True          # DR-050: peripheral clock from the 125 MHz system PLL 
                          # False = the firmware's 48 MHz source (24 MHz SPI, 46 ms a frame), else identical.
 SPI_BAUD = 62_500_000    # honest with DR-050: the repr says what it gets. Fallback 31_250_000.
 SAVE_PATH = '/save.json'
-STUD_SEATS = 5           # other players at the Caribbean Stud table, 0 to 5 (DR-041)
-UTH_SEATS = 4            # other players at the Hold'em table, 0 to 4 (DR-044)
-UTH_HINT = True          # river dealer-outs count on the Hold'em prompt (DR-042 addendum)
+CAR_SEATS = 4            # other players at the Caribbean table, 0 to 4 (DR-069)
+UTH_SEATS = 4            # other players at the Ultimate table, 0 to 4 (DR-044)
+UTH_HINT = True          # river dealer-outs count on the Ultimate prompt (DR-042 addendum)
 
 import sys
 import gc
@@ -47,8 +47,8 @@ GREY = rgb(140, 140, 140)
 # (label, module or None for "soon" or 'off', icon). Labels must fit the label area at size 2:
 # 9 characters at most (tests/test_screens.py checks). Full game names are used inside the games.
 MENU = (('Blackjack', 'blackjack', 'icon_blackjack'),
-        ('Caribbean', 'stud', 'icon_stud'),
-        ("Hold'em", 'holdem', 'icon_holdem'),
+        ('Ultimate', 'holdem', 'icon_holdem'),       # DR-061: Ultimate Texas Hold'em
+        ('Caribbean', 'caribbean', 'icon_stud'),     # DR-062: the flop game John described; Stud is archived
         ('Off', 'off', None))                        # slots was dropped (D-009)
 VISIBLE = 3                                  # rows on screen (DR-022: scrolling list)
 
@@ -77,9 +77,25 @@ ROW_X, ROW_W, ROW_H = 16, 208, 48
 ICON_W = 56                                  # icon slot at the left of the box
 LABEL_X0 = ROW_X + ICON_W                    # label area: LABEL_X0 .. ROW_X + ROW_W
 TITLE_Y, BALANCE_Y, FOOTER_Y = 14, 40, 226
-PANEL = rgb(30, 50, 80)                      # selected row
-PLATE = rgb(8, 10, 18)                       # under text on unselected rows, title, footer
+PANEL = rgb(30, 50, 80)                      # selected row (photo menu, D-007)
+PLATE = rgb(8, 10, 18)                       # under text on unselected rows, title, footer (photo menu)
 BACKGROUND = 'menu_background'
+# Style A (ruling DR-072, "casino felt and chips"), drawn in code when John's photo is not on the
+# board: a felt shaded top to bottom in 4-row strips, a double gold border, the title with a drop
+# shadow, the chips on a cream plaque, one pill per row in that game's felt colour (DR-065) with a
+# gold outline on the chosen one, a gold chip in the right margin as the cursor, and a code-drawn
+# suit sign in the icon slot until the icon art exists. No buffers: every band is redrawn from
+# its row index (menu_background), so RAM is unchanged.
+SHADES = tuple(rgb(0, 70 + (30 * i) // 59, 30 + (15 * i) // 59) for i in range(60))
+CREAM = rgb(240, 232, 200)
+BLACK = rgb(0, 0, 0)
+BORDER = (4, 7)                              # the two gold border lines, px in from each edge
+PILL_R = 23
+GAME_COLOUR = {'blackjack': (rgb(0, 95, 42), rgb(0, 60, 26)),      # (selected, unselected) pill colours
+               'holdem': (rgb(20, 40, 110), rgb(12, 25, 70)),
+               'caribbean': (rgb(110, 20, 30), rgb(70, 12, 18)),
+               'off': (rgb(70, 70, 70), rgb(45, 45, 45))}
+SUIT_RED = rgb(230, 70, 70)
 
 
 def label_text(i):
@@ -98,7 +114,7 @@ def label_x(i):
 
 
 def label_box(i, slot):
-    """Dark plate under item i's label drawn in row `slot`: (x, y, w, h), inside the row box."""
+    """Dark plate under item i's label drawn in row `slot` (photo menu): (x, y, w, h), inside the row box."""
     h = 34 if label_text(i)[1] else 24          # taller when the "soon" tag is under the label
     return label_x(i) - 4, ROW_Y[slot] + 12, label_width(i) + 8, h
 
@@ -118,19 +134,94 @@ def has_menu_art(ctx):
     return ctx.menu_art
 
 
+def felt_rows(y, h):
+    """Style A background for rows y..y+h-1: the shade strips and the border lines that cross them."""
+    yy = y - y % 4
+    while yy < y + h:
+        top = yy if yy > y else y
+        bottom = yy + 4 if yy + 4 < y + h else y + h
+        lcd.fill_rect(0, top, 240, bottom - top, SHADES[yy // 4])
+        yy += 4
+    for b in BORDER:
+        lcd.vline(b, y, h, GOLD)
+        lcd.vline(239 - b, y, h, GOLD)
+        for hy in (b, 239 - b):
+            if y <= hy < y + h:
+                lcd.hline(b, hy, 240 - 2 * b, GOLD)
+
+
 def menu_background(ctx, y, h):
-    """Restore rows y..y+h-1 of the menu background from flash, or plain colour without art."""
+    """Restore rows y..y+h-1 of the menu background: John's photo from flash, or the style-A felt."""
     if has_menu_art(ctx) and ctx.assets.background_rows(lcd, BACKGROUND, y, h):
         return
-    lcd.fill_rect(0, y, 240, h, BG)
+    felt_rows(y, h)
 
 
 def plate_text(s, y, size, col):
-    """Centred text on a dark plate with a 6 px border."""
+    """Centred text on a dark plate with a 6 px border (photo menu)."""
     w = font.width(s, size)
     x = 120 - w // 2
     lcd.fill_rect(x - 6, y - 3, w + 12, font.CH * size + 6, PLATE)
     font.text(lcd, s, x, y, col, size)
+
+
+def plaque_text(s, y, size, col):
+    """Centred text on a cream plaque with rounded ends (style A)."""
+    w = font.width(s, size)
+    h = font.CH * size + 6
+    x = 120 - w // 2
+    r = h // 2
+    lcd.fill_rect(x - 2, y - 3, w + 4, h, CREAM)
+    lcd.ellipse(x - 2, y - 3 + r, r, r, CREAM, True)
+    lcd.ellipse(x + w + 1, y - 3 + r, r, r, CREAM, True)
+    font.text(lcd, s, x, y, col, size)
+
+
+def shadow_text(s, x, y, col, size):
+    """Text with a 2 px drop shadow below it."""
+    font.text(lcd, s, x, y + 2, BLACK, size)
+    font.text(lcd, s, x, y, col, size)
+
+
+def pill(x, y, w, h, col, outline=None):
+    """A row-wide pill: a rectangle with half-disc ends; optional 1 px outline."""
+    r = h // 2
+    lcd.fill_rect(x + r, y, w - 2 * r, h, col)
+    lcd.ellipse(x + r, y + r, r, r, col, True)
+    lcd.ellipse(x + w - r - 1, y + r, r, r, col, True)
+    if outline is not None:
+        lcd.hline(x + r, y, w - 2 * r, outline)
+        lcd.hline(x + r, y + h - 1, w - 2 * r, outline)
+        lcd.ellipse(x + r, y + r, r, r, outline, False, 0x6)             # left half: quadrants 2 and 3
+        lcd.ellipse(x + w - r - 1, y + r, r, r, outline, False, 0x9)     # right half: quadrants 1 and 4
+
+
+def suit_sign(mod, cx, cy):
+    """Code-drawn stand-in for a menu icon: spade (Blackjack), diamond (Ultimate), club (Caribbean),
+    power sign (Off), about 32 px tall, centred on (cx, cy)."""
+    if mod == 'blackjack':
+        for i in range(14):                                   # the spade's point: a triangle of hlines
+            lcd.hline(cx - i, cy - 15 + i, 2 * i + 1, CREAM)
+        lcd.ellipse(cx - 6, cy + 1, 7, 7, CREAM, True)
+        lcd.ellipse(cx + 6, cy + 1, 7, 7, CREAM, True)
+        lcd.fill_rect(cx - 2, cy + 4, 4, 10, CREAM)
+        lcd.fill_rect(cx - 7, cy + 13, 14, 2, CREAM)
+    elif mod == 'holdem':
+        for i in range(16):                                   # a diamond: two triangles of hlines
+            w = (12 * i) // 15
+            lcd.hline(cx - w, cy - 15 + i, 2 * w + 1, SUIT_RED)
+            lcd.hline(cx - w, cy + 15 - i, 2 * w + 1, SUIT_RED)
+    elif mod == 'caribbean':
+        lcd.ellipse(cx, cy - 7, 7, 7, CREAM, True)
+        lcd.ellipse(cx - 8, cy + 3, 7, 7, CREAM, True)
+        lcd.ellipse(cx + 8, cy + 3, 7, 7, CREAM, True)
+        lcd.fill_rect(cx - 2, cy + 2, 4, 12, CREAM)
+        lcd.fill_rect(cx - 7, cy + 13, 14, 2, CREAM)
+    else:
+        lcd.ellipse(cx, cy, 12, 12, CREAM, False)
+        lcd.ellipse(cx, cy, 11, 11, CREAM, False)
+        lcd.fill_rect(cx - 4, cy - 15, 8, 6, SHADES[cy // 4])  # a gap at the top of the ring
+        lcd.fill_rect(cx - 2, cy - 15, 4, 14, CREAM)
 
 
 def draw_row(ctx, slot, top, sel):
@@ -138,17 +229,32 @@ def draw_row(ctx, slot, top, sel):
     i = top + slot
     y = ROW_Y[slot]
     label, mod, icon = MENU[i]
-    col = GOLD if i == sel else (GREY if mod is None else WHITE)
-    if i == sel:
-        lcd.fill_rect(ROW_X, y, ROW_W, ROW_H, PANEL)
-        lcd.rect(ROW_X, y, ROW_W, ROW_H, GOLD)
+    photo = has_menu_art(ctx)
+    if photo:
+        col = GOLD if i == sel else (GREY if mod is None else WHITE)
+        if i == sel:
+            lcd.fill_rect(ROW_X, y, ROW_W, ROW_H, PANEL)
+            lcd.rect(ROW_X, y, ROW_W, ROW_H, GOLD)
+        else:
+            px, py, pw, ph = label_box(i, slot)
+            lcd.fill_rect(px, py, pw, ph, PLATE)
     else:
-        px, py, pw, ph = label_box(i, slot)
-        lcd.fill_rect(px, py, pw, ph, PLATE)
+        on, off_col = GAME_COLOUR.get(mod, GAME_COLOUR['off'])
+        if i == sel:
+            pill(ROW_X, y, ROW_W, ROW_H, on, GOLD)
+            lcd.ellipse(ROW_X + ROW_W + 4, y + ROW_H // 2, 3, 3, GOLD, True)       # the chip cursor,
+            lcd.pixel(ROW_X + ROW_W + 4, y + ROW_H // 2, WHITE)                    # clear of the border lines
+            col = CREAM
+        else:
+            pill(ROW_X, y, ROW_W, ROW_H, off_col)
+            col = GREY if mod is None else WHITE
     if not (icon and ctx.assets.blit(lcd, icon, ROW_X + 4, y)):
-        lcd.rect(ROW_X + 12, y + 8, 32, 32, col)       # placeholder until icon art exists
+        if photo:
+            lcd.rect(ROW_X + 12, y + 8, 32, 32, col)       # placeholder until icon art exists
+        else:
+            suit_sign(mod, ROW_X + 28, y + ROW_H // 2)
     lx = label_x(i)
-    font.text(lcd, label, lx, y + 16, col, 2)
+    font.text(lcd, label, lx, y + 16, col, 2)           # no shadow on labels: size-2 text is the cost (HR-072)
     if mod is None:
         font.text(lcd, 'soon', lx + (label_width(i) - font.width('soon', 1)) // 2, y + 35, GREY, 1)
     # gold arrows in the right margin when the list continues (DR-022)
@@ -159,17 +265,27 @@ def draw_row(ctx, slot, top, sel):
 
 
 def draw_menu(ctx, sel, top=0):
-    """Menu entry: one full background read, everything drawn, one show() (DR-005)."""
-    if not (has_menu_art(ctx) and ctx.assets.background(lcd, BACKGROUND)):
-        lcd.fill(BG)
+    """Menu entry: one full background read (or the felt), everything drawn, one show() (DR-005)."""
+    photo = has_menu_art(ctx) and ctx.assets.background(lcd, BACKGROUND)
+    if not photo:
+        felt_rows(0, 240)
+        for yy in range(10, 62, 8):                           # a faint diamond pattern on the title band
+            for xx in range(12 + (yy // 8 % 2) * 4, 228, 8):
+                lcd.pixel(xx, yy, CREAM)
     if ctx.assets.blit(lcd, 'logo', 20, 6):
-        plate_text('$%d' % ctx.bankroll.balance, 52, 1, WHITE)
-    else:
+        (plate_text if photo else plaque_text)('$%d' % ctx.bankroll.balance, 52, 1, WHITE if photo else BLACK)
+    elif photo:
         plate_text('Pocket Chance', TITLE_Y, 2, GOLD)
         plate_text('$%d' % ctx.bankroll.balance, BALANCE_Y, 2, WHITE)
+    else:
+        shadow_text('Pocket Chance', 120 - font.width('Pocket Chance', 2) // 2, TITLE_Y, GOLD, 2)
+        plaque_text('$%d' % ctx.bankroll.balance, BALANCE_Y, 2, BLACK)
     for slot in range(VISIBLE):
         draw_row(ctx, slot, top, sel)
-    plate_text('joystick: move   A: pick', FOOTER_Y, 1, GREY)
+    if photo:
+        plate_text('joystick: move   A: pick', FOOTER_Y, 1, GREY)
+    else:
+        font.text_centred(lcd, 'joystick: move   A: pick', 120, FOOTER_Y, CREAM, 1)
     lcd.show()
 
 
@@ -224,7 +340,7 @@ def main():
     ctx.buttons = Buttons()
     ctx.assets = Assets('/assets')
     ctx.store = Store(SAVE_PATH)
-    ctx.stud_seats = STUD_SEATS
+    ctx.car_seats = CAR_SEATS
     ctx.uth_seats = UTH_SEATS
     ctx.uth_hint = UTH_HINT
     try:

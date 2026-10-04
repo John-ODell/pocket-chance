@@ -161,50 +161,58 @@ class TextBounds(unittest.TestCase):
             self.full(s, 'broke')
         self.check()
 
-    def test_stud_screens(self):
-        import stud
-        from stud_rules import WIN, LOSE, PUSH, NOQUALIFY, FOLD, Round, Rules
-        from stud_table import RESULT as S_RESULT, BROKE as S_BROKE, DECIDING as S_DECIDING
-        for balance in (10, 1000, 999999):
-            ctx = self.ctx(balance)
-            s = stud.Screen(ctx)
-            self.bounds.reset()
-            s.draw_all()
-            self.bounds.verify('stud idle %d' % balance)
-            if s.table.state == S_BROKE:
-                continue
-            s.table.adjust_ante(1000)
-            s.table.deal()
-            s.shown = 1
-            self.bounds.reset()
-            s.draw_all()
-            self.bounds.verify('stud deciding')
-            for shown in (2, 3, 4):
-                s.shown = shown
-                self.bounds.reset()
-                s.draw_dealer()
-                self.bounds.verify('stud reveal %d' % shown)
-            s.shown = 5
-            for outcome, net, raise_bet in ((WIN, 100 + 200 * 100, 200), (LOSE, -300, 200), (PUSH, 0, 200),
-                                            (NOQUALIFY, 100, 200), (FOLD, -100, 0)):
-                r = s.table.round
-                r.outcome, r.net, r.raise_bet, r.state = outcome, net, raise_bet, 'done'
-                s.table.state = S_RESULT
+    def test_caribbean_screens(self):
+        import caribbean
+        from caribbean_rules import WIN, LOSE, PUSH, FOLD
+        from caribbean_table import RESULT as C_RESULT, BROKE as C_BROKE, DECIDING as C_DECIDING
+        for seats in (4, 0):
+            for balance in (25, 1000, 999999):
+                ctx = self.ctx(balance)
+                ctx.car_seats = seats
+                s = caribbean.Screen(ctx)
                 self.bounds.reset()
                 s.draw_all()
-                self.bounds.verify('stud result %s' % outcome)
-            s.table.round = None
-            s.table.state = S_BROKE
-            self.bounds.reset()
-            s.draw_all()
-            self.bounds.verify('stud broke')
-            self.bounds.reset()
-            real_wait, real_draw = s.buttons.wait_any, s.draw_all
-            s.buttons.wait_any = lambda: 'A'
-            s.draw_all = lambda: None
-            s.paytable()
-            s.buttons.wait_any, s.draw_all = real_wait, real_draw
-            self.bounds.verify('stud paytable')
+                self.bounds.verify('caribbean idle %d seats %d' % (balance, seats))
+                if s.table.state == C_BROKE:
+                    continue
+                s.table.adjust_ante(1000)
+                s.table.armed = True                                   # the x3 banner at the betting screen
+                self.bounds.reset()
+                s.draw_all()
+                self.bounds.verify('caribbean armed %d' % seats)
+                s.table.deal()
+                for shown in (0, 3):
+                    s.board_shown = shown
+                    self.bounds.reset()
+                    s.draw_all()
+                    self.bounds.verify('caribbean deciding board %d seats %d' % (shown, seats))
+                s.table.call(4)
+                r = s.table.round
+                for i in range(s.table.seats.count):
+                    s.table.seats.chips[i] = 999999
+                    s.table.seats.delta[i] = 1
+                s.board_shown, s.dealer_shown = 5, 2
+                for outcome, net, q, mult, armed in ((WIN, 50 * 100 + 200 * 3, True, 3, True), (LOSE, -250, True, 1, False),
+                                                     (PUSH, 0, True, 1, False), (PUSH, 0, False, 1, False),
+                                                     (FOLD, -50, False, 1, False)):
+                    r.outcome, r.net, r.qualified, r.mult = outcome, net, q, mult
+                    s.table.armed = armed
+                    s.table.state = C_RESULT
+                    self.bounds.reset()
+                    s.draw_all()
+                    self.bounds.verify('caribbean result %s seats %d' % (outcome, seats))
+                s.table.round = None
+                s.table.state = C_BROKE
+                self.bounds.reset()
+                s.draw_all()
+                self.bounds.verify('caribbean broke')
+                self.bounds.reset()
+                real_wait, real_draw = s.buttons.wait_any, s.draw_all
+                s.buttons.wait_any = lambda: 'A'
+                s.draw_all = lambda: None
+                s.help()
+                s.buttons.wait_any, s.draw_all = real_wait, real_draw
+                self.bounds.verify('caribbean help')
         self.check()
 
     def test_holdem_screens(self):
