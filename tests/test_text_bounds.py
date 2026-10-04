@@ -9,6 +9,7 @@ import unittest
 
 import tests.context  # noqa: F401
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fakes'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'tools'))
 import font  # noqa: E402
 from lcd import LCD  # noqa: E402
 from buttons import Buttons  # noqa: E402
@@ -165,12 +166,20 @@ class TextBounds(unittest.TestCase):
             src = f.read().replace('\nmain()\n', '\n')
         ns = {'__name__': 'pocket_bounds'}
         exec(compile(src, 'pocket.py', 'exec'), ns)
-        for balance in (0, 1000, 999999):
-            ctx = self.ctx(balance)
-            for sel in range(len(ns['MENU'])):
-                self.bounds.reset()
-                ns['draw_menu'](ctx, sel)
-                self.bounds.verify('menu sel=%d' % sel)
+        for art in (False, True):
+            if art:
+                data, _ = __import__('convert_assets').to_565([(200, 40, 80)] * (240 * 240), 240, 240)
+                with open(os.path.join(self.dir, 'menu_background.565'), 'wb') as f:
+                    f.write(data)
+            for balance in (0, 1000, 999999):
+                ctx = self.ctx(balance)
+                for sel in range(len(ns['MENU'])):
+                    self.bounds.reset()
+                    ns['draw_menu'](ctx, sel)
+                    self.bounds.verify('menu sel=%d art=%s' % (sel, art))
+                    self.bounds.reset()
+                    ns['menu_select'](ctx, sel, (sel + 1) % len(ns['MENU']))
+                    self.bounds.verify('menu select art=%s' % art)
         from save import MSG_RESTORED, MSG_FRESH
         for m in (MSG_RESTORED, MSG_FRESH):
             self.bounds.reset()

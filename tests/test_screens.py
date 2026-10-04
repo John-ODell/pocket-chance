@@ -266,10 +266,37 @@ class Entry(unittest.TestCase):
             ctx = ns['Ctx']()
             ctx.assets = Assets(adir)
             ctx.bankroll = Bankroll()
+            ns['message']('hello\nworld', 0)
             ns['draw_menu'](ctx, 0)
             ns['draw_menu'](ctx, 2)
-            ns['message']('hello\nworld', 0)
+            ns['menu_select'](ctx, 2, 1)
             self.assertTrue(clocks.is_fast())
+            lcd = ns['lcd']
+            # no background art: plain colour in the margin, selected row is the panel colour
+            self.assertEqual(lcd.pixel(2, 100), ns['BG'])
+            self.assertEqual(lcd.pixel(ns['ROW_X'] + 2, ns['ROW_Y'][1] + 2), ns['PANEL'])
+            # with John's background: the photo shows in the margin and inside unselected rows,
+            # the plates and the selected row cover it under the text
+            write_565(os.path.join(adir, 'menu_background.565'), 240, 240, (200, 40, 80))
+            photo = rgb(200, 40, 80)
+            ctx.assets = Assets(adir)
+            del ctx.menu_art
+            ns['draw_menu'](ctx, 0)
+            self.assertEqual(lcd.pixel(2, 100), photo)
+            self.assertEqual(lcd.pixel(ns['ROW_X'] + 2, ns['ROW_Y'][0] + 2), ns['PANEL'])
+            self.assertEqual(lcd.pixel(ns['ROW_X'] + 2, ns['ROW_Y'][1] + 2), photo)
+            bx, by, bw, bh = ns['label_box'](1)
+            self.assertEqual(lcd.pixel(bx, by), ns['PLATE'])
+            ns['menu_select'](ctx, 0, 1)
+            self.assertEqual(lcd.pixel(ns['ROW_X'] + 2, ns['ROW_Y'][0] + 2), photo)
+            self.assertEqual(lcd.pixel(ns['ROW_X'] + 2, ns['ROW_Y'][1] + 2), ns['PANEL'])
+            self.assertEqual(lcd.pixel(2, 100), photo)
+            for i in range(len(ns['MENU'])):
+                bx, by, bw, bh = ns['label_box'](i)
+                lx = ns['label_x'](i)
+                self.assertTrue(bx <= lx and lx + ns['label_width'](i) <= bx + bw, i)     # plate holds the label
+                self.assertTrue(ns['ROW_X'] <= bx and bx + bw <= ns['ROW_X'] + ns['ROW_W'], i)
+                self.assertTrue(ns['ROW_Y'][i] <= by and by + bh <= ns['ROW_Y'][i] + ns['ROW_H'], i)
             # menu geometry: labels end inside the row box, rows do not overlap, footer is clear
             rows = ns['ROW_Y']
             box_l, box_r = ns['ROW_X'], ns['ROW_X'] + ns['ROW_W']
