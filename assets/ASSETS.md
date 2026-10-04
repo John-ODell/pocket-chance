@@ -55,14 +55,27 @@ The game draws over `table.565` in four horizontal bands that never overlap. Tex
 
 Good: a plain dark green felt with a slightly lighter border in the outer 12 px, a subtle logo or pattern in the card rows only (y 28–83 and 100–155, which the cards mostly cover), any decoration in the corners above y 24 is fine if it stays dark. Bad: light wood, bright gold trim or text under the four boxes above.
 
-## Phase 2: slots
+## Phase 2: slots (approved, DR-023, 2026-10-04)
+
+**At a glance, for John.** Ten files. Start with the three pilot files **`sym_cherry`, `sym_star`, `sym_bar`**, run them through the converter, and the game shows them before you draw the rest.
 
 | File | Count | Size (px) | Bytes on board | Notes |
 |---|---|---|---|---|
-| `slots/sym_<name>.bmp` | 8 | **56 x 56** | 6,276 each | Names: `cherry`, `lemon`, `orange`, `bell`, `bar`, `seven`, `diamond`, `star`. Each fills its square on a solid or simple background, no transparency needed |
-| `slots/cabinet.bmp` (optional) | 1 | **240 x 240** | 115,204 | Machine frame. Leave three **56 x 56** windows, centred vertically, with 18 px gaps. The reels are drawn into those windows. The dev may adjust positions in a ruling |
-| `slots/banner_jackpot.bmp` | 1 | **200 x 40** | 16,004 | Magenta background |
-| `slots/sym_blur.bmp` (optional) | 1 | **56 x 56** | 6,276 | A motion-blurred strip to show while the reels spin |
+| `slots/sym_cherry.bmp`, `sym_lemon`, `sym_orange`, `sym_bell`, `sym_bar`, `sym_seven`, `sym_diamond`, `sym_star` | 8 | **56 x 56** | 6,276 each | One symbol each, filling its square on a solid or simple dark background. **No transparency** (no magenta): the whole square is shown. Bold shapes, 3 to 5 flat colours. `star` is the jackpot, `cherry` the small win, so make those two the most distinct |
+| `slots/cabinet.bmp` (optional) | 1 | **240 x 240** | 115,204 | The machine frame. The game draws the three reels into fixed windows at **x 18–73, 92–147 and 166–221, y 92–147** (56 x 56 each). Whatever you paint inside the windows is never seen. Keep the text zones below dark and calm. Without this file the game draws a plain frame |
+| `slots/banner_jackpot.bmp` | 1 | **200 x 40** | 16,004 | "JACKPOT" banner, magenta background, shown at x 20–219, y 176–215 when three stars land |
+
+`sym_blur` is dropped: the reels scroll the real symbols, so no blur frame is needed.
+
+**Readability zones on the cabinet** (same rule as the table: average brightness under 100 of 255 and no bright pattern; the converter warns if not):
+
+| Zone | Pixels | What is drawn there |
+|---|---|---|
+| Top line | x 0–240, y 0–23 | `$chips` in gold at x 6–118; chip and bet at x 150–234 |
+| Win line | x 20–220, y 156–166 | the winning line's name, e.g. "two cherries" |
+| Bottom band | x 16–224, y 168–239 | jackpot banner (y 176–215), win amount and the prompt lines (y 218–226, 228–236) |
+
+The reel band (y 24–155) outside the three windows is yours for lights, chrome and decoration.
 
 ## Notes for the senior dev
 
