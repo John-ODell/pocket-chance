@@ -38,3 +38,4 @@ Maintained by the PM. Newest at the bottom. Format: `DD-Mon | DR-NNN | decision 
 | 2026-10-04 | DR-020 | Slots spin animation rev 2: real symbols scroll, symbols in RAM, staggered reels, direct push; RAM option A (about 44 KB), fallback B if mid-spin free RAM under about 20 KB | John |
 | 2026-10-04 | DR-021 | Slots wins rev 2: show result, then save, then 3 blinks; no auto-spin; X shows paytable; jackpot banner on three stars | John |
 | 2026-10-04 | DR-024 | Sprite sheets: one .565 per family (cards, chips, banners, icons, slot symbols); John still draws separate BMPs and the converter packs them | John |
+| 2026-10-04 | D-009 | Slots dropped. A classic multi-line 5-reel machine does not fit the board's RAM, and a 3-reel single line is not worth the cost. Next game is Caribbean Stud, then Ultimate Texas Hold'em. Slots rulings DR-017 to DR-023 stay on file as history. John no longer needs to draw slot art. | John |
