@@ -54,6 +54,7 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 | SW-PWR | power switch on the regulator enable | PCM12SMTR (C&K) slide | SMD | `Switch:SW_SPDT` / `Button_Switch_SMD:SW_SPDT_PCM12` | HR-033 | stock |
 | R-DIV | battery divider to GP28, **gated**: Q4 AO3401A high-side switch on BAT+, driven through Q3 AO3400A from the 3.3 V rail, R39 100 kΩ holds Q4 off when the board is off | 100 kΩ + 100 kΩ, 100 nF; AO3400A (Q3); AO3401A (Q4) | 0402, SOT-23 | `Device:R`, `Device:C`, `Transistor_FET:AO3400A`, `Transistor_FET:AO3401A` | HR-P01; AUDIT-2 #2 (fix mirrors the Pico W's gated VSYS sense) | stock |
 | R12 | thermistor-pin resistor, **fitted = cell temperature check bypassed** (John's decision 2026-10-04; with the 2-pin socket of rev 0.9 there is no thermistor input on the board) | 10 kΩ | 0402 | `Device:R` | PCB-001; AUDIT-2 #8; BQ24074 ds Table 7-1 | |
+| R16 | charger safety timer (TMR pin), **68 kΩ** (rev 0.10, John's ruling 2026-10-04; was 47 kΩ). Sets only the longest charge the chip allows, not the charge current (R14 sets that) | 68 kΩ 1 % | 0402 | `Device:R` | BQ24074 ds p.13 and p.28: t_MAXCHG = 10 x R_TMR x K_TMR (36 / 48 / 60 s/kΩ) = 6.8 / 9.1 / 11.3 h, inside the 18 to 72 kΩ range; covers a 2000 mAh charge at about 494 mA even on a worst-case chip | stock |
 | (none) | fuel gauge: **dropped from spin 1** (the gated ADC divider is used instead; no symbol, no footprint) | MAX17048 remains a spin-2 option | | | HR-P01, HR-P02 | |
 
 ## Block 4: screen and input
