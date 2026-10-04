@@ -97,8 +97,18 @@ Four files: three new game modules and the menu with Slots switched on. Runs wit
 | 2 | `games/slots_table.py` | `/games/slots_table.py` |
 | 3 | `games/slots.py` | `/games/slots.py` |
 | 4 | `pocket.py` | `/pocket.py` |
+| 5 | `lib/art.py` | `/lib/art.py` (slots needs `open_sprite`, added after step 1f; the expert uploaded it during the bench) |
 
 **Test line:** menu, Slots, A. The three reels scroll for about two seconds and stop left to right; the chips line shows the stake taken while they spin and the result after; a win shows "WIN +n" and the line name and blinks the gold frames three times. Joystick changes the bet (5 to 100), X shows the paytable, B returns to the menu. The first spin prints `RESULT slots mem_free mid-spin=...` (DR-020: expected about 45 to 50 KB; under 20 KB means fallback B is not enough and I need to know).
+
+## Step 1h: slots memory trims, 2026-10-05
+One file. Same game; it builds stand-in symbol rows only for symbols without art, cleans up memory after start, and prints `RESULT slots mem_free after init=...` as well as the mid-spin line.
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `games/slots.py` | `/games/slots.py` |
+
+**Test line:** as step 1g. Copy both `RESULT slots mem_free` lines to the PM.
 
 ## Step 2: pilot image test (after you have made the 4 pilot images)
 On the Mac, from the repo folder:
@@ -122,6 +132,30 @@ Upload `pocket.py` a second time, named `/main.py` on the board. Unplug and plug
 
 ## Not run anywhere yet
 All of this has run only on the Mac, against stand-in `machine` and `framebuf` modules (96 tests). Nothing has run under MicroPython or on the board. Timing, colours on the panel and RAM use are what step 1 finds out.
+
+## On the board now (code, after step 1h)
+_The record of what the board holds. `tools/check_upload.py` reads it: every module a board file imports must be here, every method a board file calls on the shared libraries must exist in the version recorded here, and a repo file that differs from its recorded version is flagged as not yet uploaded. After an upload, run `python3 tools/check_upload.py --record <step> <repo paths...>` to update the rows._
+
+| Board path | Repo file | Step | Version (git blob) |
+|---|---|---|---|
+| `/pocket.py` | `pocket.py` | 1g | 43ca9e2aff7f |
+| `/lib/pixfmt.py` | `lib/pixfmt.py` | 1 | 03010786bfba |
+| `/lib/clocks.py` | `lib/clocks.py` | 1 | b8c0bbf5c8f0 |
+| `/lib/lcd.py` | `lib/lcd.py` | 1f | 58efcaf88d03 |
+| `/lib/font.py` | `lib/font.py` | 1 | 7b1a40a2df70 |
+| `/lib/buttons.py` | `lib/buttons.py` | 1 | 7dd47cbb1e2e |
+| `/lib/art.py` | `lib/art.py` | 1g | 97b2a637219d |
+| `/lib/save.py` | `lib/save.py` | 1 | 4abeb7ea2133 |
+| `/lib/bankroll.py` | `lib/bankroll.py` | 1 | be0756d4beef |
+| `/lib/cards.py` | `lib/cards.py` | 1 | 117c3004184b |
+| `/games/blackjack_rules.py` | `games/blackjack_rules.py` | 1c | 6000c8ab25fd |
+| `/games/blackjack_table.py` | `games/blackjack_table.py` | 1c | 47214b7e2d74 |
+| `/games/blackjack.py` | `games/blackjack.py` | 1c | 3332b24fb43b |
+| `/games/slots_rules.py` | `games/slots_rules.py` | 1g | 9e701c39f6f4 |
+| `/games/slots_table.py` | `games/slots_table.py` | 1g | ac57f582b8be |
+| `/games/slots.py` | `games/slots.py` | 1h | 5aca5b6cd35c |
+
+Also on the board: `/assets/menu_background.565` (step 1d), `/save.json` and `/save.bak` (written by the game). The old `main.py` is gone (D-003).
 
 ## Not on the board yet
 Built and tested on the Mac, waiting for a later step. Do not upload: `lib/poker.py` (poker hand evaluator for the later card games).

@@ -39,6 +39,9 @@ The expert ran the build on the board. One blocker, now fixed: the image-loader 
 2. **Art:** make the four pilot images (`c_AS`, `c_back`, `chip_5`, `table`) at the sizes in `assets/ASSETS.md`, drawn the right way up as described there. Then `UPLOAD.md` step 2.
 3. Nothing else is waiting on you.
 
+## Slots bench: one upload mistake, fixed; memory being watched
+The expert found that `UPLOAD.md` step 1g left out `lib/art.py`, which slots needs (it gained a routine after step 1f). Without it the first spin crashed. The expert uploaded the right file; step 1g now lists it. To stop this happening again, `UPLOAD.md` now carries a record of exactly which version of each file is on the board, and the upload checker refuses when a board file calls something its library on the board does not have, or imports a module that is not there. Memory: the expert measured about 27 KB free in his harness after the slots screen starts, less than I expected; the game prints the real number after start and mid-spin. I trimmed what I could (stand-in symbol rows are built only for symbols without art, a memory clean-up after start). If the mid-spin number is under 20 KB I reduce further, as ruled.
+
 ## New request: DR-024, one image file per family instead of one per picture
 The expert found that opening a file costs about 3 ms on the board, so your 53 card pictures as 53 files would make blackjack slower than the plain drawn cards. DR-024 proposes that the converter packs each family (cards, chips, banners, icons, slot symbols) into one file; you still draw separate BMPs exactly as before, and uploads get easier (one file instead of 53). Waiting for your ruling before you convert card art.
 
