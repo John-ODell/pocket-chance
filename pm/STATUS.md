@@ -2,26 +2,34 @@
 
 _Updated by the senior dev at the end of each session. Written for John._
 
-**Last updated:** 2026-10-06
+**Last updated:** 2026-10-06 (final for the games)
 
-## The menu's new look is built (DR-072 style A, your pick), on branch `flop-game`
-Without your photo on the board the menu is now a casino table: a green felt shaded from dark at the top to lighter at the bottom, a double gold border, "Pocket Chance" with a drop shadow, your chips on a cream plaque, and each game as a wide pill in its own felt colour (green Blackjack, blue Ultimate, burgundy Caribbean, grey Off). The pill you are on has a gold outline and a small gold chip beside it. Until you draw the icons, each row shows a card suit drawn in code: a spade, a red diamond, a club, and a power sign for Off. Everything is drawn by code, nothing is loaded, so memory is unchanged; the expert measures the built menu (the entry redraw and the joystick band pushes) from the mount before you upload. If your photo file is on the board, the photo menu shows exactly as before. Same upload step (1o); it is all inside `pocket.py`.
+## The games are finished (2026-10-06)
+You said everything is good on the new build, so the games are done and there is no more game design. What is on your board now (upload step 1o, installed and checked file by file by the expert):
 
-## Built on branch `flop-game`: your three-game menu (2026-10-06)
-As you ruled through the PM: **Blackjack, Ultimate and Caribbean, nothing else.** "Hold'em" is renamed Ultimate and its felt is deep blue; Caribbean Stud has left the menu (its code is parked in `archive/stud/`, like slots); baccarat is paused (its finished code waits on the `baccarat` branch); and the new **Caribbean** is your flop game: two cards each, the first three table cards turn, A calls high (4x your Ante), Y calls low (2x) or B folds, the last two turn, the dealer's cards turn one by one. The dealer needs a pair of fours or better; **if not, every bet is returned**, as you ruled. A winning Ante pays by a table (flush 2:1, full house 3:1, four of a kind 10:1, straight flush 20:1, royal 100:1, anything else 1:1) and the call pays 1:1. Four other players sit at the sides as chip stacks playing the same strategy the help screen teaches. **Your multiplier, as you refined it:** when you and all four seats beat a dealer who has a hand, the next hand pays its winners **three times the whole win, Ante and call together**; it lasts exactly that one hand, never stacks, is never saved, and a hand that does not win gets nothing extra. It fires about one hand in 25 and the screen says "x3 PAYOUT NEXT HAND". The felt is burgundy so the three games look different at a glance. Upload is `UPLOAD.md` step 1o (seven files, five deletions); the expert benches it first. 228 tests pass (the 36 Stud tests moved to the archive with the game).
+- **Blackjack**, as before (green felt).
+- **Ultimate**: Ultimate Texas Hold'em, renamed from Hold'em at your request, on a deep blue felt.
+- **Caribbean**: your flop game, on a burgundy felt. Two cards each; the first three table cards turn; A calls high (4x your Ante), Y calls low (2x), B folds; the last two turn. The dealer needs a pair of fours or better, or every bet is returned. Four other players sit at the sides. When you and all four beat a dealer who has a hand, a win on the next hand pays three times the whole win.
+- **The menu**: the casino felt look you picked (style A), drawn by code.
 
-**The odds, in plain words** (my simulator, 400,000 hands per row, playing the strategy on the help screen; the numbers wobble by about one point):
-- With your rules (everything pushes when the dealer has no hand; x3 on the whole win after the table beats the house) the house keeps **about 5 chips of every 100 Antes**. That is above the 4 the PM asked me to watch for, so no smaller multiplier is needed. For scale: x2 on the whole win would be about 10, x3 on the call bet alone (the earlier build) about 8, and no multiplier about 15.
-- For comparison, the casino version of this game (one call size, the Ante bonus paid even when the dealer has no hand) is about 6 with the same strategy and 2.2 with perfect play. Your "no hand means everything pushes" rule is what makes the game stiffer than the casino's: it takes away the Ante bonus a player used to collect on about a third of hands.
-- A chip measure you may prefer: of every 100 chips you put on the table (Antes plus calls), about 1.6 stay with the house.
+**The odds, in plain words.** Caribbean keeps about 5 chips of every 100 Antes with the strategy on its help screen (about 1.6 of every 100 chips you put on the table). Ultimate keeps about 2.4 of every 100 Antes with its help screen's strategy (2.2 with perfect play), and Blackjack about half a chip of every 100 bet with basic strategy.
 
-**Confirmed by you through the PM (2026-10-06):** the call sizes low 2x / high 4x (DR-063); Ante 5 to 50 so a hand never costs more than 250 (DR-068); the menu word "Caribbean" and a felt colour per game, blue for Ultimate and burgundy for Caribbean (DR-062, DR-065); and the multiplier as described above (DR-064, your version). The ruling files follow from the PM.
+**The rulings are written down.** The decision files for DR-061 to DR-072 are drafted for the PM. Some details you never ruled on one by one. These were built as I recommended, and you accepted them by playing: Caribbean's screen layout, its buttons, four other players and how they play, saving once per hand, and the help screen. One more is flagged: the x3 only arms when everyone beats a dealer who has a hand, because with no dealer hand every bet is returned. The PM will check any of these with you if needed.
 
-## Your new Caribbean rules and the rename: eleven requests filed (DR-061 to DR-071), nothing built yet
-You asked me directly for two things. **Renaming Hold'em to "Ultimate"** is DR-061, a one-line change the moment it is ruled. **Your flop game** (two cards each, the first three table cards turn, bet low or high or fold, the last two turn, dealer needs 4s or better) is the published game Casino Hold'em with your low/high twist. I measured it with a new simulator before filing anything, because the choice between two call sizes is worth real money to the player: the published game with one call size has a 2.2% house edge with perfect play (about 7.6% with the simple strategy I would teach); your low/high version with nothing else changed is about break-even, and a careful player comes out ahead. DR-063 recommends your rule with one small funding change (when the dealer has no hand, the Ante pays 1:1 instead of the bonus table), which lands at about 0 to 2% with the taught strategy. **Your WSOP multiplier** as described (x5 on everything whenever the table beats the house) would hand you 61 chips per 100 Antes, so the chips would climb forever; DR-064 recommends a tamed version (armed only when everyone beats a dealer who has a hand, doubling the call bet's win on the next hand, about once every 28 hands) which keeps the game roughly level. The other requests: the new game takes the Caribbean row with a name you choose and Caribbean Stud moves down a row as "Stud" rather than being thrown away (DR-062), Ultimate's layout and keys with a different felt colour per game (DR-065 to DR-067), Ante 5 to 50 (DR-068), the four seats (DR-069), the save (DR-070) and a one-screen help text (DR-071). Baccarat's requests (DR-051 to DR-060) stay filed; the PM will ask you which comes first.
+## Parked, not scheduled
+- **Baccarat** is finished code waiting on its own branch (`baccarat`). It is not on the board and not planned. If you ever want it, it needs one upload step and a refresh against today's menu.
+- **Caribbean Stud** is kept in `archive/stud/` with instructions to bring it back.
+- **The error screen** (branch `game-error-screen`) is a safety net. If a game ever hits an error, it saves your chips, writes the error to a file and goes back to the menu, instead of leaving a still picture. It is not merged or installed, and it only goes on the board if you ask.
 
-## Baccarat: ten requests filed (DR-051 to DR-060), nothing built yet
-You picked baccarat. The requests cover the rules and pays (standard punto banco, eight decks, Banker 5% commission, Tie 8:1; our new simulator `tools/baccarat_edge.py` reproduces the published edges exactly: Banker 1.06%, Player 1.24%, Tie 14.36%, and gives the alternatives: Tie 9:1 4.84%, no-commission Banker 1.46%), the screen (Caribbean's bands, three card slots per hand, three bet boxes along the bottom, cards dealt one at a time 300 ms apart), the buttons (joystick left/right picks Player, Tie or Banker, up/down the stake, A deals and A again repeats the bet, X pays, B menu), stakes 5 to 100, five chip-stack seats along the bottom each with its own betting habit, the save, the menu word "Baccarat" with a fourth icon slot, a one-screen help text, how the 5% commission rounds to whole chips (19 for 20 rounded down; exact 1.06% at 20, 40, 60, 80, 100 and dearer at 5 or 10, table in DR-059), and a row of twelve coloured squares showing the last results. I build when the rulings land.
+## The one open question: the Caribbean freeze
+Once, Caribbean stopped responding after a HIGH call. The expert caught the board while it was stuck: the game was still running and checking the buttons, with plenty of memory, so it did not crash. Either your A press never reached it, or the screen stopped showing new pictures. It has not happened since. If it happens again, leave the cable plugged in and tell the PM your chip count before and after, and the last button you pressed. The saved chip count tells the two causes apart.
+
+## Not tested, honestly
+- The x3 payout is checked by tests and the simulator, but the expert's scripted bench never happened to trigger it (it comes about once in 25 hands), so its board timing is unmeasured.
+- The freeze above is unexplained.
+
+## Earlier notes
+The sections below are the history of how the games got here. They are kept for the record, and some of them describe plans that later changed.
 
 ## How much room is left, and could another game fit? (your question, 2026-10-06)
 Short answer: **yes, easily.** Storage is almost empty and memory has room for one more game of any size we have built so far. The numbers below come from the expert's benches (`hw/BUDGET.md`) and the upload record (`UPLOAD.md`).
@@ -48,11 +56,6 @@ Short answer: **yes, easily.** Storage is almost empty and memory has room for o
 **My recommendation: Three Card Poker.** It is the most played casino poker game after Hold'em, it reuses Caribbean's whole pattern (ante, look, raise or fold, dealer qualifies, the chip-stack seats, the poker evaluator), so it is the least new code for a full game, its strategy is one line ("raise with queen-six-four or better"), and the Pair Plus side bet gives you a second thing to play for. Memory lands near Caribbean's 52 KB, well inside the budget. Second choice is Video Poker if you would rather have the best odds and a different feel; baccarat if you want the quickest build. Roulette I would leave until the art pipeline is fully in use.
 
 **Risks.** Memory is the one hard limit and these all clear it; the expert measures every build before it reaches you. Each new game adds a step to `UPLOAD.md`, one icon to draw, and about a dozen tests to keep. Nothing here is built; when you pick, I file the decision requests (rules and pays with the measured edge, layout, buttons, seats, save, menu label) the way I did for the other three.
-
-## Where we are
-Every decision for Phase 1 is approved (DR-001 to DR-015) and the first full version of the game is written. **It has never run on the board.** I have asked the expert to look it over on the bench first; after that the next step is yours: upload it following `UPLOAD.md` step 1 and tell the PM what you see.
-
-The board currently boots to a blank screen because the old program was erased at your request (D-003). The new game installs as `/pocket.py` and you start it by hand from Viper IDE; it does not take over the boot file until you say so (`UPLOAD.md` step 3).
 
 ## Splitting pairs is built (DR-016, approved)
 Y splits a pair of the same rank into two hands, each with its own bet (the bankroll must cover the second bet). The two hands sit side by side; a gold line marks the one you are playing. Aces get one card each and stand. You can double after a split. A 21 after a split pays even money. The result line shows both hands. 25 new tests cover the engine, the table and the screen, and the text test now checks the split layouts too. House edge drops to about 0.55%. Files to upload are in `UPLOAD.md` step 1c; the expert can do it.
@@ -136,16 +139,3 @@ Your casino photo is behind the main menu. Because the middle of the photo is br
 ## Your table background
 You said you want to draw the felt yourself. `assets/ASSETS.md` now has a "Readability" section with the exact pixel boxes where text and cards sit, so you know which areas to keep dark and calm. The converter warns (but still converts) if a text area of your table is too light or busy. Upload just `assets/out/table.565` and the game uses it at the next start; no code changes.
 
-## Waiting on a decision
-Nothing. I will file a request before any new work on slots (Phase 2), and for making `pocket.py` the boot file if you prefer it decided here rather than in `UPLOAD.md`.
-
-## What I plan next
-- Fix whatever the bench check and step 1 turn up.
-- A `tools/check_upload.py` that checks the files on the Mac match the upload list (sizes, compile), so uploads are less error-prone.
-- Then slots, after a scope request.
-
-## Not tested, honestly
-- Nothing has run under MicroPython or on the board. The CPython stand-ins mimic `framebuf` and `machine` but cannot catch MicroPython-only differences, timing, or how the panel looks.
-- The panel has not been looked at while running at the full 62.5 MHz on the new firmware. That is why `FAST_SPI` exists.
-- Real RAM use after all modules load. `pocket.py` prints it (`RESULT boot mem_free=...`) so step 1 answers it.
-- Scaled text (`font.py`) is drawn pixel by pixel in Python; it is only redrawn on button presses, which should be fine, but speed is unmeasured.
