@@ -5,7 +5,7 @@
 from machine import Pin
 import utime
 DUR_S = 30
-SKIP = {8, 9, 10, 11, 12, 13, 23, 24, 25, 29}
+SKIP = {0, 8, 9, 10, 11, 12, 13, 23, 24, 25, 29}   # 0 reserved for the new board's PSRAM CS (DR-033)
 gp = [g for g in range(30) if g not in SKIP]
 pins = [(g, Pin(g, Pin.IN, Pin.PULL_UP)) for g in gp]
 utime.sleep_ms(20)
