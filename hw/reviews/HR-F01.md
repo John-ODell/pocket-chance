@@ -18,7 +18,7 @@ Also from the same probe: CPU runs at 125 MHz, not the 133 MHz in README.md. A b
 
 ## Options
 ### A. Reflash with a 16 MB RP2040-Plus build (recommended, when convenient)
-MicroPython publishes a build for the Waveshare RP2040-Plus (there are 4 MB and 16 MB variants; take the 16 MB one). I will fetch the exact file, check its name and size, and write the steps into this file before John does anything. The steps will be, in outline:
+MicroPython publishes an official build for this exact board: https://micropython.org/download/WAVESHARE_RP2040_PLUS/ . Take the **16 MB** variant, not "Standard". Latest stable on 2026-10-03: **`WAVESHARE_RP2040_PLUS-FLASH_16M-20260824-v1.29.0.uf2`** (MicroPython v1.29.0). That jumps from v1.22.2 to v1.29.0; `framebuf`, `machine.SPI`, `os`, `json` and `_thread` are unchanged in the ways this project uses them, and I will re-run every `hwtest/` script after the flash to confirm the numbers in `BUDGET.md` still hold. Steps:
 1. I back up the board again (already done today: `backups/2026-10-03/main.py`, identical to `main_monolith.py`).
 2. John unplugs the board, holds **BOOTSEL**, plugs it in, releases. A drive named `RPI-RP2` appears.
 3. John drags the `.uf2` onto `RPI-RP2`. The board reboots by itself into MicroPython with an empty 16 MB filesystem.
