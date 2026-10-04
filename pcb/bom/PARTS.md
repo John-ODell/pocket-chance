@@ -2,7 +2,7 @@
 
 Written 2026-10-04 (phase 2 of `pcb/STAGE2.md`). One line per part or group. Columns: what it is, the manufacturer part number (MPN), package, the KiCad symbol and footprint we will use (`library:name`; "custom" means we draw it from the datasheet), where its facts come from, and what is still to check. **Stock** is checked on PCBWay's quote page and the distributors (Digi-Key, Mouser) at phase 9; until then every line says "stock: to check".
 
-Design rules behind the list: surface-mount only except the 18650 holder; nothing smaller than 0402 (PCBWay's 0201 lines carry a 100-piece minimum); every optional block in its own group so spin 2 can drop it. **Owner's rule (2026-10-04): standard, common, stocked parts with standard footprints wherever possible; anything unusual carries its reason in its row.** "Custom" in the KiCad column means only that KiCad's bundled library lacks the drawing and we draw it from the datasheet; the part itself is still a standard catalogue part.
+Design rules behind the list: surface-mount only (the 18650 holder was dropped 2026-10-04, John's choice: flat board, JST LiPo); nothing smaller than 0402 (PCBWay's 0201 lines carry a 100-piece minimum); every optional block in its own group so spin 2 can drop it. **Owner's rule (2026-10-04): standard, common, stocked parts with standard footprints wherever possible; anything unusual carries its reason in its row.** "Custom" in the KiCad column means only that KiCad's bundled library lacks the drawing and we draw it from the datasheet; the part itself is still a standard catalogue part.
 
 Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts the Raspberry Pi design guide says to use, with its warning that others are at your own risk); U-RF (the RM2 is the standard pre-certified way to add this radio; a bare radio chip would be the unusual choice); SW-JOY (a 5-way navigation switch is a standard part, but KiCad has no footprint for it; the zero-custom alternative is five ordinary tactile buttons as a direction pad, which John said he would accept).
 
@@ -47,9 +47,8 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 | L-BB | buck-boost inductor | 2.2 µH, 2 A class, 3 x 3 mm | | `Device:L` / `Inductor_SMD:L_1210_3225Metric` or vendor | TPS63001 datasheet | pick after datasheet |
 | U-PROT | cell protection | DW01A (Fortune) | SOT-23-6 | `Battery_Management:DW01A` / `Package_TO_SOT_SMD:SOT-23-6` | HR-033, HR-P01 | datasheet (official); stock |
 | Q-PROT | protection dual MOSFET | FS8205A | TSSOP-8 or SOT-23-6 per vendor | `Transistor_FET_Dual:` generic dual N-MOSFET / per package | HR-033 | datasheet; package; stock |
-| J-BAT | pouch cell socket | S2B-PH-SM4-TB (JST PH, 2 mm, SMD) | SMD | `Connector:Conn_01x02_Socket` / `Connector_JST:JST_PH_S2B-PH-SM4-TB_1x02-1MP_P2.00mm_Horizontal` | PCB-001 | stock |
-| BT-18650 | 18650 holder | 1042 (Keystone) | through-hole | `Device:Battery_Cell` / `Battery:BatteryHolder_Keystone_1042_1x18650` | PCB-001; PCBWay places through-hole | stock; board thickness |
-| JP-CELL | cell select, one of two | 3-pad solder jumper | | `Jumper:SolderJumper_3_Bridged12` / `Jumper:SolderJumper-3_P1.3mm_Bridged12_Pad1.0x1.5mm` | PCB-001 | |
+| J-BAT | pouch cell socket, pin 1 = +, polarity on the silkscreen | S2B-PH-SM4-TB (JST PH, 2 mm, SMD) | SMD | `Connector:Conn_01x02_Socket` / `Connector_JST:JST_PH_S2B-PH-SM4-TB_1x02-1MP_P2.00mm_Horizontal` | PCB-001 | stock |
+| Q-RPP | reverse-polarity guard, P-MOSFET in the cell's positive lead | AO3401A (Alpha & Omega; -30 V, 4 A, about 50 mΩ; the most common hobby P-FET) | SOT-23 | `Transistor_FET:AO3401A` / `Package_TO_SOT_SMD:SOT-23` | PCB-001 revised (JST-only, John 2026-10-04) | datasheet (official Diodes); pin order; stock |
 | SW-PWR | power switch on the regulator enable | PCM12SMTR (C&K) slide | SMD | `Switch:SW_SPDT` / `Button_Switch_SMD:SW_SPDT_PCM12` | HR-033 | stock |
 | R-DIV | battery divider to GP28 | 100 kΩ + 100 kΩ, 100 nF | 0402 | `Device:R`, `Device:C` | HR-P01: 100 kΩ or more total | |
 | R-TS | thermistor-pin resistor | 10 kΩ (or a 10 k NTC footprint) | 0402 | `Device:R` | PCB-001 | |
