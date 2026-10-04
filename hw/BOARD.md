@@ -4,7 +4,7 @@ _Maintained by the microcontroller expert. State what is on the desk and how you
 
 | Item | Value | How verified |
 |---|---|---|
-| Board | Waveshare RP2040-Plus, 16 MB flash | USB VID:PID 2e8a:0005. Flash reads at 2, 4, 8 and 15 MB offsets return erased 0xFFFFFFFF and do not mirror the start, so the chip is larger than 2 MB (`hwtest/flash_probe.py`, 2026-10-03). 16 MB exactly is from the box; the probe cannot distinguish 8 from 16 |
+| Board | Waveshare RP2040-Plus, 16 MB flash | USB VID:PID 2e8a:0005. Flash reads at 2, 4, 8 and 15 MB offsets return erased 0xFFFFFFFF and do not mirror the start, so the chip is larger than 2 MB (`hwtest/flash_probe.py`, 2026-10-03). **16 MB by aliasing evidence** (an 8 MB chip would mirror the firmware at the 8 MB offset; the probe read erased data there). JEDEC ID not read: the PM ruled the XIP-off assembly routine unnecessary unless the PCB maker needs the exact part (2026-10-04) |
 | Display HAT | Waveshare Pico LCD 1.3", ST7789, 240x240 | John; driver init from `main_monolith.py` produced timed frames at 62.5 MHz (`hwtest/frame_full.py`); John's visual check of the colour pattern pending |
 | Firmware | **MicroPython v1.29.0 (2026-08-24), build `WAVESHARE_RP2040_PLUS-FLASH_16M`**, `machine='Waveshare RP2040-Plus 16MB with RP2040'`, mpy 4870, `_thread='unsafe'`. John flashed it 2026-10-03 (HR-F01). Before that: stock Pico build v1.22.2 | `os.uname()`, `sys.implementation` (`hwtest/board_info.py`, 2026-10-03) |
 | CPU clock | 125 MHz on both firmwares (not the 133 MHz in README) | `machine.freq()` |
@@ -29,7 +29,7 @@ Each pin read as an input with the pull-up, then the pull-down (20 samples each)
 | 26, 27, 28 | follow the pull; ADC 0.58–0.60 V floating | free ADC inputs |
 | **29** | follows the pull; ADC3 0.61 V floating, same as the free ADCs | **not wired to a VSYS divider**: unconnected on the Plus. The earlier 1.17–1.42 V "VSYS" readings were a floating input |
 
-Flash size, read-only reasoning: NOR flash ignores address bits above its capacity, so an 8 MB chip read at offset 8 MB aliases to offset 0 and shows the firmware image. `flash_probe.py` read erased 0xFFFFFFFF at 8 MB and 15 MB, not a mirror, so the chip is larger than 8 MB: 16 MB as labelled. A JEDEC-ID read (command 0x9F) would make it formal; it needs XIP off while the command runs and is pending a PM ruling (`picotool` in BOOTSEL mode or a Thumb-assembly routine).
+Flash size, read-only reasoning: NOR flash ignores address bits above its capacity, so an 8 MB chip read at offset 8 MB aliases to offset 0 and shows the firmware image. `flash_probe.py` read erased 0xFFFFFFFF at 8 MB and 15 MB, not a mirror, so the chip is larger than 8 MB: 16 MB as labelled. A JEDEC-ID read (command 0x9F) would make it formal; it needs XIP off while the command runs. **PM ruling 2026-10-04: not needed; revisit only if the PCB maker needs the exact part identity, with John near the board.** `picotool` cannot help (its "flash size" comes from the firmware's binary info, not the chip). No write-and-readback test, ever: it could alias onto the filesystem.
 
 ## If mpremote says "could not enter raw repl"
 The board is almost certainly fine. A killed `mpremote exec` (timed background run, closed terminal) leaves it in raw-REPL mode with the program still running, and mpremote's handshake then fails. Run `hwtest/unwedge.py` (Mac side, pyserial: Ctrl-C, Ctrl-B, Ctrl-D) and mpremote connects again. Unplugging also works but is not needed. Learned the hard way on 2026-10-04, twice.

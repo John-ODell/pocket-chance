@@ -17,7 +17,7 @@ Without the fix the game runs at 20 fps full-redraw and 78 fps for a 48-row band
 |---|---|---|
 | CPU | RP2040 dual Cortex-M0+, running at **125 MHz** on this firmware | measured, `board_info.py` |
 | SRAM | 264 KB; 222,720 bytes free to Python at boot | measured, `ram_free.py` |
-| Flash chip | 16 MB (reads above 2 MB are erased, not mirrored) | measured, `flash_probe.py`; 16 vs 8 from the box |
+| Flash chip | **16 MB by aliasing evidence**: reads at 2, 4, 8 and 15 MB are erased, not mirrors of the start, so the chip is larger than 8 MB; JEDEC ID not read (PM ruling) | measured, `flash_probe.py` |
 | **Filesystem available** | **15,728,640 bytes (15 MB)**, 15,720,448 free after `main.py`, since the reflash to v1.29.0 on 2026-10-03 (was 1.4 MB on the stock build). See HR-F01 | measured, `board_info.py` |
 | `_thread` | reported `_thread='unsafe'` by v1.29.0 `sys.implementation` | measured, `board_info.py` |
 | Display | 240 x 240, RGB565 | old driver |
