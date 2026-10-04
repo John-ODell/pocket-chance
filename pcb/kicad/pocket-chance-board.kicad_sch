@@ -1,0 +1,20 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "4a96f16e-da4b-424f-949b-4389eda2fe0f")
+	(paper "A3")
+	(title_block
+		(title "Pocket Chance board, spin 1")
+		(date "2026-10-04")
+		(rev "0.1")
+		(comment 1 "Root sheet. Empty until the parts are chosen (pcb/bom/PARTS.md).")
+	)
+	(lib_symbols)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)

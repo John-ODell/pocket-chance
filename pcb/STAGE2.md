@@ -9,9 +9,9 @@ RP2350A, 16 MB flash, 8 MB PSRAM; 1.54" 240 x 240 ST7789 module on a header; joy
 
 | # | Phase | Status | What John looks at when it ends |
 |---|---|---|---|
-| 1 | Install KiCad | **done** (KiCad 10.0.6, `kicad-cli` present) | open `pcb/kicad/pocket-chance-board.kicad_pro` once, confirm it opens |
-| 2 | Parts shortlist | in progress: `pcb/bom/PARTS.md` | the shortlist, one line per part, with "fab can place it" and "in stock" columns |
-| 2a | PCB-001: battery and power path | to file | the decision request (power-path charger, buck-boost, protection, two cell connectors) |
+| 1 | Install KiCad | **done** (KiCad 10.0.6; empty project created, ERC runs clean, PDF export works) | open `pcb/kicad/pocket-chance-board.kicad_pro` once, confirm it opens |
+| 2 | Parts shortlist | **draft written** (`pcb/bom/PARTS.md`); stock checks and datasheet downloads pending John's approval | the shortlist, one line per part, with "fab can place it" and "in stock" columns |
+| 2a | PCB-001: battery and power path | **filed** (`pm/inbox/PCB-001-battery-and-power-path.md`), expert review requested | the decision request (power-path charger, buck-boost, protection, two cell connectors) |
 | 3 | Schematic, ERC clean | not started | the schematic PDF export, sheet by sheet |
 | 4 | Review 1 (expert pins and electrics; PCB maker vs the RP2350 design guide) | not started | the review file |
 | 5 | Footprints checked against datasheets | not started | the 3D view screenshots |
