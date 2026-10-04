@@ -124,6 +124,7 @@ Scripts: `hwtest/pocket_bench.py` (8 scripted hands), plus a per-module import r
 | Slots spin, fixed path (symbols in RAM, compose pushed directly) | **13.1 ms, 76 fps** at 62.5 MHz; 17.7 ms, 56 fps at 24 MHz; frame with 6 symbol reads 38 ms; one reel 4.5 ms (`slots_spin_bench2.py`) |
 | Direct push of a 56x56 window | 1.5 ms; `show_rect` of the same window 7.1 ms (Python row copy) |
 | Blink: gold frame on/off around three 60x60 windows via `show_rect` | 57.8 ms per toggle, 85 max (HR-021) |
+| Five-item scrolling menu (DR-022, step 1e), real `pocket.py` code | entry 124 ms; move within the window 55 ms (max 58); move that scrolls 63 ms (max 66); 66.8 KB free after (`menu_scroll_bench.py`) |
 | Menu with photo background (D-007, step 1d), real `pocket.py` code | image read **once** on entry, 20.9 ms; menu entry 92–104 ms total (read 21 + show 18 + ~60 ms plates and size-2 text); joystick move 45.6 / 49 ms (two 48-row slices re-read from flash ≈ 4.5 ms each + two band pushes); 68.5 KB free after (`menu_bench.py`) |
 | Split as built (step 1c), scripted play | Y redraw 51.5 ms; hit/double on a split hand 40–42 ms; key→banner 99.6 / 103 ms; round-ending stand incl. save 213 / **256 ms**; 59.6 KB free after (`split_play_bench.py`, HR-016) |
 | Split layout (DR-016), two hands in the 142-row player band, code-drawn cards | 2+2 cards 38 ms; 3+2 42 ms; **4+4 worst 52.6 ms** vs 36.6 ms for one 4-card hand today; one code-drawn card 3.9 ms; second hand 64 bytes RAM (`split_bench.py`, HR-016) |
