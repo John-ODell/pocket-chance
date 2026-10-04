@@ -1,10 +1,11 @@
 # Blackjack screens and input. Thin: all rules live in blackjack_rules.py / blackjack_table.py.
 # Rulings: DR-005 (table background read on scene entry only; bands pushed for small changes;
 # full show() on scene change), DR-006 (code-drawn cards, chips and felt when art is missing),
-# DR-007 (save once per finished round, after the redraw so the result shows instantly), DR-011 ("Shuffling" moment), DR-012/014 (controls, limits).
+# DR-007 (save once per finished round, after the redraw so the result shows instantly), DR-011
+# ("Shuffling" moment), DR-012/014/016 (controls, limits, split).
 #
 # Controls   Betting: UP/DOWN bet +-5, LEFT/RIGHT +-25, A deal, B back to menu
-#            Playing: A hit, B stand, X double (when allowed)
+#            Playing: A hit, B stand, X double (when allowed), Y split (when allowed)
 #            Result:  A next hand, B menu      Broke: A take 1000 chips, B menu
 
 import utime
@@ -29,6 +30,7 @@ CARD_W, CARD_H = 40, 56
 # Four horizontal bands that never overlap. Each band is redrawn and pushed whole, so a line of
 # text must sit entirely inside its own band (John saw the "You 21" line cut off when the player
 # band ended at 165 and the text ran to 169). tests/test_text_bounds.py checks every line survives.
+# The pixel boxes John's table art must keep calm are listed in assets/ASSETS.md ("Readability").
 TOP_H = 24                 # 0..23   bankroll and bet (art keeps it calm)
 DEALER_TOP = 24            # 24..95  dealer cards at 28..83, total line at 86..93
 PLAYER_TOP = 96            # 96..167 player cards at 100..155, total line at 158..165
@@ -38,11 +40,20 @@ DEALER_Y = DEALER_TOP + 4
 PLAYER_Y = PLAYER_TOP + 4
 BANNER_Y = BOTTOM_TOP
 BOTTOM_Y = 200
+# Split layout (DR-016 / HR-016): two hands of up to 100 px side by side, 12 px margins, 16 px gap.
+SPLIT_X = (12, 128)
+SPLIT_W = 100
+SPLIT_STEP = 20
 CHIP_DENOMS = (500, 100, 25, 5)
 
 BANNERS = {BLACKJACK: ('banner_blackjack', 'BLACKJACK!', GOLD), WIN: ('banner_win', 'YOU WIN', GOLD),
            LOSE: ('banner_lose', 'DEALER WINS', GREY), PUSH: ('banner_push', 'PUSH', WHITE),
            BUST: ('banner_bust', 'BUST', RED)}
+SHORT = {BLACKJACK: 'BJ', WIN: 'WIN', LOSE: 'LOSE', PUSH: 'PUSH', BUST: 'BUST'}
+
+
+def signed(n):
+    return '%s%d' % ('+' if n > 0 else '', n)
 
 
 class Screen:
@@ -56,6 +67,7 @@ class Screen:
 
     # ---- background -------------------------------------------------------------------------
     def felt(self, y=0, h=240):
+        """Restore rows y..y+h-1 of the table: from the art if present (DR-005 row read), else felt."""
         lcd = self.lcd
         if self.has_table_art and self.assets.background_rows(lcd, 'table', y, h):
             return
@@ -101,10 +113,15 @@ class Screen:
         self.lcd.ellipse(x + 11, y + 11, 11, 11, col, True)
         self.lcd.ellipse(x + 11, y + 11, 7, 7, WHITE, False)
 
-    def hand(self, cards, y, hide_second=False):
+    def hand(self, cards, y, hide_second=False, x0=12, width=240 - 2 * 12, step=None):
+        """Draw a hand centred in [x0, x0 + width). Cards overlap when they would not fit:
+        `step` sets the overlap step, else it is computed so the hand just fits."""
         n = len(cards)
-        step = CARD_W if n <= 5 else (236 - CARD_W) // (n - 1)
-        x = (240 - (CARD_W + step * (n - 1))) // 2
+        if n * CARD_W <= width:
+            step = CARD_W
+        elif step is None:
+            step = (width - CARD_W) // (n - 1)
+        x = x0 + (width - (CARD_W + step * (n - 1))) // 2
         for i, c in enumerate(cards):
             if hide_second and i == 1:
                 self.card_back(x, y)
@@ -116,7 +133,7 @@ class Screen:
     def draw_top(self):
         lcd = self.lcd
         self.felt(0, TOP_H)
-        balance, bet = self.table.stakes()     # shows the doubled bet and the stake off the bankroll
+        balance, bet = self.table.stakes()     # the doubled/split stake, taken off the bankroll in play
         font.text(lcd, '$%d' % balance, 6, 4, GOLD, 2)
         self.chip(bet, 150, 0)
         font.text_right(lcd, '%d' % bet, 234, 4, WHITE, 2)
@@ -131,37 +148,64 @@ class Screen:
         shown = r.dealer[:1] if hide else r.dealer
         font.text(self.lcd, 'Dealer %d' % hand_value(shown)[0], 6, DEALER_Y + CARD_H + 2, WHITE, 1)
 
+    def total_line(self, i):
+        r = self.table.round
+        total, soft = hand_value(r.hands[i])
+        line = '%d%s' % (total, ' soft' if soft else '')
+        if r.doubled[i]:
+            line += ' x2' if r.is_split else '   DOUBLED x2'
+        return line
+
     def draw_player(self):
         r = self.table.round
+        lcd = self.lcd
         self.felt(PLAYER_TOP, BAND_H)
         if r is None:
             return
-        self.hand(r.player, PLAYER_Y)
-        total, soft = hand_value(r.player)
-        line = 'You %d%s' % (total, ' soft' if soft else '')
-        if r.doubled:
-            line += '   DOUBLED x2'
-        font.text(self.lcd, line, 6, PLAYER_Y + CARD_H + 2, GOLD if r.doubled else WHITE, 1)
+        ty = PLAYER_Y + CARD_H + 2
+        if not r.is_split:
+            self.hand(r.hands[0], PLAYER_Y)
+            font.text(lcd, 'You ' + self.total_line(0), 6, ty, GOLD if r.doubled[0] else WHITE, 1)
+            return
+        playing = self.table.state == PLAYING
+        for i in range(2):
+            x0 = SPLIT_X[i]
+            self.hand(r.hands[i], PLAYER_Y, x0=x0, width=SPLIT_W, step=SPLIT_STEP)
+            active = playing and i == r.active
+            col = GOLD if active else (GREY if playing else WHITE)
+            font.text(lcd, self.total_line(i), x0, ty, col, 1)
+            if active:
+                lcd.hline(x0, ty + 9, SPLIT_W, GOLD)          # marker under the hand in play
 
     def draw_bottom(self):
         lcd = self.lcd
         self.felt(BOTTOM_TOP, BAND_H)
-        st = self.table.state
+        t = self.table
+        st = t.state
         if st == BETTING:
             font.text_centred(lcd, 'Bet: joystick', 120, BOTTOM_Y + 4, GREY, 1)
             font.text_centred(lcd, 'A deal   B menu', 120, BOTTOM_Y + 18, WHITE, 1)
         elif st == PLAYING:
             font.text_centred(lcd, 'A hit   B stand', 120, BOTTOM_Y + 4, WHITE, 1)
-            if self.table.can_double():
-                font.text_centred(lcd, 'X double', 120, BOTTOM_Y + 18, WHITE, 1)
+            extra = []
+            if t.can_double():
+                extra.append('X double')
+            if t.can_split():
+                extra.append('Y split')
+            if extra:
+                font.text_centred(lcd, '   '.join(extra), 120, BOTTOM_Y + 18, WHITE, 1)
         elif st == RESULT:
-            art, label, col = BANNERS[self.table.round.outcome]
+            r = t.round
+            art, label, col = BANNERS[r.outcome]
             if not self.assets.blit(lcd, art, 40, BANNER_Y):
                 font.text_centred(lcd, label, 120, BANNER_Y + 8, col, 2)
-            r = self.table.round
-            line = '%s%d' % ('+' if r.net > 0 else '', r.net) if r.net else 'no change'
-            if r.doubled:
-                line = 'DOUBLED: bet %d, %s' % (r.bet, line)
+            if r.is_split:
+                line = '%s %s   %s %s' % (SHORT[r.outcomes[0]], signed(r.nets[0]),
+                                          SHORT[r.outcomes[1]], signed(r.nets[1]))
+            else:
+                line = signed(r.net) if r.net else 'no change'
+                if r.doubled[0]:
+                    line = 'DOUBLED: bet %d, %s' % (r.bet, line)
             font.text_centred(lcd, line, 120, BOTTOM_Y + 4, col, 1)
             font.text_centred(lcd, 'A next   B menu', 120, BOTTOM_Y + 18, WHITE, 1)
         elif st == BROKE:
@@ -221,6 +265,11 @@ class Screen:
                 t.stand()
             elif key == 'X' and t.can_double():
                 t.double()
+            elif key == 'Y' and t.can_split():
+                t.split()
+                if t.state != RESULT:
+                    self.draw_top()                      # the stake doubled: refresh the top band too
+                    self.lcd.show_band(0, TOP_H)
             else:
                 return True
             if t.state == RESULT:

@@ -18,7 +18,7 @@ from bankroll import Bankroll  # noqa: E402
 from cards import card_from_name, Shoe  # noqa: E402
 import blackjack  # noqa: E402
 from blackjack_rules import Round, Rules, BLACKJACK, WIN, LOSE, PUSH, BUST  # noqa: E402
-from blackjack_table import PLAYING, RESULT, BROKE  # noqa: E402
+from blackjack_table import BETTING, PLAYING, RESULT, BROKE  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -127,14 +127,33 @@ class TextBounds(unittest.TestCase):
                     r = Round(t.shoe, t.rules, 500)
                     r.player = [card_from_name('TS'), card_from_name('9H')]
                     r.dealer = [card_from_name('TD'), card_from_name('8C')]
-                    r.doubled = doubled
+                    r.doubled = [doubled]
                     if doubled:
-                        r.bet = 1000
-                    r._finish(outcome)
+                        r.bets = [1000]
+                    r._finish([outcome])
                     t.round = r
                     t.state = RESULT
                     self.full(s, '%s doubled=%s' % (outcome, doubled))
                     self.band(s, '%s doubled=%s band' % (outcome, doubled))
+            # split: two hands of 5 cards, doubled second hand, playing and result views
+            for doubled in (False, True):
+                t.shoe = Shoe(6, random.Random(0), stacked=[card_from_name(n) for n in
+                              ['2S', '5D', '2H', '9C', '2D', '2C', '3S', '3H', '3D', '3C', '4S', '4H', '4D', '4C', '5S', '5H', 'TS', 'TD']])
+                t.state = BETTING
+                t.round = None
+                t.deal()
+                t.split()
+                self.band(s, 'split dealt')
+                r = t.round
+                r.hands[0] += [card_from_name(n) for n in ['3S', '3H', '3D']]
+                r.hands[1] += [card_from_name(n) for n in ['4S', '4H', '4D']]
+                r.doubled[1] = doubled
+                r.bets[1] = 2000 if doubled else 1000
+                self.band(s, 'split long playing')
+                self.full(s, 'split long playing full')
+                r._settle()
+                t.state = RESULT
+                self.full(s, 'split result doubled=%s' % doubled)
             t.round = None
             t.state = BROKE
             self.full(s, 'broke')
