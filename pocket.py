@@ -7,6 +7,7 @@ FAST_SPI = True          # DR-050: peripheral clock from the 125 MHz system PLL 
                          # False = the firmware's 48 MHz source (24 MHz SPI, 46 ms a frame), else identical.
 SPI_BAUD = 62_500_000    # honest with DR-050: the repr says what it gets. Fallback 31_250_000.
 SAVE_PATH = '/save.json'
+STUD_SEATS = 5           # other players at the Caribbean Stud table, 0 to 5 (DR-041)
 
 import sys
 import gc
@@ -220,6 +221,7 @@ def main():
     ctx.buttons = Buttons()
     ctx.assets = Assets('/assets')
     ctx.store = Store(SAVE_PATH)
+    ctx.stud_seats = STUD_SEATS
     try:
         random.seed()           # hardware RNG on rp2
     except Exception:
