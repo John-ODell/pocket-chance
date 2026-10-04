@@ -270,6 +270,16 @@ class Entry(unittest.TestCase):
             ns['draw_menu'](ctx, 2)
             ns['message']('hello\nworld', 0)
             self.assertTrue(clocks.is_fast())
+            # menu geometry: labels end inside the row box, rows do not overlap, footer is clear
+            rows = ns['ROW_Y']
+            for i, (label, mod, icon) in enumerate(ns['MENU']):
+                right = ns['LABEL_X'] + font.width(label, 2) + (font.width(' soon', 1) if mod is None else 0)
+                self.assertLessEqual(right, ns['ROW_X'] + ns['ROW_W'], label)
+                if i:
+                    self.assertGreaterEqual(rows[i], rows[i - 1] + ns['ROW_H'])
+            self.assertGreaterEqual(rows[0], 40 + 16 + 8)          # below the balance line
+            self.assertLessEqual(rows[-1] + ns['ROW_H'], 226 - 4)   # above the footer
+            self.assertLessEqual(font.width('Pocket Chance', 2), 240)
         finally:
             shutil.rmtree(adir)
 

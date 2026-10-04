@@ -54,20 +54,32 @@ def message(text, ms=2000):
     utime.sleep_ms(ms)
 
 
+# Menu geometry. Rows are 48 px (an icon is 48x48), labels are size-2 text (16 px) centred in the
+# row, and every label must end inside the row box: checked by tests/test_screens.py.
+ROW_Y = (70, 118, 166)
+ROW_X, ROW_W, ROW_H = 16, 208, 48
+LABEL_X = 76
+PANEL = rgb(30, 50, 80)
+
+
 def draw_menu(ctx, sel):
     lcd.fill(BG)
-    if not ctx.assets.blit(lcd, 'logo', 20, 12):
-        font.text_centred(lcd, 'Pocket Chance', 120, 20, GOLD, 2)
-    font.text_centred(lcd, '$%d' % ctx.bankroll.balance, 120, 52, WHITE, 1)
-    y = 80
+    if ctx.assets.blit(lcd, 'logo', 20, 6):
+        font.text_centred(lcd, '$%d' % ctx.bankroll.balance, 120, 52, WHITE, 1)
+    else:
+        font.text_centred(lcd, 'Pocket Chance', 120, 14, GOLD, 2)
+        font.text_centred(lcd, '$%d' % ctx.bankroll.balance, 120, 40, WHITE, 2)
     for i, (label, mod, icon) in enumerate(MENU):
+        y = ROW_Y[i]
         col = GOLD if i == sel else (GREY if mod is None else WHITE)
         if i == sel:
-            lcd.rect(28, y - 6, 184, 44, GOLD)
-        if icon and ctx.assets.blit(lcd, icon, 36, y - 8):
-            pass
-        font.text(lcd, label + ('' if mod or mod == 'off' else ' (soon)'), 92, y + 8, col, 2)
-        y += 52
+            lcd.fill_rect(ROW_X, y, ROW_W, ROW_H, PANEL)
+            lcd.rect(ROW_X, y, ROW_W, ROW_H, GOLD)
+        if not (icon and ctx.assets.blit(lcd, icon, ROW_X + 4, y)):
+            lcd.rect(ROW_X + 12, y + 8, 32, 32, col)       # placeholder until icon art exists
+        font.text(lcd, label, LABEL_X, y + 16, col, 2)
+        if mod is None:
+            font.text(lcd, 'soon', LABEL_X + font.width(label, 2) + 8, y + 20, GREY, 1)
     font.text_centred(lcd, 'joystick: move   A: pick', 120, 226, GREY, 1)
     lcd.show()
 
