@@ -3,7 +3,7 @@
 Written for John, 2026-10-04. The decisions behind it are in `pm/inbox/PCB-001-battery-and-power-path.md` and the audit response in `pcb/reviews/AUDIT-2-RESPONSE.md`.
 
 ## The fuse
-The board has a self-resetting fuse in the battery lead (rev 0.7, your decision). It trips if a battery lead, a protection transistor or the board shorts, and it limits the heat after a wiring mistake. It does not save the two chips a reversed battery destroys: the wire check above is still the protection. It costs a few tens of millivolts, so a charge finishes a few minutes later. It resets by itself when the fault is removed and the part cools.
+The board has a self-resetting fuse in the battery lead (rev 0.7, your decision). It trips if a battery lead, a protection transistor or the board shorts, and it limits the heat after a wiring mistake. It does not save the two chips a reversed battery destroys: the wire check above is still the protection. It costs a few tens of millivolts, so a charge finishes a few minutes later. To reset it, **unplug the battery**: a tripped fuse stays warm and keeps passing a small current as long as the battery is connected; it resets within a minute of being unplugged, once it has cooled. Then find the fault before plugging the battery back in.
 
 ## Approved cell listing
 To be filled in before purchase: seller, listing name, capacity, protection board (yes), plug type (JST-PH 2.0 mm), and **which pin the red wire is on in the listing's photo**. One listing only; a different listing is a new check.
