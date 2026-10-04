@@ -491,13 +491,17 @@ def build():
             ["comment", 2, Q("Blocks left to right: core | USB, power | screen, input, audio, card, sensors | wireless.")]],
            lib_symbols]
     sch.extend(items)
-    note = ("BATTERY (PCB-001, owner decisions 2026-10-04): one protected LiPo pouch cell, 1000 mAh or more, rated 0.5 C charge, "
-            "charging 0 to 45 C, JST-PH plug, + on pin 1 = RED WIRE, pin 3 = cell thermistor (remove R12 if used). Charge current 494 mA "
-            "(R14 1.8k; 3.6k for 500 mAh). NO ON-BOARD REVERSE-POLARITY GUARD (rev 0.6, as on the Pico W): the keyed plug, the silkscreen, "
-            "one approved cell listing and checking the wire colours BEFORE plugging in are the protection; a mis-wired cell can damage "
-            "the DW01A and the charger's BAT pin (-0.3 V limits). UNPLUG USB BEFORE SWAPPING CELLS. The charger does not sense the cell's "
-            "temperature with a two-wire cell (R12 10k fitted = check bypassed): the cell's protection board and the 0.5 C rate protect it. "
-            "First power-ups: current-limited supply, no cell; then cell alone with the meter; then both. Charge on a non-flammable surface, never unattended.")
+    note = ("BATTERY (PCB-001, owner decisions 2026-10-04)\n"
+            "- One protected LiPo pouch cell, 1000 mAh or more, rated 0.5 C charge, charging 0 to 45 C, JST-PH plug, + on pin 1 = RED WIRE,\n"
+            "  pin 3 = cell thermistor (remove R12 if used). Charge current 494 mA (R14 1.8k; 3.6k for 500 mAh, up to 274 mA at tolerance).\n"
+            "- NO ON-BOARD REVERSE-POLARITY GUARD (rev 0.6, as on the Pico W). F1 polyfuse in the cell lead (rev 0.7) contains shorts and\n"
+            "  limits heat after a wiring mistake but does NOT save the two chips a reversed cell destroys. The keyed plug, the silkscreen,\n"
+            "  one approved cell listing and checking the wire colours BEFORE plugging in are the protection; a mis-wired cell can damage\n"
+            "  the DW01A and the charger's BAT pin (-0.3 V limits). UNPLUG USB BEFORE SWAPPING CELLS (the socket is live from the charger).\n"
+            "- The charger does not sense the cell's temperature with a two-wire cell (R12 10k fitted = check bypassed): the cell's\n"
+            "  protection board and the 0.5 C rate protect it. Safety timer about 6 h, longer while the charger throttles (DPPM, thermal).\n"
+            "- First power-ups: current-limited supply, no cell; then cell alone with the meter; then both. Charge on a non-flammable\n"
+            "  surface, never unattended. A tripped F1 resets only after the cell is unplugged.")
     sch.append(["text", Q(note), ["exclude_from_sim", "no"], ["at", 290, 470, 0],
                 ["effects", ["font", ["size", 1.5, 1.5]], ["justify", "left", "top"]], ["uuid", U()]])
     sch.append(["sheet_instances", ["path", Q("/"), ["page", Q("1")]]])
