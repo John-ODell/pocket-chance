@@ -7,7 +7,8 @@ import unittest
 import tests.context  # noqa: F401
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'tools'))
-from convert_assets import to_565, expected_size, convert_file, zone_warnings, TABLE_ZONES  # noqa: E402
+from convert_assets import (to_565, expected_size, convert_file, zone_warnings, TABLE_ZONES,  # noqa: E402
+                            CABINET_ZONES, MENU_ZONES, SYMBOL_NAMES)
 from pixfmt import KEY_BE  # noqa: E402
 
 try:
@@ -76,8 +77,23 @@ class ZoneWarnings(unittest.TestCase):
         self.assertIn('calm', w[0])
 
     def test_zones_inside_screen(self):
-        for name, (x, y, w, h) in TABLE_ZONES:
-            self.assertTrue(0 <= x and x + w <= 240 and 0 <= y and y + h <= 240, name)
+        for zones in (TABLE_ZONES, MENU_ZONES, CABINET_ZONES):
+            for name, (x, y, w, h) in zones:
+                self.assertTrue(0 <= x and x + w <= 240 and 0 <= y and y + h <= 240, name)
+
+    def test_cabinet_windows_are_not_checked(self):
+        # bright reel windows (x 18-73, 92-147, 166-221; y 92-147) must not warn
+        px = self.img((0, 40, 80))
+        for y in range(92, 148):
+            for x0 in (18, 92, 166):
+                for x in range(x0, x0 + 56):
+                    px[y * 240 + x] = (255, 255, 255)
+        self.assertEqual(zone_warnings(px, 240, 240, CABINET_ZONES), [])
+
+    def test_symbol_names(self):
+        self.assertEqual(len(SYMBOL_NAMES), 8)
+        for n in SYMBOL_NAMES:
+            self.assertEqual(expected_size('sym_' + n), (56, 56))
 
 
 @unittest.skipIf(Image is None, 'Pillow not installed')
