@@ -215,13 +215,13 @@ Seven files and five deletions. The menu becomes Blackjack / Ultimate / Caribbea
 **Test line:** start `/pocket.py`: without your photo file the menu is a shaded green felt with a double gold border, "Pocket Chance" with a shadow, your chips on a cream plaque, and the rows as coloured pills (green, blue, burgundy, grey) with a spade, diamond, club and power sign; the chosen pill has a gold outline and a small gold chip beside it. Rows: Blackjack / Ultimate / Caribbean / Off (four rows, three visible). With `menu_background.565` on the board the photo menu shows as before. Ultimate plays as before on a blue felt. Caribbean (burgundy felt): A deals, your two cards show, a third of a second later the first three table cards turn and the prompt reads "A high 20  Y low 10  B fold" (at Ante 5); A or Y: the last two table cards turn, then the dealer's cards one by one, then "WIN +n" / "LOSE -n" / "PUSH, no dealer hand" / "FOLD -n", "you pair / dlr high card", and the four side stacks get green or red marks; when every stack and you win against a dealer hand the bottom line says "x3 NEXT HAND". X shows the pays and the strategy. Copy all `RESULT` lines to the PM.
 
 ## Step 1p: a game error goes back to the menu instead of freezing, 2026-10-06
-One file. If a game stops on an error, the board now prints the error over USB, writes it to `/error.log`, saves your chips, shows "<game> stopped: <error name>" for 4 seconds and goes back to the menu. Before this, an error left the last picture on the screen with nothing moving, which is what a freeze looks like. This does not fix the Caribbean freeze itself; it catches it so we can read what it was. **The expert benches this first.**
+One file. If a game stops on an error, the board now prints the error over USB, writes it to `/error.log`, saves your chips, shows "<game> stopped: <error name>" for 4 seconds and goes back to the menu. Before this, an error left the last picture on the screen with nothing moving, which is what a freeze looks like. It is not the fix for the Caribbean freeze of 2026-10-06 (the game was still running then, HR-F06); it covers real errors. **The expert benches this first.**
 
 | # | From this repo | To the board |
 |---|---|---|
 | 1 | `pocket.py` | `/pocket.py` **and** `/main.py` (the boot copy) |
 
-**Test line:** play Caribbean the way that froze (HIGH at Ante 15 or 20, early after the menu). If it stops, the screen says so and returns to the menu: copy `/error.log` from the board in Viper IDE and send it to the PM. If nothing goes wrong, everything plays as before.
+**Test line:** play a few hands of each game; everything plays as before. If a game ever says it stopped, copy `/error.log` from the board in Viper IDE and send it to the PM.
 
 ## Step 2: art (any time after step 1o)
 On the Mac, from the repo folder:
