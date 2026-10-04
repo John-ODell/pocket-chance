@@ -51,3 +51,11 @@ Important side note: the Waveshare example code under `Pico_MircoPython_Examples
 5. Optional: if you have a ruler or caliper, measure the RP2040-Plus and the HAT (outline, hole positions, header pitch) and write the numbers down.
 
 The expert's open measurements (3.3 V rail under load, any LED pin) are listed in `REQUIREMENTS.md` section 13, group D.
+
+## Update, 2026-10-04, second pass
+
+- `poppler` was installed (`brew install poppler`), so both PDFs are now readable as text and as page images. They are **product-page printouts, not schematics**: they name the parts (W25Q128JVSIQ flash, MP28164 buck-boost, ETA6096 charger, MX1.25 battery socket, BOOT and RESET buttons, a user LED, SWD and USB test points) and give the pinout drawing and the 21 x 51 mm dimension drawing. They do not show wiring, resistor values, the crystal or the LED's pin. `REQUIREMENTS.md` sections 3, 4 and 9 now carry these with page numbers.
+- The expert's read-only survey (`ENGINEER_ANSWERS.md`) answered two open items: GPIO29 is unconnected on the Plus, and GP24 is VBUS sense. The flash is larger than 8 MB by aliasing evidence. The LED's pin and the 3.3 V rail under load are still open.
+- The licence of `Screen_Refernce/pico-waveshare-LCD/` was read: MIT, copyright 2021 Gopala Dhar. Nothing from it is copied.
+- Confidence changes: section 4 (other GPIO) Low to Medium; section 7 (mechanical) Very low to Low (the brain board's dimensions are documented; the HAT's are not).
+- Stage 1 deliverables written: `pcb/CONSTRAINTS.md` and `pcb/HOW_A_BOARD_IS_MADE.md`.

@@ -33,6 +33,8 @@ Reason: it keeps the proven screen and input unchanged, so any problem is in the
 
 Also note: your final answer depends on a fact I could not read yet (the HAT and board outlines, in the PDFs). I can confirm this recommendation once I can read them.
 
+**Update, 2026-10-04 (after reading the PDFs):** the two PDFs are Waveshare's product pages, not schematics. They give the brain board's size (21 x 51 mm, Pico pinout) but nothing about the HAT's outline, so Option B's main unknowns (button and joystick parts, screen position) are still open. Because you said you want "the screen, joystick and buttons" on your board, the parked decision request `pm/inbox/DR-033-board-scope.md` recommends **Option B with the screen as a plug-in module** and names Option A as the safe fallback. Either is defensible; the PM will take it to you when Stage 2 opens.
+
 ---
 
 ## Question 2: Battery or no battery?
