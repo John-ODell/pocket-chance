@@ -2,7 +2,7 @@
 
 _Updated by the senior dev at the end of each session. Written for John._
 
-**Last updated:** 2026-10-05 (night)
+**Last updated:** 2026-10-06
 
 ## Where we are
 Every decision for Phase 1 is approved (DR-001 to DR-015) and the first full version of the game is written. **It has never run on the board.** I have asked the expert to look it over on the bench first; after that the next step is yours: upload it following `UPLOAD.md` step 1 and tell the PM what you see.
@@ -41,6 +41,8 @@ The expert ran the build on the board. One blocker, now fixed: the image-loader 
 
 ## Slots dropped (D-009): what changed
 As you decided, slots is out. The code is parked in `archive/slots/` with a note; the menu is Blackjack, Caribbean, Hold'em, Off; the art list no longer mentions slot symbols or a cabinet. The sprite sheets stay for cards, chips, banners and icons. I kept the memory fixes the expert's slots bench taught us (no allocations in the screen driver and sheet reader, a slimmer sheet list), which help blackjack too. **Step 1i is on the board (2026-10-05, with your go).** The expert benched it first: 68 KB free at boot (65 before), about 54 KB free while playing blackjack, no leak, verdict fits. A full redraw is about 48 ms and a card from the new sheet format 3.4 to 3.9 ms, so your card art will make the game faster, not slower (key press to result 84 ms with a card sheet, 94 ms without). The sheet code costs about 7.6 KB more RAM than before sheets existed; that is the price of DR-024 and it fits.
+
+**Other players at the Stud table are built (DR-041), `UPLOAD.md` step 1k, five files for the expert.** Five chip stacks along the bottom of the Stud screen, a green or red marker after every hand, stacks growing or shrinking by a line per 200 chips. Each seat gets five real cards from the same deck and plays the standard strategy against the same dealer hand, so what you see is honest and your own odds are untouched. `STUD_SEATS` near the top of `pocket.py` sets 0 to 5. 10 new tests, including one that proves your cards and results are identical with and without seats.
 
 **Screen clock done the supported way (DR-050), `UPLOAD.md` step 1l.** The register trick is gone; one standard MicroPython line at the top of `pocket.py` does the same, measured identical by the expert, and the board now reports its real screen speed. `FAST_SPI = False` still exists if the screen ever looks wrong. The expert checks it from his mounted copy before anything is uploaded.
 
