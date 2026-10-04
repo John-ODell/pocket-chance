@@ -21,6 +21,8 @@ Finish with `mpremote connect $P soft-reset`. Each script prints `RESULT key=val
 | core2.py | `_thread`: core 1 pushing frames while core 0 draws | LCD |
 | byteorder.py | **visual, needs John**: which byte order the panel shows as red; orientation | LCD, leaves pattern on screen |
 | bounce.py | **needs John pressing keys for 8 s**: edges, bounce within 5 ms, press lengths, pin-to-key mapping | read-only |
+| clk_peri.py | which clock feeds the peripherals (why SPI is 24 MHz on v1.29.0); tries `machine.freq()` | reads `CLK_PERI_CTRL`; `machine.freq()` |
+| clk_peri_fix.py | re-sources `clk_peri` to `clk_sys` and times a frame at the real 62.5 MHz | **writes `CLK_PERI_CTRL`**; survives soft reset, cleared by power cycle |
 
 `lcdbench.py` is the shared driver: same pins and init sequence as `main_monolith.py`, plus window writes. It is a bench tool, not for the dev to import.
 
