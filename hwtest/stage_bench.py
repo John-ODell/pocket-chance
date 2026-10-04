@@ -3,13 +3,16 @@
 # pocket.py while the board's own files are untouched. Scripted blackjack keys from fakes_bj/.
 # John's save files are snapshotted and restored.
 import sys, gc, os
-sys.path.insert(0, '/remote/fakes_bj'); sys.path.insert(0, '/remote/stage'); sys.path.append('/')
+import os as _o
+sys.path.insert(0, '/remote/fakes_bj')
+if 'stage' in _o.listdir('/remote'): sys.path.insert(0, '/remote/stage')   # staged files if present, else the board's own
+sys.path.append('/')
 SAVES = ('/save.json', '/save.bak'); snap = {}
 for p in SAVES:
     try:
         with open(p, 'rb') as f: snap[p] = f.read()
     except OSError: snap[p] = None
-gc.collect(); print("RESULT before_import free=%d staged=%s" % (gc.mem_free(), sorted(os.listdir('/remote/stage'))))
+gc.collect(); print("RESULT before_import free=%d staged=%s" % (gc.mem_free(), sorted(os.listdir('/remote/stage')) if 'stage' in os.listdir('/remote') else 'none (board files)'))
 try:
     import pocket
 except SystemExit as e:
