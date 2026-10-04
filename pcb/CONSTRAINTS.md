@@ -82,8 +82,8 @@ We have not yet read a fab's capabilities page (that download needs your approva
 | A Mac with Python and `mpremote` | Yes (Verified, `hw/BOARD.md`) | Flashing and testing, same as today |
 | KiCad (free) | Not yet. `brew install --cask kicad` | Drawing the schematic and the board, checks, exports |
 | poppler (`pdftotext`, `pdftoppm`) | Installed 2026-10-04 by this session | Reading PDFs |
-| A multimeter | **Unknown** | The first power-up: checking 3.3 V before anything else is connected |
-| A soldering iron, hot air | **Unknown** | Only if you solder parts yourself. Decides the assembly question later |
+| A multimeter | Yes (John, via the PM, 2026-10-04: owns one, not yet located) | The first power-up: checking 3.3 V before anything else is connected |
+| A soldering iron, hot air | Iron yes, hot air not mentioned. John says he is not good at soldering, so the design targets **fab assembly of every part** and zero hand-soldering | Only for a repair or a wired speaker |
 | A current-limited bench power supply | Unknown; recommended only if a battery is ever on the board | Safe first power-up of a charger |
 | Calipers or a ruler | Unknown | Measuring the HAT and parts |
 
@@ -100,13 +100,13 @@ Estimates from `pcb/PLAN.md`; confirm every price on the fab's quote page before
 ## 9. Skill constraints (yours, and honestly, mine)
 
 - You have never made a board. Every step will be explained before you do it, and you will be asked to confirm what you see.
-- Hand-soldering the RP2040 (a 7 x 7 mm chip with pads underneath) is hard even for experienced people. The realistic first route is factory assembly of the small parts.
+- Hand-soldering the RP2040 or RP2350 (a 7 x 7 mm chip with pads underneath) is hard even for experienced people. John has said he is not good at soldering, so the rule is: every part surface-mount and from the fab's stock, assembled by the fab. Hand work limited to plugging in the screen module and the battery.
 - I cannot drive KiCad's window. You click; I read the files KiCad writes and run its checks from the terminal.
 - I have not seen a schematic of the Waveshare board or the HAT, and I will not copy one. The design will come from the official RP2040 design guide and the part datasheets.
 
 ## 10. What I need from you to close the gaps
 
 1. Approval to download these public documents into `pcb/refs/` (never committed): the **RP2040 datasheet**, **Hardware design with RP2040** (Raspberry Pi), the **W25Q128JV** flash datasheet (Winbond), the **ST7789** controller datasheet, Waveshare's **Pico-LCD-1.3** wiki page (for the HAT's schematic and dimensions), and one fab's **capabilities page** (PCBWay or JLCPCB, your pick).
-2. Do you own a multimeter, a soldering iron, calipers? (Section 7.)
+2. ~~Multimeter, iron~~ answered (yes, yes). Calipers or a ruler: still to ask when a measurement is needed.
 3. Ten minutes at the board with a multimeter when the expert asks, to read the 3.3 V rail under load. (Section 2, last row.)
 4. If you have a ruler: the HAT's width and height, and the distance from its edge to the screen.
