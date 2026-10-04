@@ -24,6 +24,7 @@ Finish with `mpremote connect $P soft-reset`. Each script prints `RESULT key=val
 | pin_hunt.py | **needs John pressing one key**: every free GPIO as a pulled-up input for 30 s, reports which went low; finds a key's real pin. Skips LCD pins 8-13 and power pins 23-25, 29 | read-only |
 | clk_peri.py | which clock feeds the peripherals (why SPI is 24 MHz on v1.29.0); tries `machine.freq()` | reads `CLK_PERI_CTRL`; `machine.freq()` |
 | clk_peri_fix.py | re-sources `clk_peri` to `clk_sys` and times a frame at the real 62.5 MHz | **writes `CLK_PERI_CTRL`**; survives soft reset, cleared by power cycle |
+| pocket_bench.py | plays 8 blackjack hands with scripted keys using the dev's real `lib/` and `games/` on the board; times every redraw path and the save; per-module RAM. Needs UPLOAD.md step 1 uploaded | writes and removes `/_bench_save.*`; LCD; applies the clk_peri fix |
 | fast_pattern.py | **visual, needs John**: applies the clk_peri fix and shows colour bars, a 1-px checker band, text and a border at a real 62.5 MHz, times 100 frames, leaves it on screen | **writes `CLK_PERI_CTRL`**; LCD |
 
 `lcdbench.py` is the shared driver: same pins and init sequence as `main_monolith.py`, plus window writes. It is a bench tool, not for the dev to import.
