@@ -39,10 +39,17 @@ class Table:
         self._check_done()
         return self.round
 
+    def _can_add(self, extra):
+        """The bankroll must cover everything already at stake plus `extra` more chips."""
+        return self.bankroll.balance >= self.round.bet + extra
+
     def can_double(self):
         r = self.round
-        return (self.state == PLAYING and r.can_double()
-                and self.bankroll.can_cover_double(r.bet))
+        return (self.state == PLAYING and r.can_double() and self._can_add(r.bets[r.active]))
+
+    def can_split(self):
+        r = self.round
+        return (self.state == PLAYING and r.can_split() and self._can_add(r.bets[0]))
 
     def hit(self):
         self.round.hit()
@@ -58,6 +65,12 @@ class Table:
         self.round.double()
         self._check_done()
 
+    def split(self):
+        if not self.can_split():
+            raise ValueError('cannot split')
+        self.round.split()
+        self._check_done()
+
     def next_hand(self):
         """Leave the result screen. Goes to BROKE if the minimum bet can't be covered."""
         if self.state != RESULT:
@@ -68,7 +81,8 @@ class Table:
 
     def stakes(self):
         """(chips to show as the bankroll, chips to show as the bet). While a hand is in play the
-        stake sits on the table, so it is shown taken off the bankroll; after a double it is 2x."""
+        stake sits on the table, so it is shown taken off the bankroll; after a double or a split
+        it is the total at stake."""
         bank = self.bankroll
         r = self.round
         if r is None:
