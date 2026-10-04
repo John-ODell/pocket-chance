@@ -141,6 +141,7 @@ class TextBounds(unittest.TestCase):
                               ['2S', '5D', '2H', '9C', '2D', '2C', '3S', '3H', '3D', '3C', '4S', '4H', '4D', '4C', '5S', '5H', 'TS', 'TD']])
                 t.state = BETTING
                 t.round = None
+                t.bankroll.balance = 5000           # the earlier hands may have lost; a split needs 2x the bet
                 t.deal()
                 t.split()
                 self.band(s, 'split dealt')
