@@ -4,7 +4,7 @@ _Maintained by the microcontroller expert. State what is on the desk and how you
 
 | Item | Value | How verified |
 |---|---|---|
-| Board | Waveshare RP2040-Plus, 16 MB flash | USB VID:PID 2e8a:0005. Flash reads at 2, 4, 8 and 15 MB offsets return erased 0xFFFFFFFF and do not mirror the start, so the chip is larger than 2 MB (`hwtest/flash_probe.py`, 2026-10-03). 16 MB exactly is from the box; the probe cannot distinguish 8 from 16 |
+| Board | Waveshare RP2040-Plus, 16 MB flash | USB VID:PID 2e8a:0005. Flash reads at 2, 4, 8 and 15 MB offsets return erased 0xFFFFFFFF and do not mirror the start, so the chip is larger than 2 MB (`hwtest/flash_probe.py`, 2026-10-03). **16 MB by aliasing evidence** (an 8 MB chip would mirror the firmware at the 8 MB offset; the probe read erased data there). JEDEC ID not read: the PM ruled the XIP-off assembly routine unnecessary unless the PCB maker needs the exact part (2026-10-04) |
 | Display HAT | Waveshare Pico LCD 1.3", ST7789, 240x240 | John; driver init from `main_monolith.py` produced timed frames at 62.5 MHz (`hwtest/frame_full.py`); John's visual check of the colour pattern pending |
 | Firmware | **MicroPython v1.29.0 (2026-08-24), build `WAVESHARE_RP2040_PLUS-FLASH_16M`**, `machine='Waveshare RP2040-Plus 16MB with RP2040'`, mpy 4870, `_thread='unsafe'`. John flashed it 2026-10-03 (HR-F01). Before that: stock Pico build v1.22.2 | `os.uname()`, `sys.implementation` (`hwtest/board_info.py`, 2026-10-03) |
 | CPU clock | 125 MHz on both firmwares (not the 133 MHz in README) | `machine.freq()` |
@@ -16,6 +16,20 @@ _Maintained by the microcontroller expert. State what is on the desk and how you
 | Last backup | `backups/2026-10-03/main.py` | `mpremote fs cp -r : backups/2026-10-03/` |
 | Free RAM at boot | 222,720 bytes free, largest allocatable block 199,129 | `hwtest/ram_free.py` |
 | ADC3 / GPIO29 | reads 7770/65535 = 1.17 V after the Pico's x3 divider. Not a believable VSYS, so this board probably does not wire GPIO29 to VSYS like a Pico. Check the schematic in `../Pico_Reference/` before relying on it | `hwtest/pins_idle.py` |
+
+## Reserved and unused GPIO on the RP2040-Plus (read-only, `hwtest/pins_reserved.py`, 2026-10-04)
+Each pin read as an input with the pull-up, then the pull-down (20 samples each); a pin that follows the pull is floating, one that reads the same both ways is driven on the board.
+
+| GPIO | Result | Reading |
+|---|---|---|
+| 0, 1, 4, 5, 6, 7, 14, 22 | follow the pull | floating: free on this board |
+| 23 | follows the pull | floating (on a Pico this is the regulator power-save pin; here nothing holds it) |
+| **24** | **held HIGH with the pull-down on** | driven on the board: a VBUS-present sense, as on a Pico (USB was connected) |
+| 25 | follows the pull | no evidence of an LED. An LED to ground could still read this way; driving it as an output to find out needs a ruling |
+| 26, 27, 28 | follow the pull; ADC 0.58–0.60 V floating | free ADC inputs |
+| **29** | follows the pull; ADC3 0.61 V floating, same as the free ADCs | **not wired to a VSYS divider**: unconnected on the Plus. The earlier 1.17–1.42 V "VSYS" readings were a floating input |
+
+Flash size, read-only reasoning: NOR flash ignores address bits above its capacity, so an 8 MB chip read at offset 8 MB aliases to offset 0 and shows the firmware image. `flash_probe.py` read erased 0xFFFFFFFF at 8 MB and 15 MB, not a mirror, so the chip is larger than 8 MB: 16 MB as labelled. A JEDEC-ID read (command 0x9F) would make it formal; it needs XIP off while the command runs. **PM ruling 2026-10-04: not needed; revisit only if the PCB maker needs the exact part identity, with John near the board.** `picotool` cannot help (its "flash size" comes from the firmware's binary info, not the chip). No write-and-readback test, ever: it could alias onto the filesystem.
 
 ## If mpremote says "could not enter raw repl"
 The board is almost certainly fine. A killed `mpremote exec` (timed background run, closed terminal) leaves it in raw-REPL mode with the program still running, and mpremote's handshake then fails. Run `hwtest/unwedge.py` (Mac side, pyserial: Ctrl-C, Ctrl-B, Ctrl-D) and mpremote connects again. Unplugging also works but is not needed. Learned the hard way on 2026-10-04, twice.
@@ -52,3 +66,5 @@ Viper IDE (Chrome) holds `/dev/cu.usbmodemXXXX` even when its tab is only open. 
 - 2026-10-04 (step 1h, sprite sheets): backed up on-board `lib/art.py`, `games/blackjack.py`, `games/slots.py`, `pocket.py` to `backups/2026-10-04-board-8/`; uploaded `lib/sheets.py` (new), `lib/art.py` (8,282 B), `games/blackjack.py` (12,404), `games/slots.py` (16,408), `pocket.py` (8,782). Benches showed a RAM regression (HR-F04: boot −11 KB, mid-spin 9–13 KB, gc pause 29 ms); **not shown to John**. `pocket_scripted.py` ran the real program three times with John's save snapshotted and restored each time. **Board state:** step 1h build on the board, idle at the REPL, dark screen, port free, `CLK_PERI_CTRL` `0x800`. Rollback to step 1g = copy the four files from `backups/2026-10-04-board-8/` back and remove `/lib/sheets.py`.
 - 2026-10-04 (step 1i, slots removed), on John's direct word: backed up on-board `lib/sheets.py`, `lib/art.py`, `lib/lcd.py`, `pocket.py` and the three `games/slots_*.py` to `backups/2026-10-04-board-9/`; uploaded `sheets.py` (2,668 B), `art.py` (8,749), `lcd.py` (4,486), `pocket.py` (8,791); deleted `/games/slots.py`, `slots_rules.py`, `slots_table.py`. Benched first from the mount (`stage_bench.py`), then the uploaded build (boot 66,880 free; blackjack ~53 KB in play after gc; gc pause 11 ms). Game live for John. **Board state:** `/pocket.py` (four-item menu), `/lib` 10 files (step 1i), `/games` 3 blackjack files, `/assets/menu_background.565`, John's `save.json` + `save.bak`; `CLK_PERI_CTRL` `0x800`.
   Live window done (John's board: boot 78,000 free, no key presses logged). Un-wedged, soft reset. **Board state at hand-over:** as above, idle at the REPL, dark screen, port free. `lib/poker.py` is NOT on the board (no upload step yet); the Stud bench staged it from the mount.
+- 2026-10-04 (step 1j, Caribbean Stud), PM's go after a bench from the mount: backed up on-board `lib/sheets.py` and `pocket.py` to `backups/2026-10-04-board-10/` (poker.py and the four stud files are new on the board); uploaded from branch `caribbean-stud` ac483e2 in order: `lib/poker.py` (3,271 B), `lib/sheets.py` (2,701), `games/stud_rules.py` (5,015), `games/stud_table.py` (2,903), `games/stud_pay.py` (1,365), `games/stud.py` (10,615), `pocket.py` (8,793). Benches: `stud_play_bench.py`, `stage_bench_stud.py` (staged, then on the uploaded build; John's saves snapshotted/restored; temp `/assets/cards.565` written and removed). Game live for John. **Board state:** `/pocket.py` (Caribbean on), `/lib` 11 files, `/games` 7 files (blackjack 3 + stud 4), `/assets/menu_background.565`, John's `save.json` + `save.bak`; `CLK_PERI_CTRL` `0x800`.
+  Live window done; un-wedged, soft reset. **Board state at hand-over:** as above, idle at the REPL, dark screen, port free.

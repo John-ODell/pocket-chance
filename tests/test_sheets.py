@@ -20,6 +20,8 @@ class Sheets(unittest.TestCase):
     def test_other_families(self):
         self.assertEqual(sheets.member('chip_5'), ('chips', 1))
         self.assertEqual(sheets.member('banner_bust'), ('banners', 3))
+        self.assertEqual(sheets.member('banner_noqualify'), ('banners', 5))
+        self.assertEqual(sheets.SHEETS['banners'][2], 6)
         self.assertEqual(sheets.member('icon_stud'), ('icons', 1))
         self.assertIsNone(sheets.member('sym_cherry'))                # slots dropped (D-009)
         self.assertIsNone(sheets.member('table'))
