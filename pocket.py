@@ -57,11 +57,16 @@ def message(text, ms=2000):
 # Menu geometry. Rows are 48 px (an icon is 48x48). The icon sits at the left of the row box and the
 # label (size-2 text, 16 px) is centred in the rest of the box, so the highlight always surrounds its
 # own word (John saw the old box sitting far to the right of the word). Checked by tests/test_screens.py.
+# Background (D-007): /assets/menu_background.565, John's photo, read whole on menu entry and by
+# row bands on a selection change (DR-005). Text sits on small dark plates so it reads over the photo.
 ROW_Y = (70, 118, 166)
 ROW_X, ROW_W, ROW_H = 16, 208, 48
 ICON_W = 56                                  # icon slot at the left of the box
 LABEL_X0 = ROW_X + ICON_W                    # label area: LABEL_X0 .. ROW_X + ROW_W
-PANEL = rgb(30, 50, 80)
+TITLE_Y, BALANCE_Y, FOOTER_Y = 14, 40, 226
+PANEL = rgb(30, 50, 80)                      # selected row
+PLATE = rgb(8, 10, 18)                       # under text on unselected rows, title, footer
+BACKGROUND = 'menu_background'
 
 
 def label_text(i):
@@ -70,34 +75,81 @@ def label_text(i):
     return label, ('soon' if mod is None else '')
 
 
+def label_width(i):
+    label, suffix = label_text(i)
+    return font.width(label, 2) + (8 + font.width(suffix, 1) if suffix else 0)
+
+
 def label_x(i):
     """Left edge that centres row i's label (plus its small suffix) in the label area."""
-    label, suffix = label_text(i)
-    w = font.width(label, 2) + (8 + font.width(suffix, 1) if suffix else 0)
-    return LABEL_X0 + (ROW_X + ROW_W - LABEL_X0 - w) // 2
+    return LABEL_X0 + (ROW_X + ROW_W - LABEL_X0 - label_width(i)) // 2
+
+
+def label_box(i):
+    """Dark plate under row i's label: (x, y, w, h), inside the row box."""
+    return label_x(i) - 4, ROW_Y[i] + 12, label_width(i) + 8, 24
+
+
+def has_menu_art(ctx):
+    if not hasattr(ctx, 'menu_art'):
+        ctx.menu_art = ctx.assets.size(BACKGROUND) is not None
+    return ctx.menu_art
+
+
+def menu_background(ctx, y, h):
+    """Restore rows y..y+h-1 of the menu background from flash, or plain colour without art."""
+    if has_menu_art(ctx) and ctx.assets.background_rows(lcd, BACKGROUND, y, h):
+        return
+    lcd.fill_rect(0, y, 240, h, BG)
+
+
+def plate_text(s, y, size, col):
+    """Centred text on a dark plate with a 6 px border."""
+    w = font.width(s, size)
+    x = 120 - w // 2
+    lcd.fill_rect(x - 6, y - 3, w + 12, font.CH * size + 6, PLATE)
+    font.text(lcd, s, x, y, col, size)
+
+
+def draw_row(ctx, i, sel):
+    y = ROW_Y[i]
+    label, mod, icon = MENU[i]
+    col = GOLD if i == sel else (GREY if mod is None else WHITE)
+    if i == sel:
+        lcd.fill_rect(ROW_X, y, ROW_W, ROW_H, PANEL)
+        lcd.rect(ROW_X, y, ROW_W, ROW_H, GOLD)
+    else:
+        px, py, pw, ph = label_box(i)
+        lcd.fill_rect(px, py, pw, ph, PLATE)
+    if not (icon and ctx.assets.blit(lcd, icon, ROW_X + 4, y)):
+        lcd.rect(ROW_X + 12, y + 8, 32, 32, col)       # placeholder until icon art exists
+    lx = label_x(i)
+    font.text(lcd, label, lx, y + 16, col, 2)
+    if mod is None:
+        font.text(lcd, 'soon', lx + font.width(label, 2) + 8, y + 20, GREY, 1)
 
 
 def draw_menu(ctx, sel):
-    lcd.fill(BG)
+    """Menu entry: one full background read, everything drawn, one show() (DR-005)."""
+    if not (has_menu_art(ctx) and ctx.assets.background(lcd, BACKGROUND)):
+        lcd.fill(BG)
     if ctx.assets.blit(lcd, 'logo', 20, 6):
-        font.text_centred(lcd, '$%d' % ctx.bankroll.balance, 120, 52, WHITE, 1)
+        plate_text('$%d' % ctx.bankroll.balance, 52, 1, WHITE)
     else:
-        font.text_centred(lcd, 'Pocket Chance', 120, 14, GOLD, 2)
-        font.text_centred(lcd, '$%d' % ctx.bankroll.balance, 120, 40, WHITE, 2)
-    for i, (label, mod, icon) in enumerate(MENU):
-        y = ROW_Y[i]
-        col = GOLD if i == sel else (GREY if mod is None else WHITE)
-        if i == sel:
-            lcd.fill_rect(ROW_X, y, ROW_W, ROW_H, PANEL)
-            lcd.rect(ROW_X, y, ROW_W, ROW_H, GOLD)
-        if not (icon and ctx.assets.blit(lcd, icon, ROW_X + 4, y)):
-            lcd.rect(ROW_X + 12, y + 8, 32, 32, col)       # placeholder until icon art exists
-        lx = label_x(i)
-        font.text(lcd, label, lx, y + 16, col, 2)
-        if mod is None:
-            font.text(lcd, 'soon', lx + font.width(label, 2) + 8, y + 20, GREY, 1)
-    font.text_centred(lcd, 'joystick: move   A: pick', 120, 226, GREY, 1)
+        plate_text('Pocket Chance', TITLE_Y, 2, GOLD)
+        plate_text('$%d' % ctx.bankroll.balance, BALANCE_Y, 2, WHITE)
+    for i in range(len(MENU)):
+        draw_row(ctx, i, sel)
+    plate_text('joystick: move   A: pick', FOOTER_Y, 1, GREY)
     lcd.show()
+
+
+def menu_select(ctx, old, new):
+    """Selection change: restore and redraw only the two rows that changed, push their bands."""
+    for i in (old, new):
+        menu_background(ctx, ROW_Y[i], ROW_H)
+        draw_row(ctx, i, new)
+        lcd.show_band(ROW_Y[i], ROW_H)
 
 
 def play(ctx, modname):
@@ -146,10 +198,10 @@ def main():
         for key in ctx.buttons.poll():
             if key == 'UP' and sel > 0:
                 sel -= 1
-                draw_menu(ctx, sel)
+                menu_select(ctx, sel + 1, sel)
             elif key == 'DOWN' and sel < len(MENU) - 1:
                 sel += 1
-                draw_menu(ctx, sel)
+                menu_select(ctx, sel - 1, sel)
             elif key in ('A', 'PRESS'):
                 mod = MENU[sel][1]
                 if mod == 'off':
