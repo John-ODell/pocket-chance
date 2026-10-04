@@ -1,6 +1,6 @@
 # DR-035: Ultimate Texas Hold'em: AI players at the table
 
-- **Status:** pending
+- **Status:** pending, **revision 2** (2026-10-05): John clarified that the other players are chip stacks only, no names, no cards, no hand names. The text-strip design is withdrawn; the seats are now stacks in the side boxes, matching DR-041 for Stud.
 - **Filed by:** senior dev
 - **Date:** 2026-10-05
 - **Blocks:** Hold'em screen (seat strips)
@@ -13,28 +13,25 @@ Whether the table shows other players, how many, how they decide, and how they a
 John wants the WSOP-table feeling. Each seat costs drawing time on every phase and a little RAM, and the decisions cost evaluator time between phases.
 
 ## Options
-### A. Two to four cosmetic seats with a fixed simple-strategy bot, text strips only (recommended)
-- **What a seat is:** a name (from a short fixed list), a chip count that starts at 1000 and moves with its results (saved nowhere; it resets when the game is entered), two hole cards it never shows except as a hand name at showdown ("Ann: pair of 9s"), and a status line per phase ("check", "raise 4x", "fold", "WIN +40", "LOSE").
-- **How it decides:** the same simple strategy as the help screen (DR-033), using `lib/poker.py` on its two cards plus the community cards: about 21 five-card evaluations per decision, roughly 15 to 25 ms on this board per seat per phase (estimate; the expert should measure), run between phases while the next cards are turned, never during an animation.
-- **Cards:** each seat is dealt two real cards from the same deck (so the deck is shared, as at a real table), which slightly changes which cards the player and dealer receive but **not the odds**: every card is equally likely wherever it is dealt. Seats never affect the player's result.
-- **Drawing:** a seat is a 60 x 56 strip of three size-1 lines (DR-034). Four strips are about 12 short strings, roughly 4 ms. Updating one strip is a band push.
-- **RAM:** per seat two card ints, a chip count, a status string, a name: under 100 bytes; four seats plus the name list under 1 KB. Decisions reuse the evaluator already loaded for the player.
-- **On today's RP2040:** this is all it should do. **With more RAM later** (or a bigger screen): show the seats' cards face up at showdown as real card art, more seats, animated chips. None of that fits 240 x 240 with nine cards already on screen.
-- **Number of seats:** John asked for 3 to 5; the layout has room for **four** strips (two per side row). Four is the recommendation; the count is a parameter (0 to 4) in the settings so John can turn them off.
-- Cons: the strips are text, not avatars; a fifth seat does not fit.
+### A. Four chip stacks in the side boxes, real cards and the simple strategy (recommended)
+- **What a seat is:** a stack of chips in one of the four 60 x 56 side boxes of the layout (DR-034, x 8 to 68 and 172 to 232 in the dealer and player rows): the 24 x 24 chip art (or a code-drawn disc) piled with a 4 px offset, one chip per 200 chips so 1000 is five chips, 44 px tall at most, with the count under it in size-1 text and a **green up or red down marker** after each hand, cleared at the next deal. No name, no cards, no hand name.
+- **How it plays:** each seat gets two real cards from the same deck (player 2 + dealer 2 + 5 community + 4 x 2 = 17 of 52) and plays the simple strategy of the help screen (DR-033) using `lib/poker.py` at the same three decision points, against the same community and dealer cards. Cost: roughly 21 five-card evaluations per decision per seat, estimated 15 to 25 ms per seat per phase on this board (the expert should measure), run between phases before the next cards turn, never during a flip. The player's odds and results are untouched: every card is equally likely wherever it is dealt.
+- **Chips:** start at 1000 on entering Hold'em, move by real results, refill silently when broke, **not saved** (DR-039).
+- **Cost:** four stacks of up to six chip blits (sheet or disc, about 1 ms each) plus four short strings: under 30 ms worst case on a full redraw, pushed as part of the side rows; RAM under 100 bytes per seat.
+- **On today's RP2040** this is the ceiling. **With more RAM or a bigger screen later:** the seats' cards face up at showdown, a fifth seat, animated chips.
+- **Count:** four fit the layout (John asked for three to five); the count is a setting 0 to 4.
 
-### B. No AI seats
-- Pros: simplest, 4 ms faster per redraw, the hand-name lines get the side boxes.
-- Cons: John asked for the table feeling.
+### B. A statistical result per seat (no cards, weighted coin)
+- Cons: fake; rejected on honesty, as in DR-041.
 
-### C. Seats with visible cards
-- Cons: no screen space (eight more 40 x 56 cards would be needed); not possible at this size.
+### C. No seats
+- Pros: faster redraw; the side boxes show the hand names instead.
 
 ## Recommendation
-Option A with four seats, switchable to zero. **Caribbean Stud retrofit:** yes, as a later request once Hold'em proves the strips: Stud's dealer and player rows are full (five cards each), so Stud seats would need a different placement (a 16 px strip under the top band, names and results only), which is its own layout decision.
+Option A with four seats. The Stud version (DR-041) comes first, as a 12 px rail, because Stud's rows are full; Hold'em has the room for proper stacks.
 
 ## What John would have to do or accept
-Other players appear as small text boxes with a name, chips and what they did; their cards are never shown. They do not change his odds.
+Four stacks of chips at the sides of the table that grow or shrink each hand, with a green or red marker. No names or cards. They do not change his odds and start again at 1000 each time he opens Hold'em.
 
 ## Appendix
-Names list (fixed, fictional): Ann, Bo, Cy, Dee, Eli, Flo. Bots use `tools/uth_edge.py`'s strategy functions, moved into the engine.
+Bots use `tools/uth_edge.py`'s strategy functions, moved into the engine.
