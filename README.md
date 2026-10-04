@@ -70,6 +70,7 @@ tools/             Mac-side tools: image converter, odds simulators, upload chec
 tests/             automated tests (run on a computer, no board needed)
 hw/ hwtest/        measured hardware budget, board notes, reviews, and the benchmark scripts
 docs/              hardware reference sheet, the AI team guide, role files
+pcb/               workspace for designing your own board from this hardware (first-timer guide, in progress)
 pm/                decision requests, rulings, decision log, hand-off notes
 SETUP.md           follow-along install guide
 UPLOAD.md          exact file list for the board, checked by tools/check_upload.py
