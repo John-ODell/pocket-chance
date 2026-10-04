@@ -37,8 +37,8 @@ Then, in Viper IDE, open `/pocket.py` on the board and press Run.
 
 If the screen stays dark or shows rubbish, press Stop, change the line `FAST_SPI = True` near the top of `/pocket.py` to `FAST_SPI = False`, run again, and tell the PM. That is the only known-unknown: the panel has not yet been looked at while running at full speed on the new firmware (HR-015).
 
-## Step 1b: re-upload after John's first play (2026-10-04)
-Three files changed after your feedback: the menu was laid out again, and the bet line now shows the doubled bet (and takes the stake off the bankroll while a hand is in play).
+## Step 1b: re-upload after John's play-tests (2026-10-04, second revision)
+Three files changed after your feedback: the menu was laid out again (each highlight box now surrounds its own word), the bet line shows the doubled bet and takes the stake off the bankroll while a hand is in play, and the "You 21" line no longer has its lower half cut off (the screen is now four bands that never overlap).
 
 | # | From this repo | To the board |
 |---|---|---|
@@ -46,7 +46,7 @@ Three files changed after your feedback: the menu was laid out again, and the be
 | 2 | `games/blackjack.py` | `/games/blackjack.py` |
 | 3 | `pocket.py` | `/pocket.py` |
 
-**Test line:** menu rows are three boxed lines (Blackjack, Slots soon, Off) with nothing cut off at the right edge. In blackjack, after dealing, the top line shows your chips minus the bet; press X on your first two cards and the bet on the top line doubles and the result pays or takes twice the bet.
+**Test line:** menu rows are three boxed lines (Blackjack, Slots soon, Off), each word centred inside its box, nothing cut off. In blackjack, the "Dealer 17" and "You 21" lines are whole; after dealing, the top line shows your chips minus the bet; press X on your first two cards and the bet on the top line doubles, the total line says DOUBLED x2, and the result pays or takes twice the bet.
 
 ## Step 2: pilot image test (after you have made the 4 pilot images)
 On the Mac, from the repo folder:
