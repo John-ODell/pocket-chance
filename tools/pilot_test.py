@@ -12,9 +12,9 @@ import utime
 
 if '/games' not in sys.path:
     sys.path.append('/games')
-if FAST_SPI:
-    from clocks import fast_peripherals
-    print('RESULT clk_peri changed=%s' % fast_peripherals())
+import machine
+machine.freq(125_000_000, 125_000_000 if FAST_SPI else 48_000_000)      # DR-050
+print('RESULT freq=%s' % machine.freq())
 
 from lcd import LCD
 lcd = LCD(62_500_000)

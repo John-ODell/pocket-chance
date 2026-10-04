@@ -60,5 +60,12 @@ class _Mem:
 mem32 = _Mem()
 
 
-def freq():
+freq_calls = []
+
+
+def freq(*args):
+    """machine.freq() reads; machine.freq(cpu, peri) sets (recorded for tests)."""
+    if args:
+        freq_calls.append(args)
+        return None
     return 125000000
