@@ -10,19 +10,19 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 
 | Ref | Part | MPN | Package | KiCad symbol / footprint | Source | To check |
 |---|---|---|---|---|---|---|
-| U1 | RP2350A microcontroller | RP2350A (Raspberry Pi) | QFN-60, 7 x 7 mm, 0.4 mm pitch | `MCU_RaspberryPi:RP2350A` / `Package_DFN_QFN:QFN-60-1EP_7x7mm_P0.4mm_EP3.4x3.4mm` | `refs/rp2350-datasheet.pdf`; design guide | pad and paste design against the datasheet's land pattern; stock |
+| U1 | RP2350A microcontroller | RP2350A (Raspberry Pi) | QFN-60, 7 x 7 mm, 0.4 mm pitch | `MCU_RaspberryPi:RP2350A` / `Package_DFN_QFN:QFN-60-1EP_7x7mm_P0.4mm_EP3.4x3.4mm` | `refs/rp2350-datasheet.pdf` Figure 148 (recommended footprint: 0.4 mm pitch, 0.2 mm pads, 7.75 mm outer span, 3.4 mm centre pad); design guide | **checked 2026-10-04: KiCad's footprint matches** (pad length 0.8 vs 0.875 mm, otherwise identical; KiCad's own description cites this datasheet). Paste: KiCad's default windowed paste on the centre pad; stock |
 | U2 | 16 MB QSPI flash | W25Q128JVSIQ (Winbond) | SOIC-8, 208 mil (5.3 x 5.3 mm) | `Memory_Flash:W25Q128JVS` / `Package_SO:SOIC-8_5.3x5.3mm_P1.27mm` | `refs/W25Q128JV-datasheet.pdf`; design guide 3.1 and 3.3 (supported chip) | stock |
-| U3 | 8 MB PSRAM | APS6404L-3SQR-SN (AP Memory) | SOP-8 | `Memory_RAM:APS6404L-3SQRx-SN` / `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` (**verify** the SN package is the 150 mil body) | Pimoroni Pico Plus 2 W uses it; design guide 3.2 | datasheet download (official AP Memory); package; stock |
+| U3 | 8 MB PSRAM | APS6404L-3SQR-SN (AP Memory; 3.0 V, 64 Mbit) | SOP-8L (150 mil), package code SN: confirmed in `refs/parts/aps6404l-3sqn.pdf` section 4.1 | `Memory_RAM:APS6404L-3SQRx-SN` / `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | Pimoroni Pico Plus 2 W uses it; design guide 3.2 | exact ordering variant (3SQR vs 3SQN) at quote; stock |
 | R9, R13 | PSRAM chip-select link and pull-up | 0 Ω, 10 kΩ | 0402 | `Device:R` / `Resistor_SMD:R_0402_1005Metric` | design guide 3.2: GPIO0 is XIP_CS1n; "the pull-up on the chip select pin is definitely needed" | |
 | R-QSPI | flash chip-select 1 kΩ series to BOOT button, optional 10 kΩ pull-up | 1 kΩ, 10 kΩ | 0402 | same | design guide 3.1 (R6 1 kΩ to USB_BOOT) | |
 | Y1 | 12 MHz crystal | ABM8-272-T3 (Abracon) | 3.2 x 2.5 mm | `Device:Crystal_GND24` / `Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm` | design guide 4.1: "we highly recommend using this crystal"; 10 pF load, 30 ppm, 50 Ω ESR max | stock |
 | C3, C4 | crystal load capacitors | 15 pF, C0G | 0402 | `Device:C` / `Capacitor_SMD:C_0402_1005Metric` | design guide 4: 15 pF each gives 10.5 pF with trace parasitics | |
 | R2 | crystal series resistor | 1 kΩ | 0402 | `Device:R` | design guide 4: prevents over-driving | |
-| L1 | core regulator inductor | AOTA-B201610S3R3-101-T (Abracon, 3.3 µH, polarity dot) | 0806 (2016 metric) | `Device:L` / `Inductor_SMD:L_0806_2016Metric` (**verify** against the Abracon drawing) | design guide 2.1: the exact part, oriented per the dot | stock (the guide says newly available); footprint |
+| L1 | core regulator inductor | AOTA-B201610S3R3-101-T (Abracon, 3.3 µH, polarity dot) | 2.0 x 1.6 x 1.0 mm (`refs/parts/aota-b201610s.pdf`) | `Device:L` / placeholder `Inductor_SMD:L_0805_2012Metric`; **phase 5: footprint from Abracon's land pattern** | design guide 2.1: the exact part, oriented per the dot | stock |
 | C6, C7, C9 | regulator input, output, AVDD caps | 4.7 µF | 0402 | `Device:C` | design guide 2.1 | |
 | R3 | VREG_AVDD filter | 33 Ω | 0402 | `Device:R` | design guide 2.1 (33 Ω + 4.7 µF) | |
 | C-dec | decoupling, one per power pin, pins 53/54 share one | 100 nF | 0402 | `Device:C` | design guide 2.2.1 | count after the symbol is placed |
-| C-bulk | 3.3 V bulk | 10 µF | 0603 | `Device:C` / `Capacitor_SMD:C_0603_1608Metric` | general practice | |
+| C-bulk | 3.3 V bulk and the buck-boost in/out capacitors | 10 µF; regulator caps 0805 X5R 10 V (3.3 V side) and 16 V (VSYS side) so the effective capacitance under DC bias stays near 10 µF | 0603 / 0805 | `Device:C` | general practice; AUDIT-2 #10 | |
 | SW-BOOT, SW-RESET | tactile buttons | PTS645SM43SMTR92 (C&K) | 6 x 6 mm SMD | `Switch:SW_Push` / `Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92` | design guide 5.4 | stock |
 | D-LED, R-LED | user LED and 1 kΩ | 0603 LED | 0603 | `Device:LED` / `LED_SMD:LED_0603_1608Metric` | | GPIO: none free; LED driven from the RM2's wireless GPIO as on the Pico 2 W (HR-033) or omitted |
 | TP1.. | test points | pad | 1.5 mm | `Connector:TestPoint` / `TestPoint:TestPoint_Pad_D1.5mm` | PLAN phase 7 | 3V3, VBAT, VSYS, GND x2, RUN, SWD |
@@ -42,16 +42,16 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 
 | Ref | Part | MPN | Package | KiCad symbol / footprint | Source | To check |
 |---|---|---|---|---|---|---|
-| U-CHG | power-path charger | BQ24074RGTR (TI) | VQFN-16, 3 x 3 mm | `Battery_Management:BQ24074RGT` / `Package_DFN_QFN:VQFN-16-1EP_3x3mm_P0.5mm_EP1.68x1.68mm` (**verify** EP size vs RGT drawing) | ti.com product page 2026-10-04 | datasheet download; stock; ISET/ILIM/TMR resistor values |
-| U-BB | 3.3 V buck-boost | TPS63001DRCR (TI) | VSON-10, 3 x 3 mm | `Regulator_Switching:TPS63001` / `Package_SON:VSON-10-1EP_3x3mm_P0.5mm_EP1.2x2mm` (**verify** EP vs DRC drawing) | ti.com product page 2026-10-04 | datasheet; inductor value (2.2 µH typical, **verify**); stock |
-| L-BB | buck-boost inductor | 2.2 µH, 2 A class, 3 x 3 mm | | `Device:L` / `Inductor_SMD:L_1210_3225Metric` or vendor | TPS63001 datasheet | pick after datasheet |
+| U-CHG | power-path charger; **mode: EN1 high (10 k to VBUS), EN2 low = USB500, 500 mA input limit; R15 (ILIM) not fitted** (AUDIT-2 #13) | BQ24074RGTR (TI) | VQFN-16, 3 x 3 mm (RGT) | `Battery_Management:BQ24074RGT` / `Package_DFN_QFN:VQFN-16-1EP_3x3mm_P0.5mm_EP1.68x1.68mm_ThermalVias` (TI's RGT land pattern: 1.68 mm centre pad, 0.6 x 0.24 mm pins at 0.5 mm pitch, thermal vias; KiCad's generic pins are longer, which is normal for reflow: checked 2026-10-04) | `refs/parts/bq24074.pdf`: EN table (00 USB100, 01 USB500), K_ISET 890 AΩ, TS 10 kΩ fixed when unused, ITERM open = 10 %, TMR 18 to 72 kΩ | stock |
+| U-BB | 3.3 V buck-boost | TPS63001DRCR (TI) | VSON-10, 3 x 3 mm (DRC) | `Regulator_Switching:TPS63001` / `Package_SON:Texas_DRC0010J_ThermalVias` (KiCad's own assignment) | `refs/parts/tps63001.pdf`: 2.2 µH, 10 µF in/out, PS/SYNC low = power save, EN high ≥ 1.2 V | stock |
+| L-BB | buck-boost inductor | ASPIAIG-F4020-2R2M (Abracon, 2.2 µH, 4 x 4 x 2 mm shielded) | 4020 | `Device:L` / `Inductor_SMD:L_Abracon_ASPIAIG-F4020` | TPS63001 ds (2.2 µH); AUDIT-2 #10 | **saturation current (need > 2 A) and DCR from the Abracon datasheet** (download pending); stock |
 | U-PROT | cell protection | DW01A (Fortune) | SOT-23-6 | `Battery_Management:DW01A` / `Package_TO_SOT_SMD:SOT-23-6` | HR-033, HR-P01 | datasheet (official); stock |
-| Q-PROT | protection dual MOSFET | FS8205A | TSSOP-8 or SOT-23-6 per vendor | `Transistor_FET_Dual:` generic dual N-MOSFET / per package | HR-033 | datasheet; package; stock |
-| J-BAT | pouch cell socket, pin 1 = +, polarity on the silkscreen | S2B-PH-SM4-TB (JST PH, 2 mm, SMD) | SMD | `Connector:Conn_01x02_Socket` / `Connector_JST:JST_PH_S2B-PH-SM4-TB_1x02-1MP_P2.00mm_Horizontal` | PCB-001 | stock |
+| Q-PROT | protection dual MOSFET, common drain | FS8205A (Fortune) | TSSOP-8 (`refs/parts/fs8205a.pdf`: 1/8 D12, 2/3 S1, 4 G1, 5 G2, 6/7 S2; 20 V, 6 A, 25 mΩ) | `pcb_custom:FS8205A` (drawn from the datasheet) / `Package_SO:TSSOP-8_4.4x3mm_P0.65mm` | HR-033; HR-P03 (rating vs 0.4 A: 6 A, fine) | stock |
+| J-BAT | pouch cell socket, **3 pins**: 1 = + (red), 2 = -, 3 = cell thermistor (TS); a 2-wire cell uses pins 1-2 | S3B-PH-SM4-TB (JST PH, 2 mm, SMD) | SMD | `Connector:Conn_01x03_Socket` / `Connector_JST:JST_PH_S3B-PH-SM4-TB_1x03-1MP_P2.00mm_Horizontal` | PCB-001; AUDIT-2 #7/#8 | stock |
 | Q-RPP | reverse-polarity guard, P-MOSFET in the cell's positive lead | AO3401A (Alpha & Omega; -30 V, 4 A, about 50 mΩ; the most common hobby P-FET) | SOT-23 | `Transistor_FET:AO3401A` / `Package_TO_SOT_SMD:SOT-23` | PCB-001 revised (JST-only, John 2026-10-04) | datasheet (official Diodes); pin order; stock |
 | SW-PWR | power switch on the regulator enable | PCM12SMTR (C&K) slide | SMD | `Switch:SW_SPDT` / `Button_Switch_SMD:SW_SPDT_PCM12` | HR-033 | stock |
-| R-DIV | battery divider to GP28 | 100 kΩ + 100 kΩ, 100 nF | 0402 | `Device:R`, `Device:C` | HR-P01: 100 kΩ or more total | |
-| R-TS | thermistor-pin resistor | 10 kΩ (or a 10 k NTC footprint) | 0402 | `Device:R` | PCB-001 | |
+| R-DIV | battery divider to GP28, **gated**: Q4 AO3401A high-side switch on BAT+, driven through Q3 2N7002 from the 3.3 V rail, R39 100 kΩ holds Q4 off when the board is off | 100 kΩ + 100 kΩ, 100 nF; 2N7002 (SOT-23, standard); AO3401A | 0402, SOT-23 | `Device:R`, `Device:C`, `Transistor_FET:2N7002`, `Transistor_FET:AO3401A` | HR-P01; AUDIT-2 #2 (fix mirrors the Pico W's gated VSYS sense) | 2N7002 datasheet (official); stock |
+| R-TS | thermistor-pin resistor, **fitted by default = cell temperature check bypassed** (John's decision 2026-10-04); remove when a thermistor cell is on J-BAT pin 3 | 10 kΩ | 0402 | `Device:R` | PCB-001; AUDIT-2 #8; BQ24074 ds Table 7-1 | |
 | U-GAUGE | fuel gauge (optional, footprint only) | MAX17048G+T10 | TDFN-8, 2 x 2 mm | custom symbol / `Package_DFN_QFN:` 2x2 DFN-8 to verify | HR-P01: optional | deferred unless time allows |
 
 ## Block 4: screen and input
@@ -60,13 +60,13 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 |---|---|---|---|---|---|---|
 | J-LCD | socket for the 1.54" 240 x 240 ST7789 module. **The module has a PH2.0 8-pin cable** (Waveshare wiki, 2026-10-04), so the board gets the matching JST-PH 2.0 mm 8-pin surface-mount socket; pin order VCC, GND, DIN, CLK, CS, DC, RST, BL | S8B-PH-SM4-TB (JST) | SMD | `Connector:Conn_01x08_Socket` / `Connector_JST:JST_PH_S8B-PH-SM4-TB_1x08-1MP_P2.00mm_Horizontal` | Waveshare 1.54inch LCD Module wiki (pin table read 2026-10-04) | whether the module ships the cable; BL drive (module has its own transistor: Unverified); stock |
 | SW-A..Y | four game buttons, **12 x 12 mm** (John asked for about 10 mm; tactile switches are made in 6 and 12 mm standard sizes, nothing stocked in between, so 12 mm is the nearest standard size; a 6 mm switch with a 10 mm cap is the in-between fallback below) | PTS125SM43SMTR2LFS (C&K, 12 x 12 x 4.3 mm SMD) | SMD | `Switch:SW_Push` / `Button_Switch_SMD:SW_Push_1P1T_NO_CK_PTS125Sx43SMTR` | John 2026-10-04 via the PM | stock; cap height vs the screen |
-| SW-JOY | 5-way joystick switch | SKRHABE010 (Alps) | SMD | `Switch:SW_Push` x5 / **footprint drawn from the Alps datasheet** (reason: KiCad ships none; the part is a standard stocked item). Alternative with no custom work: five PTS645 tactile buttons as a direction pad | today's HAT has a similar part; John accepts buttons instead of a joystick | datasheet (official Alps); footprint; stock; John's preference |
+| SW-JOY | direction pad: **five 6 mm tactile switches** (up, down, left, right, press) on the joystick's five GPIO, instead of a 5-way joystick part. Reason: Alps publishes the SKRHABE010 drawing only through its website, which refuses scripted downloads, and John accepts buttons in place of the joystick; five PTS645 switches are standard, stocked, and need no custom footprint. If John prefers a real joystick, he can save the Alps PDF into `pcb/refs/parts/` and the footprint gets drawn | PTS645SM43SMTR92 x5 (C&K) | SMD | `Switch:SW_Push` x5 / `Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92` | PCB maker's choice 2026-10-04 under the standard-parts rule | John's feel preference; stock |
 
 ## Block 5: audio
 
 | Ref | Part | MPN | Package | KiCad symbol / footprint | Source | To check |
 |---|---|---|---|---|---|---|
-| U-AMP | class-D mono amplifier | PAM8302AASCR (Diodes) | SOP-8 | `Amplifier_Audio:PAM8302AAS` / `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | HR-033, HR-P02 | datasheet (official Diodes); package; stock |
+| U-AMP | class-D mono amplifier | **PAM8302AADCR** (Diodes; the AAD suffix is the SO-8 package, AAS is MSOP-8: datasheet ordering table, read 2026-10-04) | SO-8 | `Amplifier_Audio:PAM8302AAD` / `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | HR-033, HR-P02; `refs/parts/pam8302a.pdf` | stock |
 | R/C-AUD | PWM to analog filter from GP22 | 1 kΩ + 100 nF (approx.) | 0402 | `Device:R`, `Device:C` | general practice | values at schematic |
 | J-SPK | speaker connector | JST PH 2-pin SMD (same as J-BAT, different silkscreen) | SMD | as J-BAT | ruling item 4 | |
 
@@ -85,7 +85,7 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 |---|---|---|---|---|---|---|
 | U-RTC | real-time clock | DS3231MZ+ (Analog Devices) | SOIC-8 | `Timer_RTC:DS3231MZ` / `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | HR-P02 | datasheet (official ADI); stock |
 | BT-RTC | CR1220 holder | 3001 (Keystone, 12 mm) | SMD | `Device:Battery_Cell` / `Battery:BatteryHolder_Keystone_3001_1x12mm` | DR-033 app. I.2 | **verify** 3001 takes a CR1220 (12.5 mm); Keystone drawing |
-| U-IMU | 6-axis IMU | LSM6DSOXTR (ST) | LGA-14, 2.5 x 3 mm | **custom symbol** (KiCad has LSM6DSL/DSM; pin map to compare) / **custom footprint** from the ST drawing | HR-P02; micropython-lib driver | datasheet (official ST); stock |
+| U-IMU | 6-axis IMU | LSM6DSOXTR (ST) | LGA-14, 3 x 2.5 x 0.83 mm, 0.5 mm pitch (same package as the LSM6DSL/DSM in KiCad's library) | `Sensor_Motion:LSM6DSM` symbol (same family pinout) / `Package_LGA:LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y` | HR-P02; micropython-lib driver; `refs/parts/lsm6dsox.pdf` (owner-fetched, 2026-10-04): pin map confirmed identical to the KiCad symbol, address 0x6A with SA0 low, SDx/SCx tied to GND per the pin table | land pattern checked 2026-10-04 against the datasheet's Figure 28 (body 3.0 x 2.5, 14 pads 0.25 x 0.475 at 0.5 mm pitch, 4 per short side, 3 per long side; KiCad's lands 0.35 x 0.625 at the same positions): matches | stock |
 | J-QT | STEMMA QT / Qwiic | SM04B-SRSS-TB (JST SH, 1 mm) | SMD | `Connector:Conn_01x04_Socket` / `Connector_JST:JST_SH_SM04B-SRSS-TB_1x04-1MP_P1.00mm_Horizontal` | DR-033 app. I.4 | stock |
 | R-I2C | I2C pull-ups | 4.7 kΩ x2 | 0402 | `Device:R` | HR-P02 | |
 | J-EXP | expansion header: GP1, GP28, SDA, SCL, 3V3, GND | 1 x 6, 2.54 mm | SMD or THT | `Connector:Conn_01x06_Pin` / `Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical` | DR-033 app. I.4 | |
@@ -96,6 +96,14 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 | Ref | Part | MPN | Package | KiCad symbol / footprint | Source | To check |
 |---|---|---|---|---|---|---|
 | U-RF | Raspberry Pi Radio Module 2 | RM2 (SC1169) | 21 castellated pads, 1.5 mm pitch, 14.5 x 16.5 mm | **custom symbol and footprint** from `refs/rm2-datasheet.pdf` | ruling item 3; HR-033 pins GP23/24/25/29 | pad map and antenna keep-out from the datasheet; stock (about 4 USD) |
+
+## Added by AUDIT-2 fixes (commit 808ccf1)
+| Ref | Part | Why |
+|---|---|---|
+| C40 | 4.7 µF 0402 on the 1.1 V core rail at DVDD pin 23 | RP2350 datasheet: second 4.7 µF on VOUT at the far DVDD pin, away from LX/COUT (#11) |
+| C41, C42, R44 | 1 µF local amplifier bypass; 47 kΩ + 1 µF on the amplifier's SD pin (about 30 ms delayed enable) | PAM8302A datasheet p.8 (#12) |
+| R42, R43 | 10 kΩ pull-up on the RTC interrupt (open-drain); 1 kΩ in series through JP2 | DS3231M INT/SQW is open-drain; limits contention if the IMU is still push-pull when JP2 is closed (#9) |
+| Q3, Q4, R39 | gated battery divider | (#2) |
 
 ## Fallbacks (John, 2026-10-04: "if there are units we are close to that are cheaper, have those as fallbacks")
 
@@ -113,7 +121,7 @@ Each row: the cheaper or easier-to-source near-equivalent, whether it is a **dro
 | Charger BQ24074RGT | MCP73871 (Microchip) | layout change (QFN-20 4 x 4) | the other common power-path part | full re-review of the power sheet |
 | Regulator TPS63001 | TPS63000 (adjustable; same footprint, two feedback resistors) | drop-in plus 2 resistors (place footprints now) | often better stocked | feedback divider values |
 | Regulator TPS63001 | MP28164 (what Waveshare uses) | layout change | cheap, proven on the Plus | its datasheet layout; John said no Waveshare-specific parts, but this is a generic MPS part |
-| Speaker amp PAM8302AAS | PAM8302AAD (same chip, MSOP-8) | layout change (MSOP-8 footprint) | whichever package PCBWay stocks | package |
+| Speaker amp PAM8302AAD (SO-8) | PAM8302AASCR (same chip, MSOP-8) | layout change (MSOP-8 footprint) | whichever package PCBWay stocks | package |
 | Speaker amp PAM8302AAS | PAM8403 (stereo, SOP-16; use one channel) | layout change | the most-stocked cheap class-D part | pinout, shutdown pin |
 | Battery socket S2B-PH-SM4-TB | JST S2B-PH-K-S (through-hole) | layout change | cheaper, stronger | through-hole fee |
 | Battery socket | generic "PH2.0 2P SMD" clones | drop-in | cents | polarity marking is on our silkscreen, not the part |
@@ -126,7 +134,7 @@ Each row: the cheaper or easier-to-source near-equivalent, whether it is a **dro
 | Crystal ABM8-272-T3 | none recommended | | the design guide insists on this part | |
 
 ## Custom library work (phase 5)
-RM2 (symbol + footprint), LSM6DSOX (symbol + footprint), Alps 5-way joystick (footprint), MAX17048 (symbol, if kept), RP2350A land pattern check. All drawn from the official datasheets, saved in `pcb/kicad/lib/`.
+RM2 footprint and the Abracon AOTA inductor land pattern: **drawn** by `pcb/tools/gen_fp.py` from the datasheets (2026-10-04), to be checked on the 1:1 print. Remaining checks: RP2350A land pattern vs the datasheet, LSM6DSOX pin map vs the ST datasheet (John to fetch), joystick replaced by a direction pad (no custom work). MAX17048 dropped from spin 1 (HR-P01/P02: ADC divider instead). All drawn from the official datasheets, saved in `pcb/kicad/lib/`.
 
 ## Datasheets to download next (official sources, John's approval needed)
 BQ24074 and TPS63001 (ti.com), DW01A (Fortune), FS8205A, APS6404L (AP Memory), ABM8-272 and AOTA-B201610S3R3 (Abracon), USB4085 (GCT), USBLC6-2SC6 (ST), PAM8302A (Diodes), 104031-0811 (Molex), DS3231MZ (ADI), LSM6DSOX (ST), SKRHABE010 (Alps), Keystone 1042 and 3001, JST PH and SH drawings, PTS645 (C&K), PCM12 (C&K).

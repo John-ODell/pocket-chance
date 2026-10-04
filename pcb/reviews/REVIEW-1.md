@@ -26,7 +26,7 @@ Reviewer: PCB maker, 2026-10-04. Companion to the expert's HR-P04 (pins vs the s
 3. FS8205A pin order (drawn as S1 G1 S2 G2 D2 D2 D1 D1) and continuous current rating. **Datasheet.**
 4. APS6404L package: SN = 150 mil SOIC-8 assumed. **AP Memory datasheet.**
 5. L1 footprint vs the Abracon 0806 drawing; PAM8302AAS package (SOP-8 assumed); Keystone 3001 fits a CR1220 (12.5 mm). **Datasheets.**
-6. LSM6DSOX: drawn with the LSM6DSM symbol; ST states pin compatibility across the family, **verify the 14-pin map in the ST datasheet** before the footprint.
+6. ~~LSM6DSOX pin map~~ **Closed 2026-10-04** from the ST datasheet (owner-fetched): pin map identical to the symbol used; SDx/SCx now tied to GND as the pin table asks; address 0x6A. Land pattern compared at phase 5.
 7. The LCD module's BL pin: the module has its own backlight transistor on most Waveshare modules; if BL drove the LED string directly, GP13 would need a transistor. **Check on the module page or the real module.**
 8. USB differential pair on a 1.6 mm board: the guide's 0.8/0.15 mm geometry is for 1 mm. Full-speed USB is forgiving; at layout we use the PCBWay stack-up calculator or accept the guide's "likely to work" note. **Layout decision, phase 6.**
 
