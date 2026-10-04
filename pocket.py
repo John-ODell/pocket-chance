@@ -54,12 +54,27 @@ def message(text, ms=2000):
     utime.sleep_ms(ms)
 
 
-# Menu geometry. Rows are 48 px (an icon is 48x48), labels are size-2 text (16 px) centred in the
-# row, and every label must end inside the row box: checked by tests/test_screens.py.
+# Menu geometry. Rows are 48 px (an icon is 48x48). The icon sits at the left of the row box and the
+# label (size-2 text, 16 px) is centred in the rest of the box, so the highlight always surrounds its
+# own word (John saw the old box sitting far to the right of the word). Checked by tests/test_screens.py.
 ROW_Y = (70, 118, 166)
 ROW_X, ROW_W, ROW_H = 16, 208, 48
-LABEL_X = 76
+ICON_W = 56                                  # icon slot at the left of the box
+LABEL_X0 = ROW_X + ICON_W                    # label area: LABEL_X0 .. ROW_X + ROW_W
 PANEL = rgb(30, 50, 80)
+
+
+def label_text(i):
+    """(label, suffix) for menu row i; the suffix is drawn small."""
+    label, mod, icon = MENU[i]
+    return label, ('soon' if mod is None else '')
+
+
+def label_x(i):
+    """Left edge that centres row i's label (plus its small suffix) in the label area."""
+    label, suffix = label_text(i)
+    w = font.width(label, 2) + (8 + font.width(suffix, 1) if suffix else 0)
+    return LABEL_X0 + (ROW_X + ROW_W - LABEL_X0 - w) // 2
 
 
 def draw_menu(ctx, sel):
@@ -77,9 +92,10 @@ def draw_menu(ctx, sel):
             lcd.rect(ROW_X, y, ROW_W, ROW_H, GOLD)
         if not (icon and ctx.assets.blit(lcd, icon, ROW_X + 4, y)):
             lcd.rect(ROW_X + 12, y + 8, 32, 32, col)       # placeholder until icon art exists
-        font.text(lcd, label, LABEL_X, y + 16, col, 2)
+        lx = label_x(i)
+        font.text(lcd, label, lx, y + 16, col, 2)
         if mod is None:
-            font.text(lcd, 'soon', LABEL_X + font.width(label, 2) + 8, y + 20, GREY, 1)
+            font.text(lcd, 'soon', lx + font.width(label, 2) + 8, y + 20, GREY, 1)
     font.text_centred(lcd, 'joystick: move   A: pick', 120, 226, GREY, 1)
     lcd.show()
 
