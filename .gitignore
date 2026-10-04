@@ -6,3 +6,6 @@ backups/firmware/*.uf2
 assets/src/ui/menu_background.bmp
 assets/out/*.565
 backups/2026-10-04*/
+
+# Local copies of manufacturer documents and datasheets (copyrighted, never committed)
+pcb/refs/
