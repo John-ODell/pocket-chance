@@ -2,6 +2,9 @@
 
 Written for John, 2026-10-04. The decisions behind it are in `pm/inbox/PCB-001-battery-and-power-path.md` and the audit response in `pcb/reviews/AUDIT-2-RESPONSE.md`.
 
+## Approved cell listing
+To be filled in before purchase: seller, listing name, capacity, protection board (yes), plug type (JST-PH 2.0 mm), and **which pin the red wire is on in the listing's photo**. One listing only; a different listing is a new check.
+
 ## What to buy
 - A single **LiPo pouch cell, 3.7 V, 1000 to 1200 mAh, WITH a protection board** (the listing says "protected", "with PCM" or "with protection circuit"). Sizes that fit a flat credit-card board: 503450 (5 x 34 x 50 mm) or 603048 (6 x 30 x 48 mm).
 - With a **JST-PH 2.0 mm plug** (two wires, red and black). This is the plug most hobby cells come with.
@@ -10,8 +13,8 @@ Written for John, 2026-10-04. The decisions behind it are in `pm/inbox/PCB-001-b
 - Optional, better: a cell with a **third wire, a thermistor**. It plugs into pin 3 of the board's socket and lets the charger stop when the cell is too hot or too cold. If you fit one, the resistor R12 is removed (tell the PCB maker).
 
 ## Before plugging in, every time
-0. **Unplug USB first.** If a battery was connected while USB was plugged in, the board keeps the battery socket live after the battery is removed (the reverse-polarity guard latches on until USB is unplugged). Plugging a battery in backwards into a live socket defeats the guard. So: USB out, swap the battery, USB back in.
-1. Look at the socket's silkscreen: **+ RED** on pin 1, **-** on pin 2. Hold the plug next to it and check that the red wire goes to the + side. Cells from different sellers are wired both ways; a reversed cell does nothing on this board thanks to the guard transistor, but check anyway.
+0. **Unplug USB first.** With USB plugged in the socket is live from the charger. So: USB out, swap the battery, USB back in.
+1. Look at the socket's silkscreen: **+ RED WIRE** on pin 1, **-** on pin 2. Hold the plug next to it and check that the red wire goes to the + side. Cells from different sellers are wired both ways. **There is no electronic guard on this board** (decided after the audit: none can be made safe with a two-wire plug), so a reversed cell can destroy the protection chip and the charger. This check is the protection. Buy from the one approved listing below, which has its wire colours recorded.
 2. Make sure the cell is not swollen, dented or warm.
 
 ## First power-ups, in order (with the expert on the line)
@@ -25,9 +28,6 @@ Written for John, 2026-10-04. The decisions behind it are in `pm/inbox/PCB-001-b
 - **Never leave the first charges unattended.** Stop if the cell or the area around the charger chip gets warm to the touch.
 - The board does not measure the cell's temperature with a two-wire cell. The cell's own protection board and the gentle 0.5 C charge rate are what protect it. That is the residual risk you accepted.
 - Charging stops by itself after about 6 hours whatever happens (safety timer).
-
-## A small standing drain
-With a cell plugged in and the board switched off, the reverse-polarity guard's sensing resistors draw about 110 µA from the cell (about a quarter of a percent of a 1000 mAh cell per day). Unplug the cell for storage longer than a few weeks.
 
 ## What the charge current is
 494 mA nominal with the resistor the board ships with (R14 = 1.8 kΩ). With USB the charger's total input is capped at 500 mA, board included, so a 1000 mAh or larger cell gets at most 0.50 C whatever the tolerances. For a 500 mAh cell the resistor must be 3.6 kΩ (247 mA nominal, up to 271 mA with resistor and chip tolerance, so a hair over 0.5 C): say so before the boards are ordered, or use a 1000 mAh cell. With USB the charger's total input is capped at 500 mA, board included, so the cell can never get more than that.
