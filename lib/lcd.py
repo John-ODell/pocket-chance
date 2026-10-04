@@ -37,13 +37,15 @@ class LCD(framebuf.FrameBuffer):
         self.pwm.freq(1000)
         self.pwm.duty_u16(backlight)
         self._win = bytearray(4)
+        self._c = bytearray(1)
         self._init()
 
     def _cmd(self, c, data=None):
         self.cs(1)
         self.dc(0)
         self.cs(0)
-        self.spi.write(bytes([c]))
+        self._c[0] = c
+        self.spi.write(self._c)
         if data is not None:
             self.dc(1)
             self.spi.write(data)
@@ -110,7 +112,8 @@ class LCD(framebuf.FrameBuffer):
         """Push a prepared w x h RGB565 buffer to a window of the panel, without touching the
         framebuffer (HR-020: a composed reel window goes straight to the panel, ~1.5 ms)."""
         self._window(x, y, w, h)
-        self._push(memoryview(buf)[:w * h * 2])
+        n = w * h * 2
+        self._push(buf if len(buf) == n else memoryview(buf)[:n])    # no slice object when it fits exactly
 
     def show_rect(self, x, y, w, h, scratch):
         """Push a window by copying its rows into `scratch` (needs w*h*2 bytes, else falls back

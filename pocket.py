@@ -38,10 +38,9 @@ GREY = rgb(140, 140, 140)
 # (label, module or None for "soon" or 'off', icon). Labels must fit the label area at size 2:
 # 9 characters at most (tests/test_screens.py checks). Full game names are used inside the games.
 MENU = (('Blackjack', 'blackjack', 'icon_blackjack'),
-        ('Slots', 'slots', 'icon_slots'),
         ('Caribbean', None, 'icon_stud'),
         ("Hold'em", None, 'icon_holdem'),
-        ('Off', 'off', None))
+        ('Off', 'off', None))                        # slots was dropped (D-009)
 VISIBLE = 3                                  # rows on screen (DR-022: scrolling list)
 
 

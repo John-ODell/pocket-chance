@@ -93,9 +93,9 @@ Four files: three new game modules and the menu with Slots switched on. Runs wit
 
 | # | From this repo | To the board |
 |---|---|---|
-| 1 | `games/slots_rules.py` | `/games/slots_rules.py` |
-| 2 | `games/slots_table.py` | `/games/slots_table.py` |
-| 3 | `games/slots.py` | `/games/slots.py` |
+| 1 | `archive/slots/slots_rules.py` | `/games/slots_rules.py` |
+| 2 | `archive/slots/slots_table.py` | `/games/slots_table.py` |
+| 3 | `archive/slots/slots.py` | `/games/slots.py` |
 | 4 | `pocket.py` | `/pocket.py` |
 | 5 | `lib/art.py` | `/lib/art.py` (slots needs `open_sprite`, added after step 1f; the expert uploaded it during the bench) |
 
@@ -109,25 +109,38 @@ Five files. The image loader learns sheets (one file per family of pictures, `as
 | 1 | `lib/sheets.py` | `/lib/sheets.py` (new; `art.py` imports it, so upload it first) |
 | 2 | `lib/art.py` | `/lib/art.py` |
 | 3 | `games/blackjack.py` | `/games/blackjack.py` |
-| 4 | `games/slots.py` | `/games/slots.py` |
+| 4 | `archive/slots/slots.py` | `/games/slots.py` |
 | 5 | `pocket.py` | `/pocket.py` |
 
 **Test line:** menu, blackjack hand, slots spin all as before. Copy the `RESULT` lines to the PM, including both `slots mem_free` lines.
 
-## Step 2: art (any time after step 1h)
+## Step 1i: slots removed (D-009), smaller libraries, 2026-10-05
+Slots is dropped. The menu is Blackjack, Caribbean, Hold'em, Off. The libraries lose the slots code and a few KB of RAM (`sheets.py` no longer builds a name table at import; the screen driver and sheet reader no longer allocate per call). Blackjack and the menu are otherwise unchanged.
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `lib/sheets.py` | `/lib/sheets.py` |
+| 2 | `lib/art.py` | `/lib/art.py` |
+| 3 | `lib/lcd.py` | `/lib/lcd.py` |
+| 4 | `pocket.py` | `/pocket.py` |
+| 5 | **delete** `/games/slots.py`, `/games/slots_rules.py`, `/games/slots_table.py` from the board | |
+
+**Test line:** menu shows four rows (no Slots); blackjack plays as before. Copy the `RESULT` lines (boot and blackjack mem_free) to the PM.
+
+## Step 2: art (any time after step 1i)
 On the Mac, from the repo folder:
 
 ```bash
 python3 tools/convert_assets.py
 ```
 
-It converts every BMP/PNG under `assets/src/`: single pictures (`table`, `menu_background`, `cabinet`, `logo`, `banner_jackpot`) to `assets/out/<name>.565`, and packs each family (cards, chips, banners, icons, symbols) into one sheet file (`assets/out/cards.565` etc., see `assets/ASSETS.md`). Pictures not drawn yet become transparent placeholders inside their sheet and are listed. Wrong sizes or names are errors. Light or busy text zones on `table`, `cabinet` and `menu_background` print a WARNING.
+It converts every BMP/PNG under `assets/src/`: single pictures (`table`, `menu_background`, `logo`) to `assets/out/<name>.565`, and packs each family (cards, chips, banners, icons) into one sheet file (`assets/out/cards.565` etc., see `assets/ASSETS.md`). Pictures not drawn yet become transparent placeholders inside their sheet and are listed. Wrong sizes or names are errors. Light or busy text zones on `table`, `cabinet` and `menu_background` print a WARNING.
 
 | # | From this repo | To the board |
 |---|---|---|
 | 1 | `assets/out/<name>.565` (each file the converter wrote or re-wrote) | `/assets/<same name>.565` |
 
-**Test line:** start `/pocket.py`; blackjack shows the drawn cards and chips where they exist, slots shows the drawn symbols. Nothing to change in the code. (`tools/pilot_test.py` still works for the single table image and prints timings; it reads `c_AS`, `c_back` and `chip_5` as single files only, so with sheets it will report them as missing: that is expected.)
+**Test line:** start `/pocket.py`; blackjack shows the drawn cards and chips where they exist. Nothing to change in the code. (`tools/pilot_test.py` still works for the single table image and prints timings; it reads `c_AS`, `c_back` and `chip_5` as single files only, so with sheets it will report them as missing: that is expected.)
 
 ## Step 3: start at boot (only when you are happy with step 1)
 Upload `pocket.py` a second time, named `/main.py` on the board. Unplug and plug in: the menu should appear by itself. This overwrites the boot file, so it is your call, not mine.
@@ -135,30 +148,27 @@ Upload `pocket.py` a second time, named `/main.py` on the board. Unplug and plug
 ## Not run anywhere yet
 All of this has run only on the Mac, against stand-in `machine` and `framebuf` modules (96 tests). Nothing has run under MicroPython or on the board. Timing, colours on the panel and RAM use are what step 1 finds out.
 
-## On the board now (code, after step 1h)
+## On the board now (code, after step 1i)
 _The record of what the board holds. `tools/check_upload.py` reads it: every module a board file imports must be here, every method a board file calls on the shared libraries must exist in the version recorded here, and a repo file that differs from its recorded version is flagged as not yet uploaded. After an upload, run `python3 tools/check_upload.py --record <step> <repo paths...>` to update the rows._
 
 | Board path | Repo file | Step | Version (git blob) |
 |---|---|---|---|
-| `/lib/sheets.py` | `lib/sheets.py` | 1h | 1a2bb03f10f7 |
-| `/pocket.py` | `pocket.py` | 1h | a85af6632a95 |
+| `/lib/sheets.py` | `lib/sheets.py` | 1i | 82092bdd5cdb |
+| `/pocket.py` | `pocket.py` | 1i | 74cd958d5a99 |
 | `/lib/pixfmt.py` | `lib/pixfmt.py` | 1 | 03010786bfba |
 | `/lib/clocks.py` | `lib/clocks.py` | 1 | b8c0bbf5c8f0 |
-| `/lib/lcd.py` | `lib/lcd.py` | 1f | 58efcaf88d03 |
+| `/lib/lcd.py` | `lib/lcd.py` | 1i | 3c6b0dee4cfc |
 | `/lib/font.py` | `lib/font.py` | 1 | 7b1a40a2df70 |
 | `/lib/buttons.py` | `lib/buttons.py` | 1 | 7dd47cbb1e2e |
-| `/lib/art.py` | `lib/art.py` | 1h | bfc498921b58 |
+| `/lib/art.py` | `lib/art.py` | 1i | 9031232c4b05 |
 | `/lib/save.py` | `lib/save.py` | 1 | 4abeb7ea2133 |
 | `/lib/bankroll.py` | `lib/bankroll.py` | 1 | be0756d4beef |
 | `/lib/cards.py` | `lib/cards.py` | 1 | 117c3004184b |
 | `/games/blackjack_rules.py` | `games/blackjack_rules.py` | 1c | 6000c8ab25fd |
 | `/games/blackjack_table.py` | `games/blackjack_table.py` | 1c | 47214b7e2d74 |
 | `/games/blackjack.py` | `games/blackjack.py` | 1h | b9ee6035a735 |
-| `/games/slots_rules.py` | `games/slots_rules.py` | 1g | 9e701c39f6f4 |
-| `/games/slots_table.py` | `games/slots_table.py` | 1g | ac57f582b8be |
-| `/games/slots.py` | `games/slots.py` | 1h | c7d9027054f4 |
 
-Also on the board: `/assets/menu_background.565` (step 1d), `/save.json` and `/save.bak` (written by the game). The old `main.py` is gone (D-003).
+Also on the board: `/assets/menu_background.565` (step 1d), `/save.json` and `/save.bak` (written by the game). The old `main.py` is gone (D-003). The three `/games/slots*.py` files are deleted at step 1i (their code is in `archive/slots/`).
 
 ## Not on the board yet
 Built and tested on the Mac, waiting for a later step. Do not upload: `lib/poker.py` (poker hand evaluator for the later card games).

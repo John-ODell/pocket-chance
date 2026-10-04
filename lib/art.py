@@ -25,26 +25,42 @@ class Sheet:
     def __init__(self, name, f, scratch):
         self.name = name
         self.f = f
-        self.w, self.h, self.names = sheets.SHEETS[name]
+        self.w, self.h, self.count = sheets.SHEETS[name]
         self.n = self.w * self.h * 2
         self.scratch = scratch
+        self.view = memoryview(scratch)[:self.n]
+        self.flags = bytearray(self.count)          # 0 unknown, 1 drawn, 2 placeholder (magenta)
+        self._two = bytearray(2)
+
+    def present(self, index):
+        """False when member `index` is a magenta placeholder (John has not drawn it yet)."""
+        fl = self.flags[index]
+        if fl == 0:
+            self.f.seek(sheets.offset(self.name, index))
+            self.f.readinto(self._two)
+            fl = 2 if (self._two[0] == 0xF8 and self._two[1] == 0x1F) else 1
+            self.flags[index] = fl
+        return fl == 1
 
     def read(self, index, buf):
         """Whole sprite `index` into buf (at least w*h*2 bytes). Returns True if read."""
         f = self.f
         f.seek(sheets.offset(self.name, index))
-        return f.readinto(memoryview(buf)[:self.n]) == self.n
+        dst = buf if len(buf) == self.n else memoryview(buf)[:self.n]
+        return f.readinto(dst) == self.n
 
     def rows(self, index, first, count, dst):
-        """Rows first..first+count-1 of sprite `index` into dst (count * w * 2 bytes)."""
+        """Rows first..first+count-1 of sprite `index` into dst, which holds exactly count rows
+        (pass a fixed memoryview from the caller: this allocates nothing)."""
         row = self.w * 2
         self.f.seek(sheets.offset(self.name, index) + first * row)
-        return self.f.readinto(memoryview(dst)[:count * row]) == count * row
+        return self.f.readinto(dst) == count * row
 
     def blit(self, fb, index, x, y, key=KEY):
-        if not self.read(index, self.scratch):
+        """Draw member `index`; False for a placeholder so the caller draws its own version."""
+        if not self.present(index) or not self.read(index, self.scratch):
             return False
-        spr = framebuf.FrameBuffer(memoryview(self.scratch)[:self.n], self.w, self.h, framebuf.RGB565)
+        spr = framebuf.FrameBuffer(self.view, self.w, self.h, framebuf.RGB565)
         fb.blit(spr, x, y, key)
         return True
 
@@ -73,8 +89,8 @@ class Assets:
         if r is None:
             return None
         f, w, h = r
-        sw, sh, names = sheets.SHEETS[name]
-        if w != sw or h != sh * len(names):
+        sw, sh, count = sheets.SHEETS[name]
+        if w != sw or h != sh * count:
             f.close()
             self.missing[name] = 1
             return None
@@ -147,7 +163,7 @@ class Assets:
         fs = self._from_sheet(name)
         if fs is not None:
             s, i = fs
-            if s.n <= len(buf) and s.read(i, buf):
+            if s.present(i) and s.n <= len(buf) and s.read(i, buf):
                 return s.w, s.h
             return None
         r = self._open(name)
@@ -161,12 +177,6 @@ class Assets:
         ok = f.readinto(memoryview(buf)[:n]) == n
         f.close()
         return (w, h) if ok else None
-
-    def open_sprite(self, name):
-        """Open a validated sprite positioned at its first pixel: (file, w, h) or None. The caller
-        reads rows with seek/readinto and must close it. For animations that stream a symbol in
-        over several frames (slots, HR-020) without re-opening per frame."""
-        return self._open(name)
 
     def size(self, name):
         r = self._open(name)

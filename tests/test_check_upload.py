@@ -44,9 +44,9 @@ class CheckUpload(unittest.TestCase):
     def test_record_helper_updates_rows(self):
         text = ('| Board path | Repo file | Step | Version (git blob) |\n|---|---|---|---|\n'
                 '| `/lib/art.py` | `lib/art.py` | 1f | 000000000000 |\n')
-        out = check_upload.update_record(text, '1h', ['lib/art.py', 'games/slots.py'])
+        out = check_upload.update_record(text, '1h', ['lib/art.py', 'games/blackjack.py'])
         self.assertIn('| `/lib/art.py` | `lib/art.py` | 1h | %s |' % check_upload.blob_of('lib/art.py')[:12], out)
-        self.assertIn('| `/games/slots.py` | `games/slots.py` | 1h |', out)
+        self.assertIn('| `/games/blackjack.py` | `games/blackjack.py` | 1h |', out)
         self.assertNotIn('000000000000', out)
 
     def test_current_upload_md_is_clean(self):
