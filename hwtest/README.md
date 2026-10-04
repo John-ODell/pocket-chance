@@ -62,3 +62,6 @@ Finish with `mpremote connect $P soft-reset`. Each script prints `RESULT key=val
 `lcdbench.py` is the shared driver: same pins and init sequence as `main_monolith.py`, plus window writes. It is a bench tool, not for the dev to import.
 
 Results so far: 2026-10-03, MicroPython v1.22.2 stock Pico build. See `hw/BUDGET.md`.
+
+- `peek_port.py` (run with the pipx mpremote venv's python): read a possibly frozen board's buffered output WITHOUT resetting it, then one newline and one Ctrl-C; prints the KeyboardInterrupt traceback, i.e. the line the program was sitting on. Used for HR-F06. Ends any running program, so only when John is away from the board.
+- `car_fuzz/fuzz.py`, `car_fuzz/targeted.py` (Mac, CPython): the real Caribbean screen + table with stubbed lcd/font/assets/utime, random keys / John's repro path. Stage first: `./hwtest/stage_from.sh <ref> games/caribbean.py games/caribbean_pay.py games/caribbean_rules.py games/caribbean_seats.py games/caribbean_table.py lib/poker.py lib/cards.py lib/bankroll.py`, then `python3 hwtest/car_fuzz/fuzz.py`. HR-F06.
