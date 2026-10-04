@@ -1,6 +1,6 @@
 Pocket Chance (J'Boy) - John O'Dell
 
-A pocket casino for the Waveshare RP2040-Plus and the Waveshare 1.3" LCD HAT, written in MicroPython. It runs offline on the board. Blackjack is playable today. Caribbean Stud is being built, then Ultimate Texas Hold'em.
+A pocket casino for the Waveshare RP2040-Plus and the Waveshare 1.3" LCD HAT, written in MicroPython. It runs offline on the board. Blackjack and Caribbean Stud are playable today. Ultimate Texas Hold'em is planned next.
 
 The HAT plugs onto the board, so there is no wiring in this project. The pin map and everything we measured on a real board is in [`docs/HARDWARE.md`](docs/HARDWARE.md).
 
@@ -36,13 +36,16 @@ Landscape, with USB-C and the joystick on the left and the buttons on the right.
 | Blackjack, betting | Joystick up / down | Change the bet (5 to 500, steps of 5) |
 | Blackjack, betting | **A** deal, **B** back to menu | |
 | Blackjack, playing | **A** hit, **B** stand, **X** double, **Y** split a pair | |
+| Caribbean Stud, betting | Joystick up / down, left / right | Change the ante (5 to 100, capped at a third of your chips) |
+| Caribbean Stud, betting | **A** deal, **X** pays and strategy, **B** menu | |
+| Caribbean Stud, deciding | **A** raise (twice the ante), **B** fold | The dealer's cards then turn over one by one |
 
 ## Games
 
 | Game | Status | Rules | House edge |
 |---|---|---|---|
 | Blackjack | **Playable** | 6 decks, reshuffle at 75% dealt, dealer stands on all 17, blackjack pays 3:2, hit / stand / double, split pairs once (aces get one card each, double after split allowed) | about 0.55% |
-| Caribbean Stud | In progress | Ante, five cards each, dealer shows one, fold or raise 2x, dealer needs Ace-King or better, raise pays 1 to 100:1, no jackpot | about 5.2% of the ante with good play |
+| Caribbean Stud | **Playable** | Ante 5 to 100, five cards each, dealer shows one, fold or raise 2x, dealer needs Ace-King or better, raise pays 1 to 100:1, no jackpot; X shows the pays and the basic strategy | about 5.2% of the ante with good play |
 | Ultimate Texas Hold'em | Planned | Ante and Blind, check or raise 4x / 3x pre-flop, 2x after the flop, 1x after the river | about 2.2% of the ante with good play |
 | Slots | Shelved | A 3-reel machine was built and tuned (93.84% return) then dropped: a classic multi-line machine does not fit the board's RAM. Code kept in `archive/slots/` | n/a |
 
