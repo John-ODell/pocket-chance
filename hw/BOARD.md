@@ -17,6 +17,20 @@ _Maintained by the microcontroller expert. State what is on the desk and how you
 | Free RAM at boot | 222,720 bytes free, largest allocatable block 199,129 | `hwtest/ram_free.py` |
 | ADC3 / GPIO29 | reads 7770/65535 = 1.17 V after the Pico's x3 divider. Not a believable VSYS, so this board probably does not wire GPIO29 to VSYS like a Pico. Check the schematic in `../Pico_Reference/` before relying on it | `hwtest/pins_idle.py` |
 
+## Reserved and unused GPIO on the RP2040-Plus (read-only, `hwtest/pins_reserved.py`, 2026-10-04)
+Each pin read as an input with the pull-up, then the pull-down (20 samples each); a pin that follows the pull is floating, one that reads the same both ways is driven on the board.
+
+| GPIO | Result | Reading |
+|---|---|---|
+| 0, 1, 4, 5, 6, 7, 14, 22 | follow the pull | floating: free on this board |
+| 23 | follows the pull | floating (on a Pico this is the regulator power-save pin; here nothing holds it) |
+| **24** | **held HIGH with the pull-down on** | driven on the board: a VBUS-present sense, as on a Pico (USB was connected) |
+| 25 | follows the pull | no evidence of an LED. An LED to ground could still read this way; driving it as an output to find out needs a ruling |
+| 26, 27, 28 | follow the pull; ADC 0.58–0.60 V floating | free ADC inputs |
+| **29** | follows the pull; ADC3 0.61 V floating, same as the free ADCs | **not wired to a VSYS divider**: unconnected on the Plus. The earlier 1.17–1.42 V "VSYS" readings were a floating input |
+
+Flash size, read-only reasoning: NOR flash ignores address bits above its capacity, so an 8 MB chip read at offset 8 MB aliases to offset 0 and shows the firmware image. `flash_probe.py` read erased 0xFFFFFFFF at 8 MB and 15 MB, not a mirror, so the chip is larger than 8 MB: 16 MB as labelled. A JEDEC-ID read (command 0x9F) would make it formal; it needs XIP off while the command runs and is pending a PM ruling (`picotool` in BOOTSEL mode or a Thumb-assembly routine).
+
 ## If mpremote says "could not enter raw repl"
 The board is almost certainly fine. A killed `mpremote exec` (timed background run, closed terminal) leaves it in raw-REPL mode with the program still running, and mpremote's handshake then fails. Run `hwtest/unwedge.py` (Mac side, pyserial: Ctrl-C, Ctrl-B, Ctrl-D) and mpremote connects again. Unplugging also works but is not needed. Learned the hard way on 2026-10-04, twice.
 
