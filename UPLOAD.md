@@ -78,6 +78,16 @@ One file. The menu lists Blackjack, Slots, Caribbean, Hold'em and Off; three row
 
 **Test line:** joystick down from Blackjack: Slots, then Caribbean (list scrolls when you pass the third row, a `^` appears top right), Hold'em, Off (`v` disappears). Up again to Blackjack. A on Blackjack still starts the game; A on a "soon" row does nothing.
 
+## Step 1f: faster image loading (HR-F03), 2026-10-05
+Two library files. The image loader now checks a file's size once and then goes straight to the pixels, which makes every card, chip and banner about 5 ms faster to draw. The screen driver gains a routine the slot reels will use.
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `lib/art.py` | `/lib/art.py` |
+| 2 | `lib/lcd.py` | `/lib/lcd.py` |
+
+**Test line:** menu and blackjack look and behave exactly as before (with `table.565` present the felt still shows; without it the plain felt). The expert re-measures one card blit.
+
 ## Step 2: pilot image test (after you have made the 4 pilot images)
 On the Mac, from the repo folder:
 
