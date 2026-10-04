@@ -2,7 +2,7 @@
 
 _Updated by the senior dev at the end of each session. Written for John._
 
-**Last updated:** 2026-10-05
+**Last updated:** 2026-10-05 (afternoon)
 
 ## Where we are
 Every decision for Phase 1 is approved (DR-001 to DR-015) and the first full version of the game is written. **It has never run on the board.** I have asked the expert to look it over on the bench first; after that the next step is yours: upload it following `UPLOAD.md` step 1 and tell the PM what you see.
@@ -38,6 +38,12 @@ The expert ran the build on the board. One blocker, now fixed: the image-loader 
 1. **`UPLOAD.md` step 1** (after the expert's bench check): upload 13 files, run `/pocket.py`, play a hand, copy the `RESULT` lines to the PM. If the screen is dark or garbled, flip `FAST_SPI` to `False` and tell the PM.
 2. **Art:** make the four pilot images (`c_AS`, `c_back`, `chip_5`, `table`) at the sizes in `assets/ASSETS.md`, drawn the right way up as described there. Then `UPLOAD.md` step 2.
 3. Nothing else is waiting on you.
+
+## Slots animation: measured, redesigned, back with the PM
+The expert timed my spin animation plan on the board and it was four times too slow (82 ms a frame). The reason was in my image loader: every picture drawn cost about 8 ms of file-system overhead before a single pixel was read. Two things followed:
+- **The loader is fixed** (`UPLOAD.md` step 1f): the size check happens once per picture per boot and is remembered, so cards, chips and banners will all draw about 5 ms faster once your art arrives. No change to what you see.
+- **DR-020 is revised** to the design the expert measured: the symbols stay in memory while the reels spin, each reel re-reads only the symbol scrolling in, and the windows are sent straight to the screen. Measured 13 ms a frame (76 fps) at full speed and 18 ms (56 fps) at the slow clock. It needs about 44 KB of memory while the slots screen is open, the tightest point in the project, so the first bench will check the headroom.
+- **DR-021 is revised** with the order the expert asked for: result drawn, then saved, then the win blinks. One save per spin is harmless for the flash (thousands of times below any wear limit).
 
 ## Approved for slots (DR-017, 018, 019, 022, 023) and what I did
 - `assets/ASSETS.md` Phase 2 is final: 8 symbols at 56 x 56, the optional cabinet with the window positions fixed, the jackpot banner, `sym_blur` dropped, and the dark zones to keep calm. **Pilot files first: `sym_cherry`, `sym_star`, `sym_bar`.**
