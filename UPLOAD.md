@@ -208,7 +208,7 @@ _The record of what the board holds. `tools/check_upload.py` reads it: every mod
 | Board path | Repo file | Step | Version (git blob) |
 |---|---|---|---|
 | `/games/stud_seats.py` | `games/stud_seats.py` | 1k | 5f087aac8cb6 |
-| `/games/holdem.py` | `games/holdem.py` | 1m | e66a581fcd0c |
+| `/games/holdem.py` | `games/holdem.py` | 1m | 15999364de92 |
 | `/games/holdem.py` | `games/holdem.py` | 1m | 15999364de92 |
 | `/games/holdem_pay.py` | `games/holdem_pay.py` | 1m | 16eb817d94e1 |
 | `/games/holdem_table.py` | `games/holdem_table.py` | 1m | f2ce77f0b1ce |
@@ -220,7 +220,7 @@ _The record of what the board holds. `tools/check_upload.py` reads it: every mod
 | `/games/stud_table.py` | `games/stud_table.py` | 1k | de994d48a9c8 |
 | `/games/stud_rules.py` | `games/stud_rules.py` | 1k | de79e3cb9287 |
 | `/lib/sheets.py` | `lib/sheets.py` | 1j | e3adeacc4c38 |
-| `/pocket.py` | `pocket.py` | 1m | c61acd694e67 |
+| `/pocket.py` | `pocket.py` | 1m | 6b9a73165446 |
 | `/lib/pixfmt.py` | `lib/pixfmt.py` | 1 | 03010786bfba |
 | `/lib/lcd.py` | `lib/lcd.py` | 1i | 3c6b0dee4cfc |
 | `/lib/font.py` | `lib/font.py` | 1 | 7b1a40a2df70 |
