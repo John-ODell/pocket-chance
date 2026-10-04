@@ -34,7 +34,7 @@ If you don't want to draw these, say so. The dev can generate simple versions in
 | `ui/menu_background.bmp` (optional) | 1 | **240 x 240** | 115,204 | Behind the main menu. Blurred or dark photos work best. Menu text sits on small dark plates so it stays readable, but keep the three row boxes (x 16–224, y 70–214) and the title area (y 8–60) from being very bright; the converter warns if they are. Supplied by John 2026-10-04 (D-007) |
 | `ui/logo.bmp` | 1 | **200 x 40** | 16,004 | "Pocket Chance" title, magenta background |
 | `ui/icon_blackjack.bmp`, `icon_stud.bmp`, `icon_holdem.bmp` | 3 | **48 x 48** | 4,612 each | Menu icons (packed into `icons.565`) |
-| `ui/banner_win.bmp`, `banner_lose`, `banner_push`, `banner_bust`, `banner_blackjack` | 5 | **160 x 32** | 10,244 each | Short result banners drawn over the table, magenta background |
+| `ui/banner_win.bmp`, `banner_lose`, `banner_push`, `banner_bust`, `banner_blackjack`, `banner_noqualify` | 6 | **160 x 32** | 10,244 each | Short result banners drawn over the table, magenta background. `banner_noqualify` ("dealer does not qualify") is for Caribbean Stud (DR-032), optional |
 
 Phase 1 total: 67 files, roughly 0.54 MB (each file carries a 4-byte size header). The card set is 237 KB of that.
 
@@ -48,7 +48,7 @@ You draw **one BMP per picture**, exactly as listed above. The converter then pa
 |---|---|---|---|---|
 | `/assets/cards.565` | `cards/c_*.bmp` | 40 x 56 | the 52 cards, spades then hearts, diamonds, clubs, ace to king within each; then `c_back` | 237,444 |
 | `/assets/chips.565` | `chips/chip_*.bmp` | 24 x 24 | `chip_1, chip_5, chip_25, chip_100, chip_500` | 5,764 |
-| `/assets/banners.565` | `ui/banner_*.bmp` | 160 x 32 | `win, lose, push, bust, blackjack` | 51,204 |
+| `/assets/banners.565` | `ui/banner_*.bmp` | 160 x 32 | `win, lose, push, bust, blackjack, noqualify` | 61,444 |
 | `/assets/icons.565` | `ui/icon_*.bmp` | 48 x 48 | `blackjack, stud, holdem` | 13,828 |
 
 `table`, `menu_background` and `logo` stay single files (`<name>.565`).
@@ -74,7 +74,7 @@ Good: a plain dark green felt with a slightly lighter border in the outer 12 px,
 
 Slots was dropped: John does not need to draw any slot art. The old spec is in git history and
 `archive/slots/`. The next games are Caribbean Stud and Ultimate Texas Hold'em; their art needs
-(new result banners, if any) will be added here when their rulings are in. They reuse the cards and chips.
+are small: Caribbean Stud reuses the cards, chips, table and result banners and adds only the optional `banner_noqualify` and `icon_stud` (DR-032).
 
 ## How your files reach the board: sheets (DR-024)
 
@@ -84,7 +84,7 @@ You draw **one BMP per picture**, exactly as listed above. The converter then pa
 |---|---|---|---|---|
 | `/assets/cards.565` | `cards/c_*.bmp` | 40 x 56 | the 52 cards, spades then hearts, diamonds, clubs, ace to king within each; then `c_back` | 237,444 |
 | `/assets/chips.565` | `chips/chip_*.bmp` | 24 x 24 | `chip_1, chip_5, chip_25, chip_100, chip_500` | 5,764 |
-| `/assets/banners.565` | `ui/banner_*.bmp` | 160 x 32 | `win, lose, push, bust, blackjack` | 51,204 |
+| `/assets/banners.565` | `ui/banner_*.bmp` | 160 x 32 | `win, lose, push, bust, blackjack, noqualify` | 61,444 |
 | `/assets/icons.565` | `ui/icon_*.bmp` | 48 x 48 | `blackjack, stud, holdem` | 13,828 |
 
 `table`, `menu_background` and `logo` stay single files (`<name>.565`).

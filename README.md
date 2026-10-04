@@ -1,6 +1,6 @@
 Pocket Chance (J'Boy) - John O'Dell
 
-A pocket casino for the Waveshare RP2040-Plus and the Waveshare 1.3" LCD HAT, written in MicroPython. It runs offline on the board. Blackjack is playable today. Caribbean Stud is being built, then Ultimate Texas Hold'em.
+A pocket casino for the Waveshare RP2040-Plus and the Waveshare 1.3" LCD HAT, written in MicroPython. It runs offline on the board. Blackjack and Caribbean Stud are playable today. Ultimate Texas Hold'em is planned next.
 
 The HAT plugs onto the board, so there is no wiring in this project. The pin map and everything we measured on a real board is in [`docs/HARDWARE.md`](docs/HARDWARE.md).
 
@@ -36,14 +36,19 @@ Landscape, with USB-C and the joystick on the left and the buttons on the right.
 | Blackjack, betting | Joystick up / down | Change the bet (5 to 500, steps of 5) |
 | Blackjack, betting | **A** deal, **B** back to menu | |
 | Blackjack, playing | **A** hit, **B** stand, **X** double, **Y** split a pair | |
+| Caribbean Stud, betting | Joystick up / down, left / right | Change the ante (5 to 100, capped at a third of your chips) |
+| Caribbean Stud, betting | **A** deal, **X** pays and strategy, **B** menu | |
+| Caribbean Stud, deciding | **A** raise (twice the ante), **B** fold | The dealer's cards then turn over one by one |
+| Hold'em, betting | Joystick, **A** deal, **X** help, **B** menu | Blind equals the Ante |
+| Hold'em, pre-flop / flop / river | **A** raise (4x / 2x / 1x), **Y** raise 3x pre-flop, **B** check (fold at the river) | The table cards turn as you go; the river prompt shows the dealer outs |
 
 ## Games
 
 | Game | Status | Rules | House edge |
 |---|---|---|---|
 | Blackjack | **Playable** | 6 decks, reshuffle at 75% dealt, dealer stands on all 17, blackjack pays 3:2, hit / stand / double, split pairs once (aces get one card each, double after split allowed) | about 0.55% |
-| Caribbean Stud | In progress | Ante, five cards each, dealer shows one, fold or raise 2x, dealer needs Ace-King or better, raise pays 1 to 100:1, no jackpot | about 5.2% of the ante with good play |
-| Ultimate Texas Hold'em | Planned | Ante and Blind, check or raise 4x / 3x pre-flop, 2x after the flop, 1x after the river | about 2.2% of the ante with good play |
+| Caribbean Stud | **Playable** | Ante 5 to 100, five cards each, dealer shows one, fold or raise 2x, dealer needs Ace-King or better, raise pays 1 to 100:1, no jackpot; X shows the pays and the basic strategy. Five other players sit at the table as chip stacks along the bottom edge: they play the house with real cards from the same deck and never change your odds (`STUD_SEATS` in `pocket.py`, 0 to 5) | about 5.2% of the ante with good play |
+| Ultimate Texas Hold'em | **Built**, awaiting John's first play | Equal Ante and Blind (5 to 50), two hole cards, five table cards; raise 4x or 3x pre-flop, 2x after the flop, 1x at the river or fold; dealer needs a pair for the Ante to count; Blind pays straight 1:1 up to royal 500:1. X teaches the full published simple strategy and the river prompt shows the dealer-outs count (`UTH_HINT`). Four other players sit at the sides as chip stacks (`UTH_SEATS`) | about 2.4% of the ante with the taught strategy, 2.2% optimal |
 | Slots | Shelved | A 3-reel machine was built and tuned (93.84% return) then dropped: a classic multi-line machine does not fit the board's RAM. Code kept in `archive/slots/` | n/a |
 
 Chips: you start with 1000. If you go broke you get a free refill. Your chips are saved to the board after every round, with a backup copy and recovery if the save is damaged.
@@ -51,7 +56,7 @@ Chips: you start with 1000. If you go broke you get a free refill. Your chips ar
 The house edges were measured by simulation (`tools/bj_edge.py`, `tools/bj_split.py`, `tools/stud_edge.py`) and the rules were checked against the public references on wizardofodds.com.
 
 ## What it does well on this hardware
-- Full-speed screen: about 58 frames a second for a full redraw, once the board's SPI clock is fixed (`lib/clocks.py`).
+- Full-speed screen: about 58 frames a second for a full redraw, once the board's peripheral clock is set from the system PLL (one `machine.freq` call at the top of `pocket.py`, see `docs/HARDWARE.md`).
 - Redraws only the strip of the screen that changed, so a button press answers in about 15 to 100 ms.
 - About 50 to 55 KB of RAM left while playing, on a board with 264 KB.
 - Art is optional. With no image files the game draws cards and the table in code.
