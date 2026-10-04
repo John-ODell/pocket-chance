@@ -39,8 +39,11 @@ The expert ran the build on the board. One blocker, now fixed: the image-loader 
 2. **Art:** make the four pilot images (`c_AS`, `c_back`, `chip_5`, `table`) at the sizes in `assets/ASSETS.md`, drawn the right way up as described there. Then `UPLOAD.md` step 2.
 3. Nothing else is waiting on you.
 
+## Your table background
+You said you want to draw the felt yourself. `assets/ASSETS.md` now has a "Readability" section with the exact pixel boxes where text and cards sit, so you know which areas to keep dark and calm. The converter warns (but still converts) if a text area of your table is too light or busy. Upload just `assets/out/table.565` and the game uses it at the next start; no code changes.
+
 ## Waiting on a decision
-Nothing. Next up at the PM's request: a readability guide for your table background art, and a converter warning when the text areas of a table image are too light. I will file a request before any new work on slots (Phase 2), and for making `pocket.py` the boot file if you prefer it decided here rather than in `UPLOAD.md`.
+Nothing. I will file a request before any new work on slots (Phase 2), and for making `pocket.py` the boot file if you prefer it decided here rather than in `UPLOAD.md`.
 
 ## What I plan next
 - Fix whatever the bench check and step 1 turn up.
