@@ -30,3 +30,8 @@ Maintained by the PM. Newest at the bottom. Format: `DD-Mon | DR-NNN | decision 
 | 2026-10-04 | DR-016 | Split pairs: split once, Y button, aces one card each, double after split OK, 21 after split pays 1:1. House edge about 0.55%. | John |
 | 2026-10-04 | D-007 | Add a `menu_background` image (240x240, same .565 pipeline as `table`) behind the main menu. John supplied the art (`image_assets/menu_background.bmp`, 451x258, centre-cropped to 240x240). | John |
 | 2026-10-04 | D-008 | Scope: add slots, then Caribbean Stud, then Ultimate Texas Hold'em (in that order; each needs its own rules/odds rulings before build). Menu will need scrolling or a submenu for 5 items. Other players are not simulated (they do not affect odds). | John |
+| 2026-10-04 | DR-017 | Slots: 3 reels, one centre payline, 8 symbols, 32-stop virtual strips | John |
+| 2026-10-04 | DR-018 | Slots paytable A: RTP 93.84%, 1000x fixed jackpot (three stars), hit 1 in 3.6 | John |
+| 2026-10-04 | DR-019 | Slots bets 5 to 100, steps of 5, shared bankroll | John |
+| 2026-10-04 | DR-022 | Menu: scrolling 3-row list; short names "Carib. Stud", "Ult. Hold'em" | John |
+| 2026-10-04 | DR-023 | Slots art list adopted; pilot sym_cherry, sym_star, sym_bar | John |
