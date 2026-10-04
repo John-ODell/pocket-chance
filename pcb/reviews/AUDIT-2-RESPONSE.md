@@ -54,6 +54,6 @@ The owner fetched the DW01A datasheet. Its typical-application table requires R1
 J3 back to the 2-pin JST-PH socket (S2B-PH-SM4-TB; the TS net now carries only U5 pin 1 and R12) and F1 changed to MF-MSMF150/16X-2 (1.5 A hold, 3.0 A trip, same footprint). R16 stays 47 kΩ pending the owner's ruling on the timer reconciliation. Nothing else changed from rev 0.8.
 
 ## Final commit (what the next audit pass reviews)
-- **Schematic to review:** rev 0.8, last changed in commit **283594a** (rev 0.7 plus the two DW01A resistor values); content hash **`9ed7c374ca34e7dad227afbdf19a4a0bbdb7435d`**. Exports from exactly that file are in `pcb/kicad/exports/` (ERC 0 errors, 2 warnings: the IMU's address and auxiliary pins tied to ground, as its datasheet asks).
+- **Schematic to review:** rev 0.9, last changed in commit **eafbde6** (rev 0.8 plus the 2-pin socket and the 1.5 A fuse); content hash **`304da84e427746d2779c4b5a228b10f730f74106`**. Exports from exactly that file are in `pcb/kicad/exports/` (ERC 0 errors, 2 warnings: the IMU's address and auxiliary pins tied to ground, as its datasheet asks).
 - Footprints: `pcb/kicad/lib/pcb_custom.pretty/RM2.kicad_mod` (commit 76949f0) and `AOTA-B201610S.kicad_mod`.
 - Verification by the expert: `pcb/reviews/HR-P05.md`, with the rev 0.7 re-check to follow.
