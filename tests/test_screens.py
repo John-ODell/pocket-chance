@@ -79,6 +79,10 @@ class Lcd(unittest.TestCase):
         scratch = bytearray(16384)
         lcd.show_rect(10, 10, 40, 56, scratch)
         lcd.show_rect(0, 0, 240, 240, scratch)   # too big: falls back to a band
+        lcd.spi.written = 0
+        lcd.show_buf(18, 92, 56, 56, bytearray(56 * 56 * 2))
+        self.assertGreaterEqual(lcd.spi.written, 56 * 56 * 2)
+        self.assertLess(lcd.spi.written, 56 * 56 * 2 + 64)      # only the window plus commands
 
 
 class Font(unittest.TestCase):
@@ -140,6 +144,39 @@ class AssetsTests(unittest.TestCase):
         with open(os.path.join(self.dir, 'big.565'), 'wb') as f:
             f.write(struct.pack('<HH', 200, 100) + b'\x00' * (200 * 100 * 2))
         self.assertFalse(a.blit(self.lcd, 'big', 0, 0))   # larger than the scratch
+
+    def test_size_check_is_cached_after_first_open(self):
+        import art as art_module
+        write_565(os.path.join(self.dir, 'c_AS.565'), 40, 56, (240, 232, 200))
+        a = Assets(self.dir)
+        calls = []
+        real_stat = art_module.os.stat
+        art_module.os.stat = lambda p: (calls.append(p), real_stat(p))[1]
+        try:
+            self.assertTrue(a.blit(self.lcd, 'c_AS', 0, 0))
+            self.assertTrue(a.blit(self.lcd, 'c_AS', 0, 0))
+            self.assertTrue(a.blit(self.lcd, 'c_AS', 0, 0))
+            self.assertEqual(len(calls), 1)                    # stat once, then straight to the pixels
+            self.assertEqual(a.known['c_AS'], (40, 56))
+            # the pixels are right on a cached open (header skipped, not read as pixels)
+            self.assertEqual(self.lcd.pixel(0, 0), rgb(240, 232, 200))
+            os.remove(os.path.join(self.dir, 'c_AS.565'))
+            self.assertFalse(a.blit(self.lcd, 'c_AS', 0, 0))   # vanished file: graceful
+            self.assertIn('c_AS', a.missing)
+        finally:
+            art_module.os.stat = real_stat
+
+    def test_load_into_ram_buffer(self):
+        write_565(os.path.join(self.dir, 'sym_star.565'), 56, 56, (250, 220, 40))
+        a = Assets(self.dir)
+        buf = bytearray(56 * 56 * 2)
+        self.assertEqual(a.load('sym_star', buf), (56, 56))
+        self.assertEqual(a.load('sym_star', buf), (56, 56))    # cached path
+        import framebuf
+        fb = framebuf.FrameBuffer(buf, 56, 56, framebuf.RGB565)
+        self.assertEqual(fb.pixel(10, 10), rgb(250, 220, 40))
+        self.assertIsNone(a.load('sym_star', bytearray(10)))    # too small
+        self.assertIsNone(a.load('nope', buf))
 
     def test_wrong_size_background_rejected(self):
         write_565(os.path.join(self.dir, 'table.565'), 120, 120, (0, 90, 40))
