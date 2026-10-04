@@ -4,7 +4,7 @@
 - **Filed by:** senior dev
 - **Date:** 2026-10-06
 - **Blocks:** Nothing (the menu works as it is)
-- **Needs HW review:** yes (menu entry redraw time and the row-band pushes; RAM must stay at today's 68 KB at boot, no new buffers)
+- **Needs HW review:** yes (menu entry redraw time and the row-band pushes; no new buffers). **Reviewed as built (HR-072, tip d861e16): fits.** The menu code is 2.6 KB of RAM, so free RAM at boot is **65.7 KB** (was 68.0); entry 130 ms mean, a joystick move 44 ms, a scroll 40 ms.
 
 ## The decision
 John wants the menu to look good: today, without his photo file on the board, it is a dark screen with text, three plain row boxes and a gold frame around the chosen one. Which of the three styles below (all drawn in code, no art needed, no photo, nothing we do not own) does the menu get?
@@ -21,7 +21,7 @@ Three 48 px rows with the list scrolling (DR-022), the 9-character labels, the i
 - **Title:** "Pocket Chance" in gold size-2 with a 1 px black drop shadow; the chips figure under it on a cream plate shaped like a casino plaque (a rounded rectangle: two `fill_rect` plus four quarter `ellipse` corners).
 - **Rows:** each row is a wide pill in that game's felt colour (DR-065: green for Blackjack, deep blue for Ultimate, burgundy for Caribbean, dark grey for Off): a rectangle with `ellipse` ends. Unselected pills are drawn 2 shades darker with white text; the selected pill is full colour with a gold outline and cream text, and a small gold chip (a 12 px filled `ellipse` with a white ring) sits at its right end as the cursor.
 - **Icon slot:** until John's icons exist, a code-drawn suit sign in cream: a spade for Blackjack (two ellipses and a small triangle via `poly`), a diamond for Ultimate (`poly`), a club for Caribbean (three ellipses and a stem), a power sign for Off (a ring and a bar).
-- **Cost estimate:** the shade is 60 `fill_rect` calls (about 1 ms), the pills and suits a few dozen primitives (about 5 ms), text as today, one `show()` 18.5 ms; entry about 40 ms, a joystick move two band pushes as today (the shade is redrawn per band from its row index, so no buffer). Zero RAM beyond a dozen constants.
+- **Cost estimate:** the shade is 60 `fill_rect` calls (about 1 ms), the pills and suits a few dozen primitives (about 5 ms), text as today, one `show()` 18.5 ms; entry about 40 ms, a joystick move two band pushes as today (the shade is redrawn per band from its row index, so no buffer). RAM: 2.6 KB of code and constants measured (HR-072), boot 65.7 KB free instead of 68.0; no buffers.
 - Pros: looks like the games; ties the per-game felt colours (DR-065) into the menu so John knows which door he is opening.
 - Cons: a gradient of 15 shades is as smooth as 16-bit colour on this panel gets; a 1 px banding is visible up close.
 
