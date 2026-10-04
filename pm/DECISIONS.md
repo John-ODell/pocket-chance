@@ -14,3 +14,4 @@ Maintained by the PM. Newest at the bottom. Format: `DD-Mon | DR-NNN | decision 
 | 2026-10-03 | DR-012 | Hit, stand, double only; no insurance or surrender; splitting later as its own request | John |
 | 2026-10-03 | DR-013 | Start at 1000 chips; free refill when broke | John |
 | 2026-10-03 | DR-014 | Bets 5 to 500 in steps of 5; `chip_1` art not needed | John |
+| 2026-10-03 | HR-F01 | Reflash board to MicroPython v1.29.0 RP2040-Plus 16 MB build (done by John; main.py restored from backup). Resulting SPI clock regression under investigation. | John |
