@@ -1,6 +1,6 @@
 # HR-F06: Caribbean "freeze" on the board (step 1o build, main `e8244ec`), 2026-10-04 evening
 
-- **Status: open, interim.** The program had not crashed and had not hung: it was alive in its key-polling loop. The rules and state machine are clean under 860,000 scripted keys on the Mac, including John's reported path. What is left is on the board: either the A press never reached the program, or the panel stopped showing what the program drew. Two cheap discriminators are listed at the end.
+- **Status: open, not reproduced, cause unknown** (PM's ruling 2026-10-04 late evening: stand down on the port; no freeze since John replugged). Plan if it happens again: John leaves the board plugged in, I read the button pins live (`hwtest/bounce.py`) and `/save.json` (balance rule below), then the half-speed panel trial from the mount. The program had not crashed and had not hung: it was alive in its key-polling loop. The rules and state machine are clean under 860,000 scripted keys on the Mac, including John's reported path. What is left is on the board: either the A press never reached the program, or the panel stopped showing what the program drew. Two cheap discriminators are listed at the end.
 - Reviewer: microcontroller expert. Second freeze of the day; the first (after a Stud session, same evening) was a different kind: the USB serial port went dead and only a replug brought it back (hw/BOARD.md).
 
 ## What the board said
