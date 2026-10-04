@@ -6,9 +6,11 @@ Written for John, 2026-10-04. The decisions behind it are in `pm/inbox/PCB-001-b
 - A single **LiPo pouch cell, 3.7 V, 1000 to 1200 mAh, WITH a protection board** (the listing says "protected", "with PCM" or "with protection circuit"). Sizes that fit a flat credit-card board: 503450 (5 x 34 x 50 mm) or 603048 (6 x 30 x 48 mm).
 - With a **JST-PH 2.0 mm plug** (two wires, red and black). This is the plug most hobby cells come with.
 - Rated for at least 0.5 C charging (1000 mAh cell: 500 mA). Nearly all pouch cells are; the cell's own listing is the authority.
+- A battery whose own protection has tripped (it shows 0 V) may not wake on this board; charge it briefly on an ordinary single-cell charger first, then use it here.
 - Optional, better: a cell with a **third wire, a thermistor**. It plugs into pin 3 of the board's socket and lets the charger stop when the cell is too hot or too cold. If you fit one, the resistor R12 is removed (tell the PCB maker).
 
 ## Before plugging in, every time
+0. **Unplug USB first.** If a battery was connected while USB was plugged in, the board keeps the battery socket live after the battery is removed (the reverse-polarity guard latches on until USB is unplugged). Plugging a battery in backwards into a live socket defeats the guard. So: USB out, swap the battery, USB back in.
 1. Look at the socket's silkscreen: **+ RED** on pin 1, **-** on pin 2. Hold the plug next to it and check that the red wire goes to the + side. Cells from different sellers are wired both ways; a reversed cell does nothing on this board thanks to the guard transistor, but check anyway.
 2. Make sure the cell is not swollen, dented or warm.
 
