@@ -16,7 +16,7 @@ Create these folders on the board if they do not exist: `/lib`, `/games`, `/asse
 | # | From this repo | To the board |
 |---|---|---|
 | 1 | `lib/pixfmt.py` | `/lib/pixfmt.py` |
-| 2 | `lib/clocks.py` | `/lib/clocks.py` |
+| 2 | (was `lib/clocks.py`, removed at step 1l) | `/lib/clocks.py` |
 | 3 | `lib/lcd.py` | `/lib/lcd.py` |
 | 4 | `lib/font.py` | `/lib/font.py` |
 | 5 | `lib/buttons.py` | `/lib/buttons.py` |
@@ -129,7 +129,78 @@ Slots is dropped. The menu is Blackjack, Caribbean, Hold'em, Off. The libraries 
 
 **Test line:** menu shows four rows (no Slots); blackjack plays as before. Copy the `RESULT` lines (boot and blackjack mem_free) to the PM.
 
-## Step 2: art (any time after step 1i)
+## Step 1j: Caribbean Stud (DR-025 to DR-032), 2026-10-05
+Seven files: the poker hand evaluator (new on the board; `stud_rules.py` imports it, so upload it first), three new game modules, the pays/strategy screen, the sheet list (one more banner) and the menu with Caribbean switched on.
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `lib/poker.py` | `/lib/poker.py` (new; needed by `stud_rules.py`) |
+| 2 | `lib/sheets.py` | `/lib/sheets.py` |
+| 3 | `games/stud_rules.py` | `/games/stud_rules.py` |
+| 4 | `games/stud_table.py` | `/games/stud_table.py` |
+| 5 | `games/stud_pay.py` | `/games/stud_pay.py` |
+| 6 | `games/stud.py` | `/games/stud.py` |
+| 7 | `pocket.py` | `/pocket.py` |
+
+**Test line:** menu, Caribbean, A deals: your five cards face up, the dealer's first card up and four face down, "Dealer shows K" and "You: pair of 9s" lines. A raises (the top line shows "ante 10 + 20"): the dealer's cards turn over one at a time about a third of a second apart, then the result banner and a line like "+30: ante + raise 20 x 1". B folds (all dealer cards shown at once, "-10: ante lost"). X shows the pays and the basic strategy. Copy the `RESULT` lines to the PM.
+
+## Step 1k: other players at the Caribbean Stud table (DR-041), 2026-10-05
+Five files. Five chip stacks appear in a thin rail along the bottom of the Stud screen; after each hand a green or red marker shows who won or lost. They play the house with real cards from the same deck and never touch John's odds. `STUD_SEATS` near the top of `pocket.py` sets how many (0 to 5).
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `games/stud_rules.py` | `/games/stud_rules.py` |
+| 2 | `games/stud_seats.py` | `/games/stud_seats.py` (new) |
+| 3 | `games/stud_table.py` | `/games/stud_table.py` |
+| 4 | `games/stud.py` | `/games/stud.py` |
+| 5 | `pocket.py` | `/pocket.py` |
+
+**Test line:** Caribbean: five small coloured stacks of five lines along the bottom edge. Play a hand: after the result every stack gets a green (up) or red (down) square and grows or shrinks by a line per 200 chips; the next deal clears the squares. Copy the `RESULT` lines to the PM.
+
+## Step 1l: screen clock the supported way (DR-050), 2026-10-06
+One file and one deletion. The screen-speed fix is now `machine.freq(125_000_000, 125_000_000)` at the top of `pocket.py` instead of the register trick in `lib/clocks.py`. Nothing visible changes; the expert benches it from the mounted folder first.
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `pocket.py` | `/pocket.py` |
+| 2 | **delete** `/lib/clocks.py` from the board | |
+
+**Test line:** start `/pocket.py`: the menu appears at full speed as before; the printed `RESULT first show us=` is about 18,000 (about 46,000 with `FAST_SPI = False`). Copy the `RESULT` lines to the PM.
+
+## Step 1m: Ultimate Texas Hold'em (DR-042 to DR-049), 2026-10-06
+Six files: four new game modules, the help screen and the menu with Hold'em switched on. Four other players sit at the sides of the table as chip stacks (`UTH_SEATS` in `pocket.py`, 0 to 4); the river prompt shows the dealer-outs hint (`UTH_HINT`, on by default).
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `games/holdem_rules.py` | `/games/holdem_rules.py` |
+| 2 | `games/holdem_seats.py` | `/games/holdem_seats.py` |
+| 3 | `games/holdem_table.py` | `/games/holdem_table.py` |
+| 4 | `games/holdem_pay.py` | `/games/holdem_pay.py` |
+| 5 | `games/holdem.py` | `/games/holdem.py` |
+| 6 | `pocket.py` | `/pocket.py` |
+
+**Test line:** menu, Hold'em, A deals: your two cards up, the dealer's two and the five table cards face down, four chip stacks at the sides. B checks and the three flop cards turn together; B again and the last two turn, then the prompt shows "A raise 10   B fold   outs n". A raises: the dealer's first card turns, then the second with the result ("WIN +30" / "LOSE -40" / "PUSH" / "FOLD -20", with ", Ante back" when the dealer has no pair), "you pair / dlr high card", and the stacks get a green or red mark. X shows the Blind pays and the full strategy. Copy the `RESULT` lines to the PM.
+
+## Step 1n: the integrated build (steps 1k, 1l and 1m in one go), 2026-10-06
+Everything since Caribbean Stud went live, uploaded once: the Stud seats, the clock change and Ultimate Texas Hold'em. Ten files and one deletion. Files already on the board from step 1k (the four `stud_*` files) are harmless to upload again. After this step the board matches the record below exactly.
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `games/stud_rules.py` | `/games/stud_rules.py` |
+| 2 | `games/stud_seats.py` | `/games/stud_seats.py` |
+| 3 | `games/stud_table.py` | `/games/stud_table.py` |
+| 4 | `games/stud.py` | `/games/stud.py` |
+| 5 | `games/holdem_rules.py` | `/games/holdem_rules.py` (new) |
+| 6 | `games/holdem_seats.py` | `/games/holdem_seats.py` (new) |
+| 7 | `games/holdem_table.py` | `/games/holdem_table.py` (new) |
+| 8 | `games/holdem_pay.py` | `/games/holdem_pay.py` (new) |
+| 9 | `games/holdem.py` | `/games/holdem.py` (new) |
+| 10 | `pocket.py` | `/pocket.py` (menu with Hold'em; `machine.freq` clock; `STUD_SEATS`, `UTH_SEATS`, `UTH_HINT` settings) |
+| 11 | **delete** `/lib/clocks.py` from the board (nothing imports it any more) | |
+
+**Test line:** start `/pocket.py`: `RESULT first show us=` about 18,000. Menu Blackjack / Caribbean / Hold'em / Off. Caribbean: a hand plays and the five chip stacks along the bottom get green or red marks. Hold'em: deal, B, B (flop, then turn and river with "outs n" on the prompt), A: the dealer's cards turn, the result shows and the four side stacks get marks; X shows the Blind pays and strategy. Blackjack unchanged. Copy all `RESULT` lines to the PM.
+
+## Step 2: art (any time after step 1n)
 On the Mac, from the repo folder:
 
 ```bash
@@ -150,15 +221,25 @@ Upload `pocket.py` a second time, named `/main.py` on the board. Unplug and plug
 ## Not run anywhere yet
 All of this has run only on the Mac, against stand-in `machine` and `framebuf` modules (96 tests). Nothing has run under MicroPython or on the board. Timing, colours on the panel and RAM use are what step 1 finds out.
 
-## On the board now (code, after step 1i)
+## On the board now (code, after step 1n)
 _The record of what the board holds. `tools/check_upload.py` reads it: every module a board file imports must be here, every method a board file calls on the shared libraries must exist in the version recorded here, and a repo file that differs from its recorded version is flagged as not yet uploaded. After an upload, run `python3 tools/check_upload.py --record <step> <repo paths...>` to update the rows._
 
 | Board path | Repo file | Step | Version (git blob) |
 |---|---|---|---|
-| `/lib/sheets.py` | `lib/sheets.py` | 1i | 82092bdd5cdb |
-| `/pocket.py` | `pocket.py` | 1i | 74cd958d5a99 |
+| `/games/stud_seats.py` | `games/stud_seats.py` | 1n | 5f087aac8cb6 |
+| `/games/holdem.py` | `games/holdem.py` | 1n | 15999364de92 |
+| `/games/holdem_pay.py` | `games/holdem_pay.py` | 1n | 16eb817d94e1 |
+| `/games/holdem_table.py` | `games/holdem_table.py` | 1n | f2ce77f0b1ce |
+| `/games/holdem_seats.py` | `games/holdem_seats.py` | 1n | 16a22b6a6c43 |
+| `/games/holdem_rules.py` | `games/holdem_rules.py` | 1n | 608855a2b7a8 |
+| `/lib/poker.py` | `lib/poker.py` | 1j | 41fea1368c8c |
+| `/games/stud.py` | `games/stud.py` | 1n | 6ba3de0e8646 |
+| `/games/stud_pay.py` | `games/stud_pay.py` | 1j | 36fde234415a |
+| `/games/stud_table.py` | `games/stud_table.py` | 1n | de994d48a9c8 |
+| `/games/stud_rules.py` | `games/stud_rules.py` | 1n | de79e3cb9287 |
+| `/lib/sheets.py` | `lib/sheets.py` | 1j | e3adeacc4c38 |
+| `/pocket.py` | `pocket.py` | 1n | 6b9a73165446 |
 | `/lib/pixfmt.py` | `lib/pixfmt.py` | 1 | 03010786bfba |
-| `/lib/clocks.py` | `lib/clocks.py` | 1 | b8c0bbf5c8f0 |
 | `/lib/lcd.py` | `lib/lcd.py` | 1i | 3c6b0dee4cfc |
 | `/lib/font.py` | `lib/font.py` | 1 | 7b1a40a2df70 |
 | `/lib/buttons.py` | `lib/buttons.py` | 1 | 7dd47cbb1e2e |
@@ -170,10 +251,10 @@ _The record of what the board holds. `tools/check_upload.py` reads it: every mod
 | `/games/blackjack_table.py` | `games/blackjack_table.py` | 1c | 47214b7e2d74 |
 | `/games/blackjack.py` | `games/blackjack.py` | 1h | b9ee6035a735 |
 
-Also on the board: `/assets/menu_background.565` (step 1d), `/save.json` and `/save.bak` (written by the game). The old `main.py` is gone (D-003). The three `/games/slots*.py` files are deleted at step 1i (their code is in `archive/slots/`).
+Also on the board: `/assets/menu_background.565` (step 1d), `/save.json` and `/save.bak` (written by the game). The old `main.py` is gone (D-003). The three `/games/slots*.py` files are deleted at step 1i (their code is in `archive/slots/`); `/lib/clocks.py` is deleted at step 1l.
 
 ## Not on the board yet
-Built and tested on the Mac, waiting for a later step. Do not upload: `lib/poker.py` (poker hand evaluator for the later card games).
+Nothing at the moment.
 
 ## Restore the old version
 Upload `main_monolith.py` and name it `/main.py` on the board.

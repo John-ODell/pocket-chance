@@ -161,6 +161,103 @@ class TextBounds(unittest.TestCase):
             self.full(s, 'broke')
         self.check()
 
+    def test_stud_screens(self):
+        import stud
+        from stud_rules import WIN, LOSE, PUSH, NOQUALIFY, FOLD, Round, Rules
+        from stud_table import RESULT as S_RESULT, BROKE as S_BROKE, DECIDING as S_DECIDING
+        for balance in (10, 1000, 999999):
+            ctx = self.ctx(balance)
+            s = stud.Screen(ctx)
+            self.bounds.reset()
+            s.draw_all()
+            self.bounds.verify('stud idle %d' % balance)
+            if s.table.state == S_BROKE:
+                continue
+            s.table.adjust_ante(1000)
+            s.table.deal()
+            s.shown = 1
+            self.bounds.reset()
+            s.draw_all()
+            self.bounds.verify('stud deciding')
+            for shown in (2, 3, 4):
+                s.shown = shown
+                self.bounds.reset()
+                s.draw_dealer()
+                self.bounds.verify('stud reveal %d' % shown)
+            s.shown = 5
+            for outcome, net, raise_bet in ((WIN, 100 + 200 * 100, 200), (LOSE, -300, 200), (PUSH, 0, 200),
+                                            (NOQUALIFY, 100, 200), (FOLD, -100, 0)):
+                r = s.table.round
+                r.outcome, r.net, r.raise_bet, r.state = outcome, net, raise_bet, 'done'
+                s.table.state = S_RESULT
+                self.bounds.reset()
+                s.draw_all()
+                self.bounds.verify('stud result %s' % outcome)
+            s.table.round = None
+            s.table.state = S_BROKE
+            self.bounds.reset()
+            s.draw_all()
+            self.bounds.verify('stud broke')
+            self.bounds.reset()
+            real_wait, real_draw = s.buttons.wait_any, s.draw_all
+            s.buttons.wait_any = lambda: 'A'
+            s.draw_all = lambda: None
+            s.paytable()
+            s.buttons.wait_any, s.draw_all = real_wait, real_draw
+            self.bounds.verify('stud paytable')
+        self.check()
+
+    def test_holdem_screens(self):
+        import holdem
+        from holdem_rules import WIN, LOSE, PUSH, FOLD, PREFLOP, FLOP, RIVER
+        from holdem_table import RESULT as H_RESULT, BROKE as H_BROKE
+        for seats in (4, 0):
+            for balance in (20, 1000, 999999):
+                ctx = self.ctx(balance)
+                ctx.uth_seats = seats
+                ctx.uth_hint = True
+                s = holdem.Screen(ctx)
+                self.bounds.reset()
+                s.draw_all()
+                self.bounds.verify('holdem idle %d seats %d' % (balance, seats))
+                if s.table.state == H_BROKE:
+                    continue
+                s.table.adjust_ante(1000)
+                s.table.deal()
+                for st in (PREFLOP, FLOP, RIVER):
+                    s.table.state = st
+                    s.table.round.state = st
+                    s.table.outs = 45 if st == RIVER else None
+                    self.bounds.reset()
+                    s.draw_all()
+                    self.bounds.verify('holdem %s seats %d' % (st, seats))
+                s.table.raise_(1)
+                r = s.table.round
+                for i in range(s.table.seats.count):
+                    s.table.seats.chips[i] = 999999
+                    s.table.seats.delta[i] = 1
+                s.dealer_shown = 2
+                for outcome, net, q in ((WIN, 50 * 500 + 100, True), (LOSE, -300, True), (PUSH, 0, True),
+                                        (WIN, 100, False), (FOLD, -100, False)):
+                    r.outcome, r.net, r.qualified = outcome, net, q
+                    s.table.state = H_RESULT
+                    self.bounds.reset()
+                    s.draw_all()
+                    self.bounds.verify('holdem result %s seats %d' % (outcome, seats))
+                s.table.round = None
+                s.table.state = H_BROKE
+                self.bounds.reset()
+                s.draw_all()
+                self.bounds.verify('holdem broke')
+                self.bounds.reset()
+                real_wait, real_draw = s.buttons.wait_any, s.draw_all
+                s.buttons.wait_any = lambda: 'A'
+                s.draw_all = lambda: None
+                s.help()
+                s.buttons.wait_any, s.draw_all = real_wait, real_draw
+                self.bounds.verify('holdem help')
+        self.check()
+
     def test_menu_and_messages(self):
         with open(os.path.join(ROOT, 'pocket.py')) as f:
             src = f.read().replace('\nmain()\n', '\n')
