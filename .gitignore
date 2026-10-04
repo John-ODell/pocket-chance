@@ -18,3 +18,7 @@ pcb/kicad/exports/
 *.kicad_prl
 *-backups/
 fp-info-cache
+
+# Team channel messages are working conversation, not project record (the README stays)
+pcb/team/*
+!pcb/team/README.md
