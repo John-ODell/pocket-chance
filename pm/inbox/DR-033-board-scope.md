@@ -10,7 +10,7 @@
 Which chip, which wireless, which screen and which power blocks go on the **first** spin of one integrated handheld board, and which wait for a second spin.
 
 ## John's wishes (his words, via the PM, 2026-10-04)
-One board together with the HAT, no gap ("not a sandwich with a hole"). Resizable buttons; a power switch; LiPo charging and battery management; a small speaker; more RAM and storage for the multi-line slots that was shelved (D-009); wireless (an "RP2040 W" or any 2.4 GHz Wi-Fi/Bluetooth). Trade-offs he accepts: button size, joystick replaced by buttons or a different style, a different or slightly larger screen (anything except e-ink). Footprint does not matter yet.
+One board together with the HAT, no gap ("not a sandwich with a hole"). Resizable buttons; a power switch; LiPo charging and battery management; a small speaker; more RAM and storage for the multi-line slots that was shelved (D-009); wireless (an "RP2040 W" or any 2.4 GHz Wi-Fi/Bluetooth). Added later the same day: a **microSD card slot** (purpose not yet stated; appendix H). Trade-offs he accepts: button size, joystick replaced by buttons or a different style, a different or slightly larger screen (anything except e-ink). Footprint does not matter yet.
 
 ## Why it matters
 Each of the four big asks (new chip for RAM, wireless, integrated screen, battery) is a classic way a first board fails on its own. Stacking all four on spin 1 means that when something does not work, four unknowns hide the cause. Staging them puts each unknown on a board where the rest is already proven.
@@ -136,6 +136,7 @@ Spin 1 carries the charger, protection, cell socket, power switch and regulator.
 | RM2 wireless module | footprint and pins routed; populate only if cheap to do so | bring up in software |
 | Speaker amplifier and speaker | footprint | populate and bring up |
 | Fuel gauge | footprint | populate |
+| microSD slot (SPI mode, GP4/5/6/7, card detect GP14) | yes: slot, pull-ups and capacitor placed by the fab; no software use yet | software: a `/sd` mount and whatever John names as its purpose |
 | SWD pads, test points, user LED | yes | yes |
 
 ## Appendix G: Assembly plan (John: "as many small parts as possible assembled by the fab")
@@ -147,12 +148,53 @@ Spin 1 carries the charger, protection, cell socket, power switch and regulator.
 - **Assembly fees to expect:** a setup fee, a stencil, a per-joint price and the parts. The PLAN's "30 to 150 USD or more" range for a small run is the right order of magnitude; the RP2350, PSRAM and RM2 add roughly 10 to 15 USD per board in parts (estimate).
 - **Minimum quantity:** assembled runs are usually 2 to 5 boards minimum. Having a spare is good: one for bring-up, one kept clean.
 
+## Appendix H: microSD card slot (added 2026-10-04 at John's request)
+
+**What John has not said yet: what the card is for.** The hardware is the same for every use (one slot, four signal lines, a card-detect line, three pull-ups, a capacitor), so the slot can go on the board now. The *software* differs a lot by purpose, and one fact changes whether a card is worth having at all: **the board already has 16 MB of flash with about 15 MB free, and all the art for all the planned games is well under 1 MB.** So a card is only needed for the uses marked "needs a card" below.
+
+| Use | Needs a card? | What the developer would change |
+|---|---|---|
+| More room for art and sprite sheets | No, 15 MB is plenty; and a card over SPI is **slower** than the internal flash (see (b)) | nothing, unless backgrounds become dozens of full-screen images |
+| Backups of saves and games, moving files without a USB cable | Yes, and it is the easiest use | a "copy to card / restore from card" item in the menu; saves themselves stay in internal flash |
+| Loading new games or art without a computer | Yes | add `/sd` to the module path and the art search path; a card with the wrong files must not crash the menu |
+| Logs | No (internal flash can log); harmless on a card | a few lines |
+| Music or sound files later | Yes if more than a few short clips; a 3-minute WAV is about 16 MB | the audio path (PWM or I2S) plus a streaming player; the biggest software job on this list |
+
+**(a) Pin budget on the RP2350A (30 GPIO, 0 to 29).** Everything John wants, with no verified pin moved:
+
+| GPIO | Use | Why this pin |
+|---|---|---|
+| 0 | PSRAM chip-select | only XIP_CS1n option not used by the game |
+| 1 | spare (test point) | |
+| 2, 3, 16, 18, 20 | joystick | verified, unchanged |
+| 4, 6, 7 | microSD MISO, SCK, MOSI on SPI0 | SPI0 RX can only be GP0/4/16/20; SPI0 SCK GP2/6/18/22; SPI0 TX GP3/7/19/23 (pico-sdk function table). With 0, 16, 20 taken, GP4 is the only MISO left, which pins SCK and MOSI to 6 and 7 |
+| 5 | microSD chip-select | any GPIO; next to its bus |
+| 8 to 13 | screen | verified, unchanged |
+| 14 | microSD card-detect | any GPIO; optional, can be dropped to free a pin |
+| 15, 17, 19, 21 | buttons | verified, unchanged |
+| 22 | speaker (PWM audio) | any GPIO |
+| 23, 24, 25, 29 | RM2 wireless | fixed by the stock Pico 2 W firmware (HR-033) |
+| 26, 27 | fuel gauge I2C1 (SDA, SCL) | moved here from GP4/5 to free GP4 for the card: the **cheapest rearrangement**, no verified pin touched |
+| 28 | battery voltage divider (ADC2) | an ADC pin |
+
+Result: **29 of 30 pins used, one spare.** It fits. Two consequences: I2S audio (three pins) does not fit alongside the card; PWM audio (one pin) does, which HR-033 already preferred. A debug UART does not fit either; SWD pads cover debugging. The screen cannot share its SPI bus with the card: the card driver re-initialises the bus at its own speed and the screen runs at 62.5 MHz, and the card's MISO would need GP8 or GP12, both taken by the screen. Status: pin functions Documented (pico-sdk `gpio.h` table, read 2026-10-04); the plan itself Unverified until the expert reviews it.
+
+**(b) SPI versus SDIO, and what MicroPython offers.** `machine.SDCard` (the fast, native SD/SDIO driver) exists in MicroPython for ESP32, mimxrt, pyboard and cc3200; **the rp2 port is not listed** (docs.micropython.org, machine.SDCard page, read 2026-10-04). On RP2040 and RP2350 the standard route is the pure-Python `sdcard.py` driver from micropython-lib over a `machine.SPI` bus, mounted with `os.VfsFat`. SDIO on the RP2 family exists only as C-SDK PIO code, not in MicroPython, and would need six pins we do not have. So: **SPI mode, `sdcard.py`.** Costs: SPI-mode cards run at up to about 25 MHz; the Python driver moves 512-byte blocks, so expect a few hundred KB/s at best (**estimate, Unverified**; the expert measures), against 4.4 to 5.6 MB/s measured for the internal flash (`hw/BUDGET.md`). RAM: the driver plus a FAT mount is a few KB (estimate). Conclusion: the card is for bulk storage and file transfer, not for streaming art at frame time.
+
+**(c) Hardware details a first board gets wrong.** 10 kΩ pull-ups on CS, MOSI and MISO (and on the two unused data lines, which SPI mode leaves floating); a 10 µF plus 0.1 µF capacitor at the slot's supply pin because a card draws up to about 100 to 200 mA in bursts during writes and a sagging rail corrupts the write (the buck-boost in appendix D must be sized with this in mind: expert's estimate 100 mA board plus up to 200 mA card peaks); 3.3 V only; an ESD array on the exposed lines; a **push-push** surface-mount slot (card clicks in and out) from the fab's stock rather than a hinged one (hinged slots are for cards that never come out); card-detect wired to GP14 with the slot's own switch; and the footprint checked against the slot's datasheet drawing and the 1:1 paper print, because slot footprints vary by maker. Keep the SPI lines short; 25 MHz over a long trace is the usual cause of "card works on the bench, fails in the case". All general practice, **Unverified** here; part datasheets to be read at parts choice.
+
+**(d) File layout.** Nothing in `SETUP.md` changes for the code: the game, `lib/`, `games/` and the saves stay in internal flash exactly as today. The developer adds: a mount step at boot (`os.mount(sdcard.SDCard(spi, cs), '/sd')`) that quietly continues without a card; an optional art path on the card behind the internal one; and the backup or copy feature once John names the purpose. **Saves stay in internal flash:** LittleFS with the atomic rename is proven (`hw/BUDGET.md`), while FAT on a removable card loses data if the card is pulled or the power drops mid-write.
+
+**Recommendation for the slot: spin 1, populated.** It is cheap (slot, three resistors, two capacitors, an ESD part), the fab places it, it is electrically independent of everything else so it cannot stop the board working, and the pins are only free now because nothing else claims them. Software support comes when John says what the card is for; until then it is an empty slot. What would change my mind: if the pin review shows a better use for GP4 to GP7 and GP14, or if John's purpose turns out to be "more art", in which case the 16 MB flash already covers it and the slot can be a footprint only.
+
 ## Appendix F: Sources read for this request (online, 2026-10-04; nothing downloaded yet)
 - Raspberry Pi, "Microcontroller chips" (RP2040 and RP2350 variants, SRAM, PSRAM via QMI): raspberrypi.com/documentation/microcontrollers/microcontroller-chips.html
 - Raspberry Pi, Radio Module 2 documentation and datasheet: datasheets.raspberrypi.com/rm2/rm2-datasheet.pdf and the documentation repository's rm2.adoc
 - MicroPython, PR #15620 "rp2: Add PSRAM support" (merged 2025-04-08, in v1.25.0); micropython.org/download/?mcu=rp2350 (v1.29.0 builds, Pico 2 W listed)
 - Pimoroni, Pico Plus 2 W product page (RP2350B, 16 MB flash, 8 MB PSRAM, RM2)
 - Waveshare wiki, 2inch LCD Module and 1.54inch LCD Module pages
+- docs.micropython.org, `machine.SDCard` (ports listed; rp2 absent) and the rp2 quickref; micropython-lib `sdcard.py` (SPI-mode driver)
+- pico-sdk `src/rp2_common/hardware_gpio/include/hardware/gpio.h` (RP2350 GPIO function table) and `src/rp2350/hardware_regs/include/hardware/regs/addressmap.h`
 - Espressif ESP32-S3-WROOM-1 module (via product listings; the datasheet is to be read if option C is chosen)
 - Repo: `hw/BUDGET.md`, `hw/reviews/HR-F04.md`, `pm/DECISIONS.md` (D-009), `docs/HARDWARE.md`, `pcb/requirements/REQUIREMENTS.md`
 - Charger, protection, fuel gauge and amplifier part names come from general practice and vendor reference boards (Adafruit, SparkFun); their datasheets are not yet read.
