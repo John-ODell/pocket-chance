@@ -1,0 +1,124 @@
+"""Convert John's source art (assets/src/**) to .565 files for the board (assets/out/).
+
+Rulings: DR-002 (4-byte header: width, height, 16-bit little-endian; then big-endian RGB565;
+extension .565; any non-magenta pixel that would become the transparent value is nudged one shade),
+DR-003 (big-endian pixels, no rotation: art is drawn upright), DR-004 (Pillow, Mac side only),
+DR-006 (exact sizes from assets/ASSETS.md; wrong sizes are rejected, not stretched).
+
+Usage (from the repo root):
+    python3 tools/convert_assets.py                 convert everything under assets/src
+    python3 tools/convert_assets.py path/to/x.bmp   convert one or more files
+    --resize    nearest-neighbour resize to the expected size instead of rejecting
+    --any-size  accept a file at whatever size it is (experiments only)
+Output goes flat into assets/out/<name>.565 and is uploaded to /assets on the board.
+"""
+import os
+import re
+import struct
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'lib'))
+from pixfmt import rgb565, KEY_RGB, KEY_BE  # noqa: E402
+
+# Expected sizes by file name (assets/ASSETS.md). First match wins.
+SIZES = (
+    (r'^c_[A23456789TJQK][SHDC]$', (40, 56)),
+    (r'^c_back$', (40, 56)),
+    (r'^chip_\d+$', (24, 24)),
+    (r'^table$', (240, 240)),
+    (r'^cabinet$', (240, 240)),
+    (r'^logo$', (200, 40)),
+    (r'^banner_jackpot$', (200, 40)),
+    (r'^icon_\w+$', (48, 48)),
+    (r'^banner_\w+$', (160, 32)),
+    (r'^sym_\w+$', (56, 56)),
+)
+
+
+def expected_size(name):
+    for pat, size in SIZES:
+        if re.match(pat, name):
+            return size
+    return None
+
+
+def to_565(pixels, w, h):
+    """pixels: iterable of (r, g, b) in row order. Returns the complete file contents (bytes)."""
+    out = bytearray(4 + w * h * 2)
+    struct.pack_into('<HH', out, 0, w, h)
+    i = 4
+    nudged = 0
+    for r, g, b in pixels:
+        if (r, g, b) == KEY_RGB:
+            v = KEY_BE
+        else:
+            v = rgb565(r, g, b)
+            if v == KEY_BE:            # a real pixel that happens to match the key
+                v = rgb565(r, g, max(0, b - 8))
+                nudged += 1
+        out[i] = v >> 8
+        out[i + 1] = v & 0xFF
+        i += 2
+    return bytes(out), nudged
+
+
+def convert_file(src, out_dir, resize=False, any_size=False):
+    from PIL import Image
+    name = os.path.splitext(os.path.basename(src))[0]
+    if name != name.lower() or ' ' in name:
+        name_l = name.lower().replace(' ', '')
+        print('  note: %s renamed to %s (names are lowercase, no spaces)' % (name, name_l))
+        name = name_l
+    # card names keep the capital rank/suit: c_AS, not c_as. Restore them.
+    m = re.match(r'^c_([a23456789tjqk])([shdc])$', name)
+    if m:
+        name = 'c_' + m.group(1).upper() + m.group(2).upper()
+    img = Image.open(src).convert('RGB')
+    want = expected_size(name)
+    if want is None and not any_size:
+        raise ValueError('%s: unknown asset name, no size rule in ASSETS.md' % name)
+    if want is not None and img.size != want:
+        if resize:
+            img = img.resize(want, Image.NEAREST)
+        elif not any_size:
+            raise ValueError('%s: is %dx%d, must be %dx%d' % (name, img.size[0], img.size[1], want[0], want[1]))
+    w, h = img.size
+    get = getattr(img, 'get_flattened_data', None) or img.getdata   # Pillow 12.3 renamed it
+    data, nudged = to_565(get(), w, h)
+    os.makedirs(out_dir, exist_ok=True)
+    dst = os.path.join(out_dir, name + '.565')
+    with open(dst, 'wb') as f:
+        f.write(data)
+    note = ' (%d pixel%s nudged off the transparent colour)' % (nudged, '' if nudged == 1 else 's') if nudged else ''
+    print('  %s -> %s  %dx%d  %d bytes%s' % (os.path.relpath(src), os.path.relpath(dst), w, h, len(data), note))
+    return dst
+
+
+def main(argv):
+    root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+    resize = '--resize' in argv
+    any_size = '--any-size' in argv
+    files = [a for a in argv if not a.startswith('--')]
+    if not files:
+        src_root = os.path.join(root, 'assets', 'src')
+        for d, _, names in os.walk(src_root):
+            for n in sorted(names):
+                if n.lower().endswith(('.bmp', '.png')):
+                    files.append(os.path.join(d, n))
+    if not files:
+        print('nothing to convert: put BMP or PNG files under assets/src/')
+        return 0
+    out_dir = os.path.join(root, 'assets', 'out')
+    errors = 0
+    for f in files:
+        try:
+            convert_file(f, out_dir, resize, any_size)
+        except Exception as e:  # report every file, then fail
+            print('  ERROR %s: %s' % (os.path.relpath(f), e))
+            errors += 1
+    print('%d file(s), %d error(s)' % (len(files), errors))
+    return 1 if errors else 0
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))
