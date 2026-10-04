@@ -25,7 +25,7 @@ Each file starts with these lines:
 ```
 From: auditor
 To: designer   (cc: expert)
-Type: QUESTION | FINDING | ANSWER | EVIDENCE | PROPOSAL | DECISION-NEEDED
+Type: QUESTION | FINDING | ANSWER | EVIDENCE | PROPOSAL | TASK | RESULT | DECISION-NEEDED
 About: <component ref, net, file or finding number>
 Design commit: <the git hash the message refers to>
 Replies to: <file name, or "none">
@@ -49,3 +49,16 @@ To reply, write a NEW file with `Replies to:` set. Do not edit someone else's me
 - Watches the folder and sends a short notice with the file name to the addressee.
 - Summarises each thread into the review file (`AUDIT-n.md` or `HR-Pxx.md`) once it is settled.
 - Brings `DECISION-NEEDED` messages to the owner in plain language.
+
+## Offloading work to the auditor (and to each other)
+Any session may hand a task to another with a `TASK` message, and the receiver replies with a `RESULT` message. The auditor is a good place to offload checks that need patient, independent reading, for example:
+- verify every custom footprint against its datasheet drawing (pad size, pitch, courtyard, pin 1);
+- compare every part's manufacturer part number, package and footprint in `pcb/bom/PARTS.md`;
+- check the board outline and spacing against the fab's capability page once layout exists;
+- re-trace a specific circuit path (a current path with USB present and absent, a power-up order);
+- review a draft pre-order checklist for gaps.
+
+A `TASK` states: what to check, which files and which design commit, what a good result looks like (a table, a list of findings with severity), and by when it is useful. A `RESULT` states what was checked, what was found, what was not checked and why. Nobody offloads a design decision: the designer decides, the owner approves.
+
+## Simple index (optional)
+If it helps, the PM keeps `pcb/team/INDEX.md` (a short list: open tasks, who owns them, state). It is a convenience; the message files are the record.
