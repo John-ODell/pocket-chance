@@ -1,4 +1,6 @@
-# Image loader for .565 files (ruling DR-002): 4-byte header (width, height, 16-bit little-endian)
+# Image loader for .565 files. Named art.py, not assets.py: on the board the /assets FOLDER would
+# shadow a module called assets (HR-F02; '' is first on sys.path and a bare folder is a package).
+# (ruling DR-002): 4-byte header (width, height, 16-bit little-endian)
 # then big-endian RGB565 pixels, copied into framebuffers unchanged (DR-003).
 # Ruling DR-005 / HR-005: one preallocated 16 KB scratch for every sprite; backgrounds read with one
 # readinto straight into the framebuffer, on scene entry only, never per frame; big reads.

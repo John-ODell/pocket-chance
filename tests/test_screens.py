@@ -21,7 +21,7 @@ from pixfmt import rgb, KEY, KEY_BE  # noqa: E402
 import clocks  # noqa: E402
 from lcd import LCD  # noqa: E402
 from buttons import Buttons, PINS  # noqa: E402
-from assets import Assets  # noqa: E402
+from art import Assets  # noqa: E402
 from save import Store  # noqa: E402
 from bankroll import Bankroll  # noqa: E402
 from cards import card_from_name, Shoe  # noqa: E402

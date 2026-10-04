@@ -26,7 +26,7 @@ import random
 import font
 from pixfmt import rgb
 from buttons import Buttons
-from assets import Assets
+from art import Assets
 from save import Store
 from bankroll import Bankroll
 

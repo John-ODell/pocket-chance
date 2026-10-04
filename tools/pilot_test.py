@@ -23,7 +23,7 @@ print('RESULT after framebuffer mem_free=%d' % gc.mem_free())
 
 import font
 from pixfmt import rgb
-from assets import Assets
+from art import Assets
 
 a = Assets('/assets')
 for name in ('table', 'c_AS', 'c_back', 'chip_5', 'logo'):
