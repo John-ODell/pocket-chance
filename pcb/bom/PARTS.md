@@ -2,7 +2,9 @@
 
 Written 2026-10-04 (phase 2 of `pcb/STAGE2.md`). One line per part or group. Columns: what it is, the manufacturer part number (MPN), package, the KiCad symbol and footprint we will use (`library:name`; "custom" means we draw it from the datasheet), where its facts come from, and what is still to check. **Stock** is checked on PCBWay's quote page and the distributors (Digi-Key, Mouser) at phase 9; until then every line says "stock: to check".
 
-Design rules behind the list: surface-mount only except the 18650 holder; nothing smaller than 0402 (PCBWay's 0201 lines carry a 100-piece minimum); every optional block in its own group so spin 2 can drop it.
+Design rules behind the list: surface-mount only except the 18650 holder; nothing smaller than 0402 (PCBWay's 0201 lines carry a 100-piece minimum); every optional block in its own group so spin 2 can drop it. **Owner's rule (2026-10-04): standard, common, stocked parts with standard footprints wherever possible; anything unusual carries its reason in its row.** "Custom" in the KiCad column means only that KiCad's bundled library lacks the drawing and we draw it from the datasheet; the part itself is still a standard catalogue part.
+
+Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts the Raspberry Pi design guide says to use, with its warning that others are at your own risk); U-RF (the RM2 is the standard pre-certified way to add this radio; a bare radio chip would be the unusual choice); SW-JOY (a 5-way navigation switch is a standard part, but KiCad has no footprint for it; the zero-custom alternative is five ordinary tactile buttons as a direction pad, which John said he would accept).
 
 ## Block 1: core (RP2350A, flash, PSRAM, crystal, regulator parts)
 
@@ -59,7 +61,7 @@ Design rules behind the list: surface-mount only except the 18650 holder; nothin
 |---|---|---|---|---|---|---|
 | J-LCD | socket for the 1.54" 240 x 240 ST7789 module (8 pins: VCC, GND, DIN, CLK, CS, DC, RST, BL) | 1 x 8 socket, 2.54 mm, SMD | | `Connector:Conn_01x08_Socket` / `Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical_SMD_Pin1Left` | Waveshare 1.54inch LCD Module wiki (pin order **to verify** on the module page, not from memory) | pin order; whether BL needs a transistor (the module has its own); module stock |
 | SW-A..Y | four game buttons | PTS645SM43SMTR92 (6 mm) default; a 12 mm SMD tactile as the "bigger button" option | SMD | `Switch:SW_Push` / `Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92` | ruling: button size is John's | John's choice of size before footprints (phase 5) |
-| SW-JOY | 5-way joystick switch | SKRHABE010 (Alps) or SKQUCAA010 | SMD | `Switch:SW_Push` x5 or custom 5-way symbol / **custom footprint** from the Alps drawing | today's HAT has a similar part | datasheet (official Alps); footprint; stock |
+| SW-JOY | 5-way joystick switch | SKRHABE010 (Alps) | SMD | `Switch:SW_Push` x5 / **footprint drawn from the Alps datasheet** (reason: KiCad ships none; the part is a standard stocked item). Alternative with no custom work: five PTS645 tactile buttons as a direction pad | today's HAT has a similar part; John accepts buttons instead of a joystick | datasheet (official Alps); footprint; stock; John's preference |
 
 ## Block 5: audio
 
