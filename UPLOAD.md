@@ -88,6 +88,18 @@ Two library files. The image loader now checks a file's size once and then goes 
 
 **Test line:** menu and blackjack look and behave exactly as before (with `table.565` present the felt still shows; without it the plain felt). The expert re-measures one card blit.
 
+## Step 1g: slots (DR-017 to DR-023), 2026-10-05
+Four files: three new game modules and the menu with Slots switched on. Runs with code-drawn stand-in symbols (coloured squares) until John's art exists; with `sym_*.565`, `cabinet.565` and `banner_jackpot.565` in `/assets` it uses them automatically.
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `games/slots_rules.py` | `/games/slots_rules.py` |
+| 2 | `games/slots_table.py` | `/games/slots_table.py` |
+| 3 | `games/slots.py` | `/games/slots.py` |
+| 4 | `pocket.py` | `/pocket.py` |
+
+**Test line:** menu, Slots, A. The three reels scroll for about two seconds and stop left to right; the chips line shows the stake taken while they spin and the result after; a win shows "WIN +n" and the line name and blinks the gold frames three times. Joystick changes the bet (5 to 100), X shows the paytable, B returns to the menu. The first spin prints `RESULT slots mem_free mid-spin=...` (DR-020: expected about 45 to 50 KB; under 20 KB means fallback B is not enough and I need to know).
+
 ## Step 2: pilot image test (after you have made the 4 pilot images)
 On the Mac, from the repo folder:
 
@@ -112,7 +124,7 @@ Upload `pocket.py` a second time, named `/main.py` on the board. Unplug and plug
 All of this has run only on the Mac, against stand-in `machine` and `framebuf` modules (96 tests). Nothing has run under MicroPython or on the board. Timing, colours on the panel and RAM use are what step 1 finds out.
 
 ## Not on the board yet
-Built and tested on the Mac, waiting for rulings or a later step. Do not upload: `lib/poker.py` (poker hand evaluator for the later card games), `games/slots_rules.py` (slots engine, DR-017/018 pending).
+Built and tested on the Mac, waiting for a later step. Do not upload: `lib/poker.py` (poker hand evaluator for the later card games).
 
 ## Restore the old version
 Upload `main_monolith.py` and name it `/main.py` on the board.
