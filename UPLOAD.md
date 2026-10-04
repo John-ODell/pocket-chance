@@ -181,7 +181,26 @@ Six files: four new game modules, the help screen and the menu with Hold'em swit
 
 **Test line:** menu, Hold'em, A deals: your two cards up, the dealer's two and the five table cards face down, four chip stacks at the sides. B checks and the three flop cards turn together; B again and the last two turn, then the prompt shows "A raise 10   B fold   outs n". A raises: the dealer's first card turns, then the second with the result ("WIN +30" / "LOSE -40" / "PUSH" / "FOLD -20", with ", Ante back" when the dealer has no pair), "you pair / dlr high card", and the stacks get a green or red mark. X shows the Blind pays and the full strategy. Copy the `RESULT` lines to the PM.
 
-## Step 2: art (any time after step 1m)
+## Step 1n: the integrated build (steps 1k, 1l and 1m in one go), 2026-10-06
+Everything since Caribbean Stud went live, uploaded once: the Stud seats, the clock change and Ultimate Texas Hold'em. Ten files and one deletion. Files already on the board from step 1k (the four `stud_*` files) are harmless to upload again. After this step the board matches the record below exactly.
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `games/stud_rules.py` | `/games/stud_rules.py` |
+| 2 | `games/stud_seats.py` | `/games/stud_seats.py` |
+| 3 | `games/stud_table.py` | `/games/stud_table.py` |
+| 4 | `games/stud.py` | `/games/stud.py` |
+| 5 | `games/holdem_rules.py` | `/games/holdem_rules.py` (new) |
+| 6 | `games/holdem_seats.py` | `/games/holdem_seats.py` (new) |
+| 7 | `games/holdem_table.py` | `/games/holdem_table.py` (new) |
+| 8 | `games/holdem_pay.py` | `/games/holdem_pay.py` (new) |
+| 9 | `games/holdem.py` | `/games/holdem.py` (new) |
+| 10 | `pocket.py` | `/pocket.py` (menu with Hold'em; `machine.freq` clock; `STUD_SEATS`, `UTH_SEATS`, `UTH_HINT` settings) |
+| 11 | **delete** `/lib/clocks.py` from the board (nothing imports it any more) | |
+
+**Test line:** start `/pocket.py`: `RESULT first show us=` about 18,000. Menu Blackjack / Caribbean / Hold'em / Off. Caribbean: a hand plays and the five chip stacks along the bottom get green or red marks. Hold'em: deal, B, B (flop, then turn and river with "outs n" on the prompt), A: the dealer's cards turn, the result shows and the four side stacks get marks; X shows the Blind pays and strategy. Blackjack unchanged. Copy all `RESULT` lines to the PM.
+
+## Step 2: art (any time after step 1n)
 On the Mac, from the repo folder:
 
 ```bash
@@ -202,25 +221,24 @@ Upload `pocket.py` a second time, named `/main.py` on the board. Unplug and plug
 ## Not run anywhere yet
 All of this has run only on the Mac, against stand-in `machine` and `framebuf` modules (96 tests). Nothing has run under MicroPython or on the board. Timing, colours on the panel and RAM use are what step 1 finds out.
 
-## On the board now (code, after step 1m)
+## On the board now (code, after step 1n)
 _The record of what the board holds. `tools/check_upload.py` reads it: every module a board file imports must be here, every method a board file calls on the shared libraries must exist in the version recorded here, and a repo file that differs from its recorded version is flagged as not yet uploaded. After an upload, run `python3 tools/check_upload.py --record <step> <repo paths...>` to update the rows._
 
 | Board path | Repo file | Step | Version (git blob) |
 |---|---|---|---|
-| `/games/stud_seats.py` | `games/stud_seats.py` | 1k | 5f087aac8cb6 |
-| `/games/holdem.py` | `games/holdem.py` | 1m | 15999364de92 |
-| `/games/holdem.py` | `games/holdem.py` | 1m | 15999364de92 |
-| `/games/holdem_pay.py` | `games/holdem_pay.py` | 1m | 16eb817d94e1 |
-| `/games/holdem_table.py` | `games/holdem_table.py` | 1m | f2ce77f0b1ce |
-| `/games/holdem_seats.py` | `games/holdem_seats.py` | 1m | 16a22b6a6c43 |
-| `/games/holdem_rules.py` | `games/holdem_rules.py` | 1m | 608855a2b7a8 |
+| `/games/stud_seats.py` | `games/stud_seats.py` | 1n | 5f087aac8cb6 |
+| `/games/holdem.py` | `games/holdem.py` | 1n | 15999364de92 |
+| `/games/holdem_pay.py` | `games/holdem_pay.py` | 1n | 16eb817d94e1 |
+| `/games/holdem_table.py` | `games/holdem_table.py` | 1n | f2ce77f0b1ce |
+| `/games/holdem_seats.py` | `games/holdem_seats.py` | 1n | 16a22b6a6c43 |
+| `/games/holdem_rules.py` | `games/holdem_rules.py` | 1n | 608855a2b7a8 |
 | `/lib/poker.py` | `lib/poker.py` | 1j | 41fea1368c8c |
-| `/games/stud.py` | `games/stud.py` | 1k | 6ba3de0e8646 |
+| `/games/stud.py` | `games/stud.py` | 1n | 6ba3de0e8646 |
 | `/games/stud_pay.py` | `games/stud_pay.py` | 1j | 36fde234415a |
-| `/games/stud_table.py` | `games/stud_table.py` | 1k | de994d48a9c8 |
-| `/games/stud_rules.py` | `games/stud_rules.py` | 1k | de79e3cb9287 |
+| `/games/stud_table.py` | `games/stud_table.py` | 1n | de994d48a9c8 |
+| `/games/stud_rules.py` | `games/stud_rules.py` | 1n | de79e3cb9287 |
 | `/lib/sheets.py` | `lib/sheets.py` | 1j | e3adeacc4c38 |
-| `/pocket.py` | `pocket.py` | 1m | 6b9a73165446 |
+| `/pocket.py` | `pocket.py` | 1n | 6b9a73165446 |
 | `/lib/pixfmt.py` | `lib/pixfmt.py` | 1 | 03010786bfba |
 | `/lib/lcd.py` | `lib/lcd.py` | 1i | 3c6b0dee4cfc |
 | `/lib/font.py` | `lib/font.py` | 1 | 7b1a40a2df70 |
