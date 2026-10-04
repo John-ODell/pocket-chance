@@ -30,7 +30,8 @@ PCB maker, 2026-10-04. Verdict first: **the audit found two real defects (findin
 - Coin-cell holder: the wrong Keystone page was removed; the 3001 drawing is still to obtain.
 - Layout: none yet, by John's instruction, until the expert's verification and the second audit.
 
-## Final commit
-See the last line of this file, filled in by the commit that carries it.
-
-**Final commit for the next audit pass: 3134df4** (schematic rev 0.3 with the battery note; exports regenerated at this commit).
+## Final commit (what the next audit pass reviews)
+- **Schematic to review:** `pcb/kicad/pocket-chance-board.kicad_sch`, rev 0.3, last changed in commit **3e6eaa4**; its git content hash (`git hash-object`) is **`1decf957cb72f32b48d8597c76007ef56c75faeb`**. Any checkout whose schematic file has this hash is the reviewed design.
+- The exports made from exactly that file are committed next to it in `pcb/kicad/exports/`: `pocket-chance-board-schematic.pdf`, `erc.rpt` (0 errors, 2 warnings), `netlist.xml`.
+- The commit carrying this response and those exports is the child of 3e6eaa4; it changes no design file.
+- Verification by the expert: `hw/reviews/HR-P05.md` (independent, written before reading this response).
