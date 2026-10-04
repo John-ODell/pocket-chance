@@ -2,7 +2,7 @@
 
 A shared message folder. The auditor (a different model in a separate chat) cannot be messaged, and the Claude sessions cannot message it. Everyone can read and write files, so the files are the channel. The PM relays a short notice (not the content) to the addressee when a new file appears.
 
-**Where it lives:** `/Users/johnodell/Desktop/PicoPlus/pico-pocket-chance/pcb/team/` (this folder). Message files are git-ignored: they are working conversation, not project record. Anything that matters is summarised into a review file (`pcb/reviews/`) or the decision log by the PM.
+**Where it lives:** `pcb/team/` in the shared checkout (this folder; the owner can say where on their computer). Message files are git-ignored: they are working conversation, not project record. Anything that matters is summarised into a review file (`pcb/reviews/`) or the decision log by the PM.
 
 ## Who
 | Name | Who | Gets a notice |
