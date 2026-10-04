@@ -131,7 +131,10 @@ class Screen:
             return
         self.hand(r.player, PLAYER_Y)
         total, soft = hand_value(r.player)
-        font.text(self.lcd, 'You %d%s' % (total, ' soft' if soft else ''), 6, PLAYER_Y + CARD_H + 2, WHITE, 1)
+        line = 'You %d%s' % (total, ' soft' if soft else '')
+        if r.doubled:
+            line += '   DOUBLED x2'
+        font.text(self.lcd, line, 6, PLAYER_Y + CARD_H + 2, GOLD if r.doubled else WHITE, 1)
 
     def draw_bottom(self):
         lcd = self.lcd
@@ -148,9 +151,11 @@ class Screen:
             art, label, col = BANNERS[self.table.round.outcome]
             if not self.assets.blit(lcd, art, 40, BANNER_Y):
                 font.text_centred(lcd, label, 120, BANNER_Y + 8, col, 2)
-            net = self.table.round.net
-            if net:
-                font.text_centred(lcd, '%s%d' % ('+' if net > 0 else '', net), 120, BOTTOM_Y + 4, col, 1)
+            r = self.table.round
+            line = '%s%d' % ('+' if r.net > 0 else '', r.net) if r.net else 'no change'
+            if r.doubled:
+                line = 'DOUBLED: bet %d, %s' % (r.bet, line)
+            font.text_centred(lcd, line, 120, BOTTOM_Y + 4, col, 1)
             font.text_centred(lcd, 'A next   B menu', 120, BOTTOM_Y + 18, WHITE, 1)
         elif st == BROKE:
             font.text_centred(lcd, 'Out of chips', 120, BANNER_Y + 8, RED, 2)
