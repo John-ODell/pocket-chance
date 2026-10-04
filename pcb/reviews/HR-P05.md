@@ -206,3 +206,36 @@ Confirming and correcting `…_from-designer_to-pm_fault-containment-polyfuse.md
 
 ## Not verified
 DW01A ratings and thresholds (datasheet not in `pcb/refs/parts/`; John to save it); the pack's PCM trip figures (no cell chosen); PPTC figures from the Bourns MF-MSMF family data as I remember them, to be read from the datasheet if option D is taken.
+
+---
+
+# Part 8: verification of rev 0.7, F1 polyfuse (2026-10-04, design commit `7765383`, schematic content hash 1abae791d6e39b4e3c84039a20fcecd3686cf349; docs-only commit `a534d7d` after it)
+
+Checked by a semantic diff of `netlist.xml` between `92f61d2` (rev 0.6) and `7765383`: **exactly two changes.** F1 `MF-MSMF110/16X-2` (Fuse_1812_4532Metric) inserted: net CELL_P is now J3 pin 1 + F1 pin 1, new net CELL_F is F1 pin 2 + R22 pin 1; R20 100 Ω moves from 0402 to 0603. Component count 131 → 132. No other net or value differs. "Nothing else changed" is confirmed.
+
+## Placement
+In the cell's positive lead only, ahead of the R22 ammeter link, so charge and discharge currents both pass through it and the USB → OUT path does not. The DW01A senses current on the negative lead (CS), unaffected. The gated divider taps BAT+, downstream of F1, so the battery reading on GP28 is the charger-side node: low by I·R_F1 while discharging (≤ 0.45 A × 0.20 Ω = 90 mV worst case, ~2 % of the reading), high by the same while charging. A gauge error, not a safety item; a cold F1 is 0.06–0.20 Ω per the designer's datasheet figures.
+
+## Charge termination
+The BQ24074 regulates its own BAT pin at V_BAT(REG) (4.16–4.24 V, datasheet p.12). The cell sits lower by I × (R_F1 + R22 + wiring): at the start of the constant-voltage phase, ≈ 0.49 A × 0.2 Ω ≈ 100 mV worst case; by termination (I_TERM ≈ 10 % of 494 mA ≈ 49 mA) the drop is ≈ 10 mV. Effect: the constant-voltage phase runs a few minutes longer and the cell terminates within ~10 mV of where it would without F1; the cell never sees more than the regulation voltage; the DW01A's over-charge threshold (~4.3 V, from memory) is untouched. The safety timer (R16 47 kΩ, ≈ 8 h at K_TMR 36–48) is far from the extra minutes. **No safety effect, as predicted in Part 7.**
+
+## Derated hold vs the board's draw
+| Current through F1 | Value | Against hold |
+|---|---|---|
+| Charging (USB present; the board's load comes from USB via the power path, the cell only receives charge) | ≤ 0.50 A (USB500 total cap) | 1.10 A at 25 °C, 0.77 A at 60 °C: margin ≥ 0.27 A |
+| Discharging, worst case: 300 mA at 3.3 V, TPS63001 ~85 % at a 3.0 V cell, plus charger quiescent and a card-write burst | ≈ 0.40–0.45 A | margin ≥ 0.32 A at 60 °C |
+| Both at once | not possible: the cell is either being charged or supplying OUT, not both | |
+No nuisance trip up to 60 °C; at 85 °C the family's derating (~0.6 A) still clears 0.45 A. The 16 V rating and 100 A interrupt figure are far from a 4.2 V cell.
+
+## What F1 does in the faults
+- Shorted lead, shorted Q1, shorted board node, PCM working: the PCM trips first (2–4 A typical, ms). F1 sees the same current for those milliseconds and does not reach trip; it is the second layer only.
+- Same faults with the PCM absent or dead: the cell's short-circuit current (tens of amps for a 1000 mAh pouch) trips F1 in well under 0.3 s (8 A → 0.3 s per the datasheet figure); at a 2–4 A fault it trips in seconds. Once tripped it stays high-resistance while voltage remains across it, passing ~0.1–0.2 A and sitting hot (~0.5–0.8 W is typical for the family); **the cell must be unplugged to reset it**. `BATTERY.md` should say so in a line.
+- Reversed cell with USB: the microsecond C22 equalisation passes untouched (a PPTC is thermal, far too slow), U5's BAT pin and the DW01A are over-stressed as in Part 7, and the follow-on current from the cell through failed silicon is what F1 bounds, after the PCM if the PCM works. The documents' wording "does not save the DW01A or U5's BAT pin" is correct.
+
+## R20 at 0603
+36 mA × 100 Ω = 0.13 W against a standard 0603's 0.1 W: better than the 0402 (0.063 W) but still 30 % over rating for as long as a reversed cell sits there with USB absent; it survives seconds to minutes, not an afternoon. Two cheap ways to get inside the rating, either acceptable: an 0805 (0.125 W, nearly there) or **330 Ω** in the same 0603 (11 mA, 40 mW; 100 Ω–1 kΩ is the usual range for the DW01A's VCC filter, to be confirmed against the DW01A datasheet when John saves it). Not a blocker: R20 opening is itself a benign end to that fault current.
+
+**Verdict on rev 0.7:** F1 is in the right place, the right size, and the only change besides R20's footprint; the correct-polarity states of Part 7 hold with a ≤ 100 mV shift at the start of constant-voltage charging and a ~2 % gauge offset; the fault behaviour matches the words John was given. Two notes for the documents: a tripped F1 stays hot until the cell is unplugged; R20 is still marginal at 0603, 330 Ω or 0805 would end that.
+
+## Not verified
+F1's datasheet itself (figures as the designer quoted them); DW01A datasheet (still to be saved); PCM figures (no cell chosen).
