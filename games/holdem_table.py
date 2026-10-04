@@ -81,11 +81,16 @@ class HoldemTable:
         elif self.state == FLOP:
             self.seats.act_flop(self.round.board[:3])
             self.round.check()
-            self.state = RIVER
-            if self.hint:
-                self.outs = self.round.outs()
+            self.state = RIVER                 # the screen calls compute_outs() after the river band push
         else:
             raise ValueError('cannot check at the river')
+
+    def compute_outs(self):
+        """The river hint, once per hand (about 0.3 s on the board); the screen calls it right after
+        the river cards are pushed so the count overlaps the 300 ms pause (HR as-built note)."""
+        if self.hint and self.state == RIVER and self.outs is None:
+            self.outs = self.round.outs()
+        return self.outs
 
     def fold(self):
         if self.state != RIVER:
