@@ -276,7 +276,9 @@ add("R24", R, "100k", R0402, (315, 430), {"1": "VBAT_SENSE", "2": "GND"})
 add("C28", C, "100nF", C0402, (330, 430), {"1": "VBAT_SENSE", "2": "GND"})
 
 # ---- Block 4: screen and input ------------------------------------------------------------
-add("J4", ("Connector", "Conn_01x08_Socket"), "LCD 1.54in ST7789 module", "Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical_SMD_Pin1Left",
+# Waveshare 1.54inch LCD Module: "PH2.0 8PIN interface" (wiki, read 2026-10-04): a JST-PH 2.0 mm cable, pin order
+# VCC, GND, DIN, CLK, CS, DC, RST, BL. 3.3 V supply and logic.
+add("J4", ("Connector", "Conn_01x08_Socket"), "LCD 1.54in ST7789 module, JST-PH 8-pin", "Connector_JST:JST_PH_S8B-PH-SM4-TB_1x08-1MP_P2.00mm_Horizontal",
     (480, 80), {"1": "+3V3", "2": "GND", "3": "LCD_MOSI", "4": "LCD_SCK", "5": "LCD_CS", "6": "LCD_DC", "7": "LCD_RST", "8": "LCD_BL"})
 for i, (ref, net) in enumerate([("SW4", "BTN_A"), ("SW5", "BTN_B"), ("SW6", "BTN_X"), ("SW7", "BTN_Y")]):
     add(ref, SWP, net[4:], PTS645, (480 + 20 * i, 130), {"1": net, "2": "GND"})
