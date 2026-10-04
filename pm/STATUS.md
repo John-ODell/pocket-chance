@@ -39,6 +39,9 @@ The expert ran the build on the board. One blocker, now fixed: the image-loader 
 2. **Art:** make the four pilot images (`c_AS`, `c_back`, `chip_5`, `table`) at the sizes in `assets/ASSETS.md`, drawn the right way up as described there. Then `UPLOAD.md` step 2.
 3. Nothing else is waiting on you.
 
+## Sprite sheets built (DR-024, approved), upload step 1h
+Your pictures now travel to the board as one file per family: `cards.565` (all 53), `chips.565`, `banners.565`, `icons.565`, `symbols.565`. You still draw one BMP per picture; `python3 tools/convert_assets.py` packs them and lists what is missing (missing ones are transparent placeholders, so a few drawn cards already show). Why: the expert measured 3 ms to open any file on the board, so 53 card files would have made blackjack slower than the plain drawn cards; from a sheet a card takes 2.9 ms and the slot reels read rows in 0.26 ms. `assets/ASSETS.md` has the table of sheets. Five files for the expert in `UPLOAD.md` step 1h.
+
 ## Slots bench: one upload mistake, fixed; memory being watched
 The expert found that `UPLOAD.md` step 1g left out `lib/art.py`, which slots needs (it gained a routine after step 1f). Without it the first spin crashed. The expert uploaded the right file; step 1g now lists it. To stop this happening again, `UPLOAD.md` now carries a record of exactly which version of each file is on the board, and the upload checker refuses when a board file calls something its library on the board does not have, or imports a module that is not there. Memory: the expert measured about 27 KB free in his harness after the slots screen starts, less than I expected; the game prints the real number after start and mid-spin. I trimmed what I could (stand-in symbol rows are built only for symbols without art, a memory clean-up after start). If the mid-spin number is under 20 KB I reduce further, as ruled.
 

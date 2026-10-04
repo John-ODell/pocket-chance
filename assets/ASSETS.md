@@ -40,6 +40,22 @@ Phase 1 total: 67 files, roughly 0.54 MB (each file carries a 4-byte size header
 
 **Hand fit:** five 40 px cards side by side take 200 px. A sixth card overlaps the others. This is why the card width is 40.
 
+## How your files reach the board: sheets (DR-024)
+
+You draw **one BMP per picture**, exactly as listed above. The converter then packs each family of same-size pictures into **one file** for the board, because opening a file on the board costs about 3 ms and a hand of blackjack draws up to nine pictures:
+
+| Sheet file on the board | Packed from | Sprite size | Members (in this order) | Bytes |
+|---|---|---|---|---|
+| `/assets/cards.565` | `cards/c_*.bmp` | 40 x 56 | the 52 cards, spades then hearts, diamonds, clubs, ace to king within each; then `c_back` | 237,444 |
+| `/assets/chips.565` | `chips/chip_*.bmp` | 24 x 24 | `chip_1, chip_5, chip_25, chip_100, chip_500` | 5,764 |
+| `/assets/banners.565` | `ui/banner_*.bmp` | 160 x 32 | `win, lose, push, bust, blackjack` | 51,204 |
+| `/assets/icons.565` | `ui/icon_*.bmp` | 48 x 48 | `blackjack, slots, stud, holdem` | 18,436 |
+| `/assets/symbols.565` | `slots/sym_*.bmp` | 56 x 56 | `cherry, lemon, orange, bell, bar, seven, diamond, star` | 50,180 |
+
+`table`, `menu_background`, `cabinet`, `logo` and `banner_jackpot` stay single files (`<name>.565`).
+
+A picture you have not drawn yet becomes a transparent (magenta) placeholder inside the sheet, and the game draws its plain code version instead, so you can convert and upload after drawing just a few. The converter prints which members are missing. **When you change one picture, run the converter again and upload that family's sheet again** (one file).
+
 ## Readability: where text and cards sit on the blackjack table
 
 The game draws over `table.565` in four horizontal bands that never overlap. Text is gold, white or grey, so under every text box the art must be **dark (average brightness under 100 of 255) and calm** (no bright pattern, no thin light lines). Cards and the chip cover their boxes completely, so the art under them does not matter. The converter prints a warning for any text box that is too light or too busy; it still converts the file. Everything below is in pixels, x from the left edge, y from the top, as you see the screen while playing.
