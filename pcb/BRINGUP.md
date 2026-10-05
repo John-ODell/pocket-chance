@@ -33,6 +33,8 @@ Every step is supervised, on a clear non-flammable surface, with the expert on t
 7. Each rail (TP1, TP2, TP3, TP4, TP7) to GND: no dead short. Capacitors make the reading drift upward at first; that is normal.
 8. Screen, microSD card, speaker and battery all **disconnected**. Jumper JP2 left open.
 
+The speaker socket J5 is a bridge output: neither wire is ground. Never clip a scope or meter ground to either speaker wire.
+
 Never put a meter in current mode across two rails. To measure current, the meter goes in series, with everything switched off while you rewire.
 
 ## The steps
