@@ -4,6 +4,7 @@
 Output: pcb/kicad/lib/pcb_custom.pretty/*.kicad_mod
   RM2.kicad_mod            Raspberry Pi Radio Module 2, from rm2-datasheet.pdf Figure 6 and Table 2 (2026-10-04)
   AOTA-B201610S.kicad_mod  Abracon 0806 inductor, from the AOTA-B201610S datasheet land pattern (2026-10-04)
+  Fuse_Bourns_MF-MSMF_1812.kicad_mod  Bourns MF-MSMF recommended pad layout (2026-10-04)
 
 Every number below is read from the datasheet drawing and must be checked on the 1:1 paper print (phase 7).
 Standard library only.
@@ -77,10 +78,10 @@ def rm2():
     items.append(rect("F.SilkS", L, T, R, T + 4.0, 0.12))     # antenna end marked on silk
     items.append(rect("F.CrtYd", L - 0.75, T - 0.5, R + 0.75, B + 0.75, 0.05))   # 0.25 mm beyond the pads' outer edges
     # RF keep-out (RM2 ds 2.4): 35.5 x 18.5 mm, 13.5 mm beyond the antenna edge and 5.0 mm into the module.
-    # Drawn on the comments layer AND as a rule area on every copper layer inside the footprint, so the DRC enforces it.
+    # Drawn on the comments layer AND as a rule area on all copper layers (*.Cu: F, In1, In2, B; placement review 19:02), so the DRC enforces it.
     items.append(rect("Cmts.User", -35.5 / 2, T - 13.5, 35.5 / 2, T + 5.0, 0.15))
     kx0, ky0, kx1, ky1 = -35.5 / 2, T - 13.5, 35.5 / 2, T + 5.0
-    items.append(f'\t(zone (net 0) (net_name "") (layers "F&B.Cu") (uuid "{U()}") (name "RF_KEEP_OUT") (hatch edge 0.5)'
+    items.append(f'\t(zone (net 0) (net_name "") (layers "*.Cu") (uuid "{U()}") (name "RF_KEEP_OUT") (hatch edge 0.5)'
                  f' (connect_pads (clearance 0)) (min_thickness 0.25) (filled_areas_thickness no)'
                  f' (keepout (tracks not_allowed) (vias not_allowed) (pads not_allowed) (copperpour not_allowed) (footprints not_allowed))'
                  f' (placement (enabled no) (sheetname "")) (fill (thermal_gap 0.5) (thermal_bridge_width 0.5))'
@@ -92,17 +93,35 @@ def rm2():
 
 def aota():
     """Abracon AOTA-B201610S: body 2.0 x 1.6 x 1.0 mm; land pattern two pads 0.80 x 1.60 mm, 0.70 mm gap
-    (datasheet 'Recommended Land Pattern'). Polarity dot on pin 1 side (design guide 2.1): marked on silk."""
+    (datasheet 'Recommended Land Pattern'). Orientation dot on the OUTPUT end = pad 2 = 1V1 (RP2350 datasheet Figure 28:
+    current enters the unmarked end and leaves at the dot; Figure 26: dotted end goes to C_OUT). Pad 1 = VREG_LX.
+    Marked on silk and fab so assembly puts the part's dot on pad 2 (auditor evidence 19:06, checked 2026-10-04)."""
     items = [text("Reference", "L", 0, -1.6, "F.SilkS"), text("Value", "AOTA-B201610S", 0, 1.6, "F.Fab"),
              pad(1, -0.75, 0, 0.8, 1.6), pad(2, 0.75, 0, 0.8, 1.6),
              rect("F.Fab", -1.0, -0.8, 1.0, 0.8), rect("F.CrtYd", -1.4, -1.05, 1.4, 1.05, 0.05),
-             f'\t(fp_circle (center -1.45 -0.9) (end -1.35 -0.9) (stroke (width 0.12) (type default)) (fill yes) (layer "F.SilkS") (uuid "{U()}"))',
+             f'\t(fp_circle (center 0.6 -0.4) (end 0.8 -0.4) (stroke (width 0.05) (type default)) (fill yes) (layer "F.Fab") (uuid "{U()}"))',
+             text("user", "DOT=1V1", 0, 0, "F.Fab", size=0.3),
+             f'\t(fp_circle (center 1.45 -0.9) (end 1.55 -0.9) (stroke (width 0.12) (type default)) (fill yes) (layer "F.SilkS") (uuid "{U()}"))',
              f'\t(fp_line (start -1.0 -1.0) (end 1.0 -1.0) (stroke (width 0.12) (type default)) (layer "F.SilkS") (uuid "{U()}"))',
              f'\t(fp_line (start -1.0 1.0) (end 1.0 1.0) (stroke (width 0.12) (type default)) (layer "F.SilkS") (uuid "{U()}"))']
-    footprint("AOTA-B201610S", "Abracon AOTA-B201610S 0806 molded inductor, land pattern from the datasheet; polarity dot = pin 1 side", items)
+    footprint("AOTA-B201610S", "Abracon AOTA-B201610S 0806 molded inductor, land pattern from the datasheet; orientation dot = pad 2 (1V1 output end)", items)
+
+
+def fuse_1812_bourns():
+    """Bourns MF-MSMF 1812 (Style 1), recommended pad layout from the MF-MSMF datasheet pp.6-7: two pads 1.5 mm wide
+    (along the part) x 3.2 mm tall, 2.7 mm gap between them (inch values 0.059, 0.126, 0.106). Body 4.5 x 3.2 mm.
+    Replaces KiCad's generic Fuse_1812 lands (1.125 x 3.4, gap 3.15), AUDIT-3 Appendix A."""
+    px = 2.7 / 2 + 1.5 / 2                                   # pad centres at +-2.10
+    items = [text("Reference", "F", 0, -2.8, "F.SilkS"), text("Value", "MF-MSMF", 0, 2.8, "F.Fab"),
+             pad(1, -px, 0, 1.5, 3.2), pad(2, px, 0, 1.5, 3.2),
+             rect("F.Fab", -2.25, -1.6, 2.25, 1.6), rect("F.CrtYd", -px - 1.0, -1.85, px + 1.0, 1.85, 0.05),
+             f'\t(fp_line (start -1.0 -1.75) (end 1.0 -1.75) (stroke (width 0.12) (type default)) (layer "F.SilkS") (uuid "{U()}"))',
+             f'\t(fp_line (start -1.0 1.75) (end 1.0 1.75) (stroke (width 0.12) (type default)) (layer "F.SilkS") (uuid "{U()}"))']
+    footprint("Fuse_Bourns_MF-MSMF_1812", "Bourns MF-MSMF 1812 PTC fuse, recommended pad layout from the Bourns datasheet (VERIFY on 1:1 print)", items)
 
 
 if __name__ == "__main__":
     OUTDIR.mkdir(parents=True, exist_ok=True)
     rm2()
     aota()
+    fuse_1812_bourns()
