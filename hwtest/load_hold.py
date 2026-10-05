@@ -3,7 +3,7 @@
 # back to the game's default (20000/65535). Measure 3V3 (and VSYS if exposed) during the hold.
 # Run: mpremote connect <port> mount hwtest exec "import load_hold"
 DUR_S = 60
-from clocks import fast_peripherals; fast_peripherals()
+import machine; machine.freq(125_000_000, 125_000_000)      # DR-050: lib/clocks.py is gone; this is what pocket.py does at boot
 from lcd import LCD
 import utime, gc
 lcd = LCD(62_500_000, backlight=65535)
