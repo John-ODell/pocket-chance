@@ -74,10 +74,15 @@ for cap, pin in DECOUPLE.items():
     sp = pad(cap, net=net)
     gp = [p for p in b.FindFootprintByReference(cap).Pads() if p.GetNumber() != sp.GetNumber()][0]
     sx, sy = mm(sp.GetPosition())
-    # leave the pin straight outward 0.7 mm (clear of the neighbouring pins), then go to the cap pad
-    ex, ey = px + ox * 0.7, py + oy * 0.7
+    # leave the pin straight outward along its own row to the cap pad's outward coordinate, then jog sideways to the
+    # pad: orthogonal stubs occupy only their own pin's lane (run 2 showed diagonal stubs block the neighbours)
+    if ox:
+        ex, ey = sx, py
+    else:
+        ex, ey = px, sy
     track((px, py), (ex, ey), net)
-    track((ex, ey), (sx, sy), net)
+    if (ex, ey) != (sx, sy):
+        track((ex, ey), (sx, sy), net)
     # ground pad: via just beyond the pad, on the side away from the supply pad
     gx, gy = mm(gp.GetPosition())
     ux, uy = gx - sx, gy - sy
