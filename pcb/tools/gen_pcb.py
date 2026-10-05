@@ -57,6 +57,7 @@ at("SW5", 130, 48.5, 90)     # B
 # and the 1.3" (45 x 31 mm) in landscape. The module sits on standoffs, cable to J4. Standoff holes wait for the
 # module's mechanical drawing.
 at("J4", 75, 52, 180)        # LCD socket, cable entry towards the screen
+at("J9", 66.11, 44.0, 90)    # rev 0.11: 1x8 2.54 mm header on the same nets as J4, pins in a row left to right
 
 # ---------------------------------------------------------------- MCU block (centre)
 # U1 turned 90 clockwise: screen/SD pins face up, radio/audio/I2C pins face down, QSPI/USB/core regulator face right,
@@ -335,6 +336,16 @@ def main():
     # speaker: PAM8302A bridge output, neither terminal is ground (auditor 19:28)
     silk_text(board, "SPK+ SPK-: bridge output,", 12.5, 71.5, 0.8)
     silk_text(board, "neither wire is GND", 12.5, 72.8, 0.8)
+    # J9 pin names (wire by name: modules differ in pin order), one label per pin, reading upwards into the screen area
+    j9 = board.FindFootprintByReference("J9")
+    if j9:
+        names = {"1": "3V3", "2": "GND", "3": "MOSI/SDA", "4": "SCK/SCL", "5": "CS", "6": "DC", "7": "RST", "8": "BL"}
+        for p in j9.Pads():
+            t = silk_text(board, names[p.GetNumber()], 0, 0, 0.9)
+            t.SetTextAngleDegrees(90)
+            t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
+            t.SetPosition(p.GetPosition() + pcbnew.VECTOR2I(0, pcbnew.FromMM(-1.8)))
+        silk_text(board, "J9: WIRE BY NAME, MODULES DIFFER IN ORDER. ONE SCREEN AT A TIME", 75.0, 30.5, 0.9)
     # rail names next to the probe pads
     for fp in board.GetFootprints():
         if fp.GetReference().startswith("TP"):
