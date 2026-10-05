@@ -330,7 +330,7 @@ def main():
     t.SetTextSize(pcbnew.VECTOR2I(pcbnew.FromMM(1.2), pcbnew.FromMM(1.2)))
     board.Add(t)
     t2 = pcbnew.PCB_TEXT(board)
-    t2.SetText("Pocket Chance spin 1  rev 0.11 placement draft")
+    t2.SetText("Pocket Chance spin 1  rev 0.12 layout in progress")
     t2.SetLayer(pcbnew.F_SilkS)
     t2.SetPosition(mm(75, 1.8))
     t2.SetTextSize(pcbnew.VECTOR2I(pcbnew.FromMM(1.0), pcbnew.FromMM(1.0)))
@@ -359,14 +359,15 @@ def main():
     # J9 pin names (wire by name: modules differ in pin order), one label per pin, reading upwards into the screen area
     j9 = board.FindFootprintByReference("J9")
     if j9:
-        names = {"1": "3V3", "2": "GND", "3": "MOSI/SDA", "4": "SCK/SCL", "5": "CS", "6": "DC", "7": "RST", "8": "BL"}
+        names = {"1": "GND", "2": "3V3", "3": "SCK/SCL", "4": "MOSI/SDA", "5": "RST", "6": "DC", "7": "CS", "8": "BL"}   # rev 0.12: AITRIP order
         for p in j9.Pads():
             t = silk_text(board, names[p.GetNumber()], 0, 0, 0.9)
             t.SetTextAngleDegrees(90)
             t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
             t.SetPosition(p.GetPosition() + pcbnew.VECTOR2I(0, pcbnew.FromMM(-1.8)))
         silk_text(board, "J9: WIRE BY NAME, MODULES DIFFER IN ORDER. ONE SCREEN AT A TIME", 75.0, 30.5, 0.9)
-    silk_text(board, "Q6 FITTED = BL ACTIVE LOW (then remove R49)", 99.0, 49.0, 0.7)
+    silk_text(board, "Q6 FITTED = BL ACTIVE LOW.", 99.0, 48.6, 0.7)
+    silk_text(board, "POWER OFF, REMOVE R49 FIRST. NEVER BOTH", 99.0, 49.6, 0.7)
     # rail names next to the probe pads
     for fp in board.GetFootprints():
         if fp.GetReference().startswith("TP"):
