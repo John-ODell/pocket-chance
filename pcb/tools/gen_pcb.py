@@ -322,9 +322,10 @@ def main():
     # tails), on insulating foam tape inside this outline; its lead runs down the back and round the right edge into J3
     # and is tied down through the two holes beside J3. Kept off the back of the charger and buck-boost (auditor 19:21).
     rect(board, pcbnew.B_SilkS, 96.0, 3.0, 148.0, 39.0, 0.15)
-    t3 = silk_text(board, "LiPo CELL 52 x 34 x 10 on insulating foam tape; lead to J3 round the right edge", 122.0, 21.0, 1.2)
-    t3.SetLayer(pcbnew.B_SilkS)
-    t3.SetMirrored(True)
+    for k, line in enumerate(("LiPo CELL 52 x 34 x 10", "on insulating foam tape", "lead to J3 round the right edge")):
+        t3 = silk_text(board, line, 122.0, 17.0 + 3.0 * k, 1.2)
+        t3.SetLayer(pcbnew.B_SilkS)
+        t3.SetMirrored(True)
     for k, (x, y) in enumerate(((147.0, 77.5), (147.0, 81.0))):
         hole(board, f"H{k + 1}", x, y, 2.2)
     # rail names next to the probe pads
