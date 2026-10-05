@@ -18,7 +18,7 @@ Rows with a stated reason for a non-generic choice: Y1 and L1 (the exact parts t
 | Y1 | 12 MHz crystal | ABM8-272-T3 (Abracon) | 3.2 x 2.5 mm | `Device:Crystal_GND24` / `Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm` | design guide 4.1: "we highly recommend using this crystal"; 10 pF load, 30 ppm, 50 Ω ESR max | stock |
 | C16, C17 | crystal load capacitors | 15 pF, C0G | 0402 | `Device:C` / `Capacitor_SMD:C_0402_1005Metric` | design guide 4: 15 pF each gives 10.5 pF with trace parasitics | |
 | R3 | crystal series resistor | 1 kΩ | 0402 | `Device:R` | design guide 4: prevents over-driving | |
-| L1 | core regulator inductor | AOTA-B201610S3R3-101-T (Abracon, 3.3 µH, polarity dot) | 2.0 x 1.6 x 1.0 mm (`refs/parts/aota-b201610s.pdf`) | `Device:L` / placeholder `Inductor_SMD:L_0805_2012Metric`; **phase 5: footprint from Abracon's land pattern** | design guide 2.1: the exact part, oriented per the dot | stock |
+| L1 | core regulator inductor | AOTA-B201610S3R3-101-T (Abracon, 3.3 µH, polarity dot) | 2.0 x 1.6 x 1.0 mm (`refs/parts/aota-b201610s.pdf`) | `Device:L` / `pcb_custom:AOTA-B201610S` (Abracon land pattern: 0.8 x 1.6 mm pads, 0.7 mm gap); **assembly: the part's orientation dot goes on pad 2, the 1V1 output end** (RP2350 datasheet Figures 26 and 28; pad 1 = VREG_LX) | design guide 2.1: the exact part, oriented per the dot | stock |
 | C13, C14, C15 (+ C40 at DVDD pin 23, AUDIT-2 #11) | regulator input, output, AVDD caps | 4.7 µF | 0402 | `Device:C` | design guide 2.1 | |
 | R2 | VREG_AVDD filter | 33 Ω | 0402 | `Device:R` | design guide 2.1 (33 Ω + 4.7 µF) | |
 | C1 to C10 | decoupling, one per power pin (six IOVDD, one shared for pins 53/54, three DVDD) | 100 nF | 0402 | `Device:C` | design guide 2.2.1 | |
