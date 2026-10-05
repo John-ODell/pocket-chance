@@ -26,6 +26,8 @@ def frame():
         b.fb.fill((0xF800, 0x07E0, 0x001F, 0xFFFF)[i & 3]); t0 = utime.ticks_us(); b.show(); ts.append(utime.ticks_diff(utime.ticks_us(), t0))
     b.blank(); b.spi.deinit(); return sum(ts) // 30
 shipped = machine.freq()
+shipped_src = (machine.mem32[CTRL] >> 5) & 7             # auditor (firmware-pinmap result): restore the shipped peripheral
+shipped_peri = 48_000_000 if shipped_src == 2 else shipped   # source too, not a fixed 48 MHz; only clk_sys/pll_usb are handled
 print("RESULT as_shipped: freq=%d %s spi_repr=%d full_frame_us=%d" % (machine.freq(), state(), spi_repr(), frame()))
 for mcu in (125_000_000, 150_000_000):
     try:
@@ -33,6 +35,6 @@ for mcu in (125_000_000, 150_000_000):
         print("RESULT after freq(%d,%d): %s spi_repr=%d full_frame_us=%d" % (mcu, mcu, state(), spi_repr(), frame()))
     except Exception as e:
         print("RESULT freq(%d,%d) failed: %r" % (mcu, mcu, e))
-machine.freq(shipped, 48_000_000)
-gc.collect(); print("RESULT restored: freq=%d %s ram_free=%d" % (machine.freq(), state(), gc.mem_free()))
+machine.freq(shipped, shipped_peri)
+gc.collect(); print("RESULT restored: freq=%d %s ram_free=%d (shipped was auxsrc=%d; a source other than clk_sys/pll_usb is NOT restored: unplug to be sure)" % (machine.freq(), state(), gc.mem_free(), shipped_src))
 print("RESULT look at the panel: four solid colours cycled in each state; speckles or tearing = that SPI speed is not clean on this wiring")
