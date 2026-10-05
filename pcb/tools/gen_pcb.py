@@ -318,10 +318,11 @@ def main():
     silk_text(board, "+ RED", 136.6, 89.0, 1.2)
     silk_text(board, "-  BLK", 136.6, 87.0, 1.2)
     silk_text(board, "CHECK POLARITY WITH A METER", 135.0, 85.2, 0.8)
-    # the cell lives on the back, taped inside this outline; its lead wraps round the right edge into J3 and is tied
-    # down through the two holes beside J3 (strain relief)
-    rect(board, pcbnew.B_SilkS, 96.0, 58.0, 148.0, 92.0, 0.15)
-    t3 = silk_text(board, "LiPo CELL 52 x 34 x 10 (tape here, lead to J3 round the right edge)", 122.0, 75.0, 1.2)
+    # the cell lives on the back behind the A/B/X/Y buttons (front: SMD switches only, nothing hot, no through-hole
+    # tails), on insulating foam tape inside this outline; its lead runs down the back and round the right edge into J3
+    # and is tied down through the two holes beside J3. Kept off the back of the charger and buck-boost (auditor 19:21).
+    rect(board, pcbnew.B_SilkS, 96.0, 3.0, 148.0, 39.0, 0.15)
+    t3 = silk_text(board, "LiPo CELL 52 x 34 x 10 on insulating foam tape; lead to J3 round the right edge", 122.0, 21.0, 1.2)
     t3.SetLayer(pcbnew.B_SilkS)
     t3.SetMirrored(True)
     for k, (x, y) in enumerate(((147.0, 77.5), (147.0, 81.0))):
