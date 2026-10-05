@@ -29,6 +29,7 @@ W, H = 150.0, 100.0          # board outline (prototype; credit-card size is spi
 SCR_X0, SCR_Y0, SCR_X1, SCR_Y1 = 49.0, 4.0, 101.0, 41.0   # screen reserve, 52 x 37 mm
 
 P = {}                       # ref -> (x, y, rotation)
+DNP = set()                  # unfitted parts (schematic dnp): footprint placed, marked DNP, kept out of BOM and pick-and-place
 
 
 def at(ref, x, y, rot=0):
@@ -57,7 +58,14 @@ at("SW5", 130, 48.5, 90)     # B
 # and the 1.3" (45 x 31 mm) in landscape. The module sits on standoffs, cable to J4. Standoff holes wait for the
 # module's mechanical drawing.
 at("J4", 75, 52, 180)        # LCD socket, cable entry towards the screen
-at("J9", 66.11, 44.0, 90)    # rev 0.11: 1x8 2.54 mm header on the same nets as J4, pins in a row left to right
+at("J9", 66.11, 44.0, 90) 
+# backlight: R49 0 ohm link fitted; Q6/R50/R51 high-side switch unfitted (rev 0.11)
+at("R49", 93, 47.0, 0)
+at("Q6", 93, 51.5, 0)
+at("R50", 97, 51.5, 0)
+at("R51", 97, 53.2, 0)
+at("TP14", 88.5, 46.0)                  # LCD_SCK probe
+   # rev 0.11: 1x8 2.54 mm header on the same nets as J4, pins in a row left to right
 
 # ---------------------------------------------------------------- MCU block (centre)
 # U1 turned 90 clockwise: screen/SD pins face up, radio/audio/I2C pins face down, QSPI/USB/core regulator face right,
@@ -87,7 +95,8 @@ at("C4", 66.3, 72.9, 0)                  # IOVDD pin 30
 at("C5", 70.8, 75.8, 90)                 # IOVDD pin 38
 at("C10", 72.0, 75.8, 90)                # DVDD pin 39
 at("C6", 74.0, 75.8, 90)                 # IOVDD pin 45
-at("C12", 75.6, 76.2, 90)                # ADC_AVDD 2.2 uF, pin 44 (room left at 73.2, 77.6 for the 100 nF if approved)
+at("C12", 75.6, 76.2, 90)                # ADC_AVDD 2.2 uF, pin 44
+at("C43", 73.2, 77.8, 90)                # ADC_AVDD 100 nF at pin 44 (rev 0.11, RP2350 ds p.402)
 at("R1", 75.6, 79.0, 90)
 at("C7", 77.4, 65.6, 0)                  # USB/QSPI IOVDD pins 53/54
 # crystal (left side, pins 21/22)
@@ -143,11 +152,13 @@ at("C11", 104, 66.5, 0)                 # 3.3 V bulk
 # battery: socket on the right edge, fuse and protection next to it
 at("J3", W - 5.5, 88, 90)               # LiPo socket, cable entry from the right edge; pin 1 (+) is the lower pin
 at("F1", 136, 95.5, 0)
-at("R22", 134, 91, 0)
+at("R22", 131, 90.0, 0)                # 0 ohm link CELL_F -> BAT+ (opened to measure cell current)
 at("TP7", 128, 80)                      # BAT+
 at("U7", 140, 80, 0)                    # DW01A
 at("Q1", 140, 75, 0)                    # FS8205A
 row(["R20", "R21", "C27"], 134, 76, dy=1.6)
+at("TP9", 134.0, 91.6)                 # CELL_P probe (fuse input)
+at("TP10", 137.6, 91.6)                # CELL_F probe (fuse output)
 at("TP6", 142, 97.5)                    # GND near the battery (clear of the corner mounting hole)
 # gated battery divider, near U1's ADC pin side
 at("Q4", 90, 86, 0)
@@ -167,6 +178,8 @@ row(["R42", "R43", "JP2"], 29.6, 72.6, dy=2.2)
 at("U10", 44, 66, 0)                    # LSM6DSOX
 row(["C36", "C37"], 47.2, 67.6, dy=1.4) # IMU VDD/VDDIO pins 8 and 12 (right side)
 row(["R31", "R32"], 34, 66, dy=1.6)     # I2C pull-ups
+at("TP11", 30.5, 64.0)                  # SDA probe
+at("TP12", 30.5, 60.5)                  # SCL probe
 at("J7", 50, 95.5, 0)                   # STEMMA QT, cable from the bottom edge
 at("J8", 30, 97, 90)                    # expansion header along the bottom edge
 at("TP5", 57, 89)                       # GND
@@ -174,6 +187,7 @@ at("TP5", 57, 89)                       # GND
 at("J6", 7.6, 62, 270)
 at("C34", 15.4, 62.2, 90)               # SD 100 nF at pin 4 (review: was 27 mm away)
 at("C33", 17.6, 62.2, 90)               # SD 10 uF next to it
+at("TP13", 17.0, 67.0)                  # SD_SCK probe
 row(["R26", "R27", "R28", "R29", "R30"], 17, 54.0, dy=1.3)
 
 
@@ -183,6 +197,8 @@ def load_netlist():
     comps = {}
     for c in root.iter("comp"):
         comps[c.get("ref")] = (c.findtext("value"), c.findtext("footprint"))
+        if any(p.get("name") == "dnp" for p in c.iter("property")):
+            DNP.add(c.get("ref"))
     nets = {}
     for n in root.iter("net"):
         for node in n.iter("node"):
@@ -277,6 +293,10 @@ def main():
         else:                                   # unplaced parts parked below the board, visible in the render
             x, y, rot = 5 + 8 * (staging % 18), H + 15 + 8 * (staging // 18), 0
             staging += 1
+        if ref in DNP:
+            fp.SetDNP(True)
+            fp.SetExcludedFromBOM(True)
+            fp.SetExcludedFromPosFiles(True)
         board.Add(fp)
         fp.SetPosition(mm(x, y))
         fp.SetOrientationDegrees(rot)
@@ -310,7 +330,7 @@ def main():
     t.SetTextSize(pcbnew.VECTOR2I(pcbnew.FromMM(1.2), pcbnew.FromMM(1.2)))
     board.Add(t)
     t2 = pcbnew.PCB_TEXT(board)
-    t2.SetText("Pocket Chance spin 1  rev 0.10 placement draft")
+    t2.SetText("Pocket Chance spin 1  rev 0.11 placement draft")
     t2.SetLayer(pcbnew.F_SilkS)
     t2.SetPosition(mm(75, 1.8))
     t2.SetTextSize(pcbnew.VECTOR2I(pcbnew.FromMM(1.0), pcbnew.FromMM(1.0)))
@@ -346,6 +366,7 @@ def main():
             t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
             t.SetPosition(p.GetPosition() + pcbnew.VECTOR2I(0, pcbnew.FromMM(-1.8)))
         silk_text(board, "J9: WIRE BY NAME, MODULES DIFFER IN ORDER. ONE SCREEN AT A TIME", 75.0, 30.5, 0.9)
+    silk_text(board, "Q6 FITTED = BL ACTIVE LOW (then remove R49)", 99.0, 49.0, 0.7)
     # rail names next to the probe pads
     for fp in board.GetFootprints():
         if fp.GetReference().startswith("TP"):

@@ -171,7 +171,7 @@ add("U1", ("MCU_RaspberryPi", "RP2350A"), "RP2350A", "Package_DFN_QFN:QFN-60-1EP
     "51": "USB_DM_R", "52": "USB_DP_R",
     "55": "QSPI_SD3", "56": "QSPI_SCLK", "57": "QSPI_SD0", "58": "QSPI_SD2", "59": "QSPI_SD1", "60": "QSPI_SS",
     "2": "PSRAM_CS", "3": "EXP_GP1", "4": "JOY_UP", "5": "JOY_PRESS", "7": "SD_MISO", "8": "SD_CS", "9": "SD_SCK",
-    "10": "SD_MOSI", "12": "LCD_DC", "13": "LCD_CS", "14": "LCD_SCK", "15": "LCD_MOSI", "16": "LCD_RST", "17": "LCD_BL",
+    "10": "SD_MOSI", "12": "LCD_DC", "13": "LCD_CS", "14": "LCD_SCK", "15": "LCD_MOSI", "16": "LCD_RST", "17": "LCD_BL_CTL",
     "18": "IMU_INT", "19": "BTN_A", "27": "JOY_LEFT", "28": "BTN_B", "29": "JOY_DOWN", "31": "BTN_X", "32": "JOY_RIGHT",
     "33": "BTN_Y", "34": "AUDIO_PWM", "35": "WL_REG_ON", "36": "WL_DATA", "37": "WL_CS", "40": "SDA", "41": "SCL",
     "42": "VBAT_SENSE", "43": "WL_CLK",
@@ -181,7 +181,8 @@ x = 130
 for i in range(10):
     add(f"C{i+1}", C, "100nF", C0402, (x + 12 * (i % 5), 60 + 20 * (i // 5)), {"1": "+3V3" if i < 7 else "1V1", "2": "GND"})
 add("C11", C, "10uF", C0603, (190, 60), {"1": "+3V3", "2": "GND"})          # 3.3 V bulk near U1
-add("C12", C, "2.2uF", C0603, (190, 80), {"1": "ADC_AVDD", "2": "GND"})     # ADC supply filter (Pico 2 W: 201 R into 2.2 uF)
+add("C12", C, "2.2uF", C0603, (190, 80), {"1": "ADC_AVDD", "2": "GND"})
+add("C43", C, "100nF", C0402, (220, 80), {"1": "ADC_AVDD", "2": "GND"})    # rev 0.11 (John): local 100 nF at ADC_AVDD pin 44, RP2350 ds p.402 (AUDIT-3 #20)     # ADC supply filter (Pico 2 W: 201 R into 2.2 uF)
 add("R1", R, "200R", R0402, (205, 80), {"1": "+3V3", "2": "ADC_AVDD"})
 # on-chip 1.1 V switching regulator: design guide 2.1 (exact parts)
 add("L1", L, "3.3uH AOTA-B201610S3R3-101-T", "pcb_custom:AOTA-B201610S", (130, 110), {"1": "VREG_LX", "2": "1V1"})   # footprint from the Abracon land pattern (gen_fp.py)
@@ -215,6 +216,9 @@ add("J1", ("Connector", "Conn_ARM_JTAG_SWD_10"), "SWD", "Connector_PinHeader_1.2
 # test points (HR-P03)
 for i, net in enumerate(["VBUS", "VSYS", "+3V3", "1V1", "GND", "GND", "BAT+", "RUN"]):
     add(f"TP{i+1}", TP, net, TPFP, (130 + 12 * i, 285), {"1": net})
+# rev 0.11 (John): probe pads for the fuse (current and heat checks, AUDIT-3 #24) and the buses
+for i, net in enumerate(["CELL_P", "CELL_F", "SDA", "SCL", "SD_SCK", "LCD_SCK"]):
+    add(f"TP{i+9}", TP, net, TPFP, (130 + 12 * i, 305), {"1": net})
 
 # ---- Block 2: USB --------------------------------------------------------------------
 add("J2", ("Connector", "USB_C_Receptacle_USB2.0_16P"), "USB4085-GF-A", "Connector_USB:USB_C_Receptacle_GCT_USB4085", (300, 80), {
@@ -281,7 +285,7 @@ add("J3", ("Connector", "Conn_01x02_Socket"), "LiPo JST-PH 2.0mm (1 = + RED WIRE
 # ammeter link, so it sits in the battery path only (charging and discharging both pass through it; the USB path does not).
 # Bourns MF-MSMF150/16X-2 (datasheet in refs/parts): 1.50 A hold (1.00 A at 60 C), 3.00 A trip, 16 V, 1812 (was the 110 part in rev 0.7). Contains a shorted lead, a failed protection FET or a board short, and limits the heat after a
 # wiring mistake; it does NOT save the DW01A or the charger's BAT pin from a reversed cell. Costs 25 to 100 mV at 0.5 A.
-add("F1", ("Device", "Polyfuse"), "MF-MSMF150/16X-2 1.5A", "Fuse:Fuse_1812_4532Metric", (380, 400), {"1": "CELL_P", "2": "CELL_F"})   # rev 0.9: 1.5 A hold (1.0 A at 60 C), 3.0 A trip, John's ruling after the expert's load bound
+add("F1", ("Device", "Polyfuse"), "MF-MSMF150/16X-2 1.5A", "pcb_custom:Fuse_Bourns_MF-MSMF_1812", (380, 400), {"1": "CELL_P", "2": "CELL_F"})   # rev 0.9: 1.5 A hold (1.0 A at 60 C), 3.0 A trip, John's ruling after the expert's load bound
 add("R22", R, "0R", "Resistor_SMD:R_0603_1608Metric", (395, 400), {"1": "CELL_F", "2": "BAT+"})   # ammeter link in the cell lead (HR-P03)
 # Reverse-polarity guard, rev 0.4 (AUDIT-3 #1 and HR-P05 part 4; the rev 0.3 single P-FET referenced to BAT- was not
 # enough with USB present, because the charger powers the DW01A, Q1 is on, BAT- sits at ground, and a reversed cell then
@@ -325,6 +329,14 @@ add("J4", ("Connector", "Conn_01x08_Socket"), "LCD 1.54in ST7789 module, JST-PH 
 add("J9", ("Connector", "Conn_01x08_Pin"), "LCD header 2.54 mm (wire by name; one screen at a time)",
     "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical",
     (520, 80), {"1": "+3V3", "2": "GND", "3": "LCD_MOSI", "4": "LCD_SCK", "5": "LCD_CS", "6": "LCD_DC", "7": "LCD_RST", "8": "LCD_BL"})
+# Backlight drive (rev 0.11, John; expert 21:00): GPIO13 (LCD_BL_CTL) reaches the screen's BL pin through R49, a fitted
+# 0 ohm link, so the board behaves as before (BL high = on). If a module's BL pin turns out to drive its LEDs directly,
+# fit Q6 (AO3401A high-side switch from 3V3) with R50/R51 and REMOVE R49: the backlight then turns on with GPIO13 LOW.
+add("R49", R, "0R", R0402, (580, 60), {"1": "LCD_BL_CTL", "2": "LCD_BL"})
+add("Q6", ("Transistor_FET", "AO3401A"), "AO3401A (DNP: fit only for a direct-drive BL module)", "Package_TO_SOT_SMD:SOT-23",
+    (560, 80), {"1": "BL_GATE", "2": "+3V3", "3": "LCD_BL"}, dnp=True)
+add("R50", R, "1k", R0402, (580, 80), {"1": "LCD_BL_CTL", "2": "BL_GATE"}, dnp=True)
+add("R51", R, "100k", R0402, (580, 100), {"1": "+3V3", "2": "BL_GATE"}, dnp=True)
 # game buttons: John asked for about 10 mm; tactile switches come in 6 and 12 mm standard sizes, so 12 mm it is
 # (C&K PTS125, 12 x 12 mm surface-mount; KiCad footprint), fallback XKB TS-1187A (same size, cheaper), see PARTS.md
 PTS125 = "Button_Switch_SMD:SW_Push_1P1T_NO_CK_PTS125Sx43SMTR"
