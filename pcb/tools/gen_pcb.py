@@ -84,19 +84,19 @@ at("C13", 77.4, 71.8, 0)                 # VREG_VIN 4.7 uF, beside pin 49
 at("C14", 80.8, 73.6, 90)                # 1V1 4.7 uF at L1 pad 2
 at("C15", 77.6, 75.8, 0)                 # VREG_AVDD 4.7 uF (pin 46) with R2
 at("R2", 79.8, 75.8, 0)
-# decoupling: one cap per supply pin, at that pin (placement review 19:02)
+# decoupling: one cap per supply pin, at that pin, its supply pad facing the pin (placement review 19:02; routing prep)
 at("C1", 74.8, 64.3, 90)                 # IOVDD pin 1
 at("C8", 72.8, 64.3, 90)                 # DVDD pin 6
 at("C2", 70.8, 64.3, 90)                 # IOVDD pin 11
-at("C3", 66.3, 67.4, 0)                  # IOVDD pin 20
-at("C9", 66.3, 69.4, 0)                  # DVDD pin 23
-at("C40", 66.3, 70.9, 0)                 # DVDD pin 23 bulk 4.7 uF (guide: one per DVDD side)
-at("C4", 66.3, 72.9, 0)                  # IOVDD pin 30
-at("C5", 70.8, 75.8, 90)                 # IOVDD pin 38
-at("C10", 72.0, 75.8, 90)                # DVDD pin 39
-at("C6", 74.0, 75.8, 90)                 # IOVDD pin 45
-at("C12", 75.6, 76.2, 90)                # ADC_AVDD 2.2 uF, pin 44
-at("C43", 73.2, 77.8, 90)                # ADC_AVDD 100 nF at pin 44 (rev 0.11, RP2350 ds p.402)
+at("C3", 66.3, 67.4, 180)                  # IOVDD pin 20
+at("C9", 66.3, 69.4, 180)                  # DVDD pin 23
+at("C40", 66.3, 70.9, 180)                 # DVDD pin 23 bulk 4.7 uF (guide: one per DVDD side)
+at("C4", 66.3, 72.9, 180)                  # IOVDD pin 30
+at("C5", 71.3, 75.6, 270)                # IOVDD pin 38
+at("C10", 72.5, 75.6, 270)               # DVDD pin 39
+at("C6", 75.2, 75.6, 270)                # IOVDD pin 45
+at("C12", 74.0, 79.6, 270)                # ADC_AVDD 2.2 uF, behind C43
+at("C43", 74.0, 75.6, 270)                # ADC_AVDD 100 nF right at pin 44 (rev 0.11, RP2350 ds p.402; auditor 20:38)
 at("R1", 75.6, 79.0, 90)
 at("C7", 77.4, 65.6, 0)                  # USB/QSPI IOVDD pins 53/54
 # crystal (left side, pins 21/22)

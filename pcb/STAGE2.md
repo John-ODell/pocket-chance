@@ -21,6 +21,11 @@ RP2350A, 16 MB flash, 8 MB PSRAM; 1.54" 240 x 240 ST7789 module on a header; joy
 | 9 | PCBWay instant quote (no sign-in, no payment) | not started | the quote, read line by line against the checklist |
 | 10 | Pre-order checklist | not started | the checklist, every box ticked, then John orders |
 
+## Routing method (John, 2026-10-04)
+Pipeline: `gen_pcb.py` (placement) -> `route_critical.py` (hand-routed critical copper, LOCKED) -> `route_prep.py` (In1 GND and In2 +3V3 planes, Specctra export) -> Freerouting 2.4.1 (headless, non-critical nets around the locked copper) -> `ses_import.py` (back into KiCad; KiCad's own SES import returned False on these files) -> DRC and hand review.
+Freerouting is a standing assist tool, not a one-off: rerun it whenever the layout is chopped up or stuck. Each run is its own labelled commit (input commit, Freerouting version, passes, routed/unrouted counts) so runs can be compared. Critical nets (RP2350 core supply, crystal, QSPI, USB, buck-boost, radio) are always hand-routed and locked.
+- Run 1 (branch route-draft 3bc9330, NOT FOR FAB): all nets, 25 passes, 8 unrouted, all at U1's power pins -> stage 1 of route_critical.py (decoupling escapes, cap ground vias, exposed-pad vias).
+
 ## Routing checklist (from the auditor's layout checklist, team file 2026-10-04 19:16)
 1. Record John's layer count and PCBWay's actual stackup (copper weights, dielectric, tolerances) before calculating any impedance. Use one confirmed process, not every headline minimum at once; four-layer inner hole-to-copper 0.178 mm, copper-to-edge 0.25 mm.
 2. RM2: the 35.5 x 18.5 mm exclusion clear of copper on all four layers, and of vias, parts, the cell, cables and enclosure metal; ground and stitching under the module body (six ground pads 1, 4, 7, 11, 15, 21), outside the exclusion. Checked in the generated Gerbers, not only in KiCad.
