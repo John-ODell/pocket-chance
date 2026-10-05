@@ -92,8 +92,8 @@ at("C3", 66.3, 67.4, 180)                  # IOVDD pin 20
 at("C9", 66.3, 69.4, 180)                  # DVDD pin 23
 at("C40", 66.3, 70.9, 180)                 # DVDD pin 23 bulk 4.7 uF (guide: one per DVDD side)
 at("C4", 66.3, 72.9, 180)                  # IOVDD pin 30
-at("C5", 71.3, 75.6, 270)                # IOVDD pin 38
-at("C10", 72.5, 75.6, 270)               # DVDD pin 39
+at("C5", 71.6, 75.6, 270)                # IOVDD pin 38
+at("C10", 72.8, 75.6, 270)               # DVDD pin 39
 at("C6", 75.2, 75.6, 270)                # IOVDD pin 45
 at("C12", 74.0, 79.6, 270)                # ADC_AVDD 2.2 uF, behind C43
 at("C43", 74.0, 75.6, 270)                # ADC_AVDD 100 nF right at pin 44 (rev 0.11, RP2350 ds p.402; auditor 20:38)
