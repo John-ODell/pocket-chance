@@ -21,6 +21,17 @@ RP2350A, 16 MB flash, 8 MB PSRAM; 1.54" 240 x 240 ST7789 module on a header; joy
 | 9 | PCBWay instant quote (no sign-in, no payment) | not started | the quote, read line by line against the checklist |
 | 10 | Pre-order checklist | not started | the checklist, every box ticked, then John orders |
 
+## Routing checklist (from the auditor's layout checklist, team file 2026-10-04 19:16)
+1. Record John's layer count and PCBWay's actual stackup (copper weights, dielectric, tolerances) before calculating any impedance. Use one confirmed process, not every headline minimum at once; four-layer inner hole-to-copper 0.178 mm, copper-to-edge 0.25 mm.
+2. RM2: the 35.5 x 18.5 mm exclusion clear of copper on all four layers, and of vias, parts, the cell, cables and enclosure metal; ground and stitching under the module body (six ground pads 1, 4, 7, 11, 15, 21), outside the exclusion. Checked in the generated Gerbers, not only in KiCad.
+3. USB: the ESD diodes first, with a short ground return; the D+/D- pair symmetric over continuous ground, 90 ohm differential from the real stackup; series resistors near U1.
+4. TPS63001: L2, C23, C25, C26 and C24 on their pins with short, wide paths; feedback away from the switch nodes.
+5. RP2350 core supply: the LX, C13 and C14 loops as in RP2350 Figures 26/28; the L1 dot on the 1V1 end; no copper pour or vias under L1 on F.Cu/In1/In2 (rule area LX_NO_POUR in the footprint); every bypass at its own pin.
+6. Charger and fuse: IN/OUT/BAT caps on their pins; the thermal pad tied into ground copper with vias; F1 heat and derating considered.
+7. Connectors and mechanics: J3 marks; strain relief; the cell clear of the antenna, hot parts and through-hole tails; USB, microSD and screen fit checked on the 1:1 print.
+8. Signals: short local bypass; QSPI and fast SPI over continuous ground; a quiet crystal; audio and power routed apart; labelled probes without long stubs.
+9. Release: schematic, ERC and netlist agree; no unrouted nets, shorts, isolated pours, courtyard or edge errors; Gerbers, drills, mask, paste, BOM and centroid inspected against the released revision.
+
 ## Fab-output plan (from the auditor's pre-order checklist, adopted 2026-10-04)
 1. **One frozen commit.** Routing, planes and DRC done; connector polarity, parts and standoff clearances checked; every file below made from that one commit, which is recorded with the package.
 2. **Fabrication ZIP:** four copper Gerbers, top/bottom mask, silk and paste, a closed outline, separate plated and non-plated Excellon drills, slot notes. Outline 150 x 100 mm checked.
