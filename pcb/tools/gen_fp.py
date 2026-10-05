@@ -101,6 +101,14 @@ def aota():
              rect("F.Fab", -1.0, -0.8, 1.0, 0.8), rect("F.CrtYd", -1.4, -1.05, 1.4, 1.05, 0.05),
              f'\t(fp_circle (center 0.6 -0.4) (end 0.8 -0.4) (stroke (width 0.05) (type default)) (fill yes) (layer "F.Fab") (uuid "{U()}"))',
              text("user", "DOT=1V1", 0, 0, "F.Fab", size=0.3),
+             # no copper pour and no vias under the inductor on the top and inner layers (RP2350 datasheet p.411: cut copper
+             # under the inductor; auditor and expert: inner layers too). B.Cu keeps its ground plane, as on the Pico 2.
+             # Tracks are allowed so the pads can be reached; route nothing else through this area.
+             f'\t(zone (net 0) (net_name "") (layers "F.Cu" "In1.Cu" "In2.Cu") (uuid "{U()}") (name "LX_NO_POUR") (hatch edge 0.3)'
+             f' (connect_pads (clearance 0)) (min_thickness 0.25) (filled_areas_thickness no)'
+             f' (keepout (tracks allowed) (vias not_allowed) (pads allowed) (copperpour not_allowed) (footprints allowed))'
+             f' (placement (enabled no) (sheetname "")) (fill (thermal_gap 0.5) (thermal_bridge_width 0.5))'
+             f' (polygon (pts (xy -1.3 -1.0) (xy 1.3 -1.0) (xy 1.3 1.0) (xy -1.3 1.0))))',
              f'\t(fp_circle (center 1.45 -0.9) (end 1.55 -0.9) (stroke (width 0.12) (type default)) (fill yes) (layer "F.SilkS") (uuid "{U()}"))',
              f'\t(fp_line (start -1.0 -1.0) (end 1.0 -1.0) (stroke (width 0.12) (type default)) (layer "F.SilkS") (uuid "{U()}"))',
              f'\t(fp_line (start -1.0 1.0) (end 1.0 1.0) (stroke (width 0.12) (type default)) (layer "F.SilkS") (uuid "{U()}"))']
