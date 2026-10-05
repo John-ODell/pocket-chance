@@ -147,7 +147,7 @@ at("TP7", 128, 80)                      # BAT+
 at("U7", 140, 80, 0)                    # DW01A
 at("Q1", 140, 75, 0)                    # FS8205A
 row(["R20", "R21", "C27"], 134, 76, dy=1.6)
-at("TP6", 146, 96)                      # GND near the battery
+at("TP6", 142, 97.5)                    # GND near the battery (clear of the corner mounting hole)
 # gated battery divider, near U1's ADC pin side
 at("Q4", 90, 86, 0)
 at("Q3", 95, 86, 0)
@@ -321,13 +321,20 @@ def main():
     # the cell lives on the back behind the A/B/X/Y buttons (front: SMD switches only, nothing hot, no through-hole
     # tails), on insulating foam tape inside this outline; its lead runs down the back and round the right edge into J3
     # and is tied down through the two holes beside J3. Kept off the back of the charger and buck-boost (auditor 19:21).
-    rect(board, pcbnew.B_SilkS, 96.0, 3.0, 148.0, 39.0, 0.15)
+    rect(board, pcbnew.B_SilkS, 92.0, 3.0, 144.0, 39.0, 0.15)   # clear of the corner mounting hole
     for k, line in enumerate(("LiPo CELL 52 x 34 x 10", "on insulating foam tape", "lead to J3 round the right edge")):
-        t3 = silk_text(board, line, 122.0, 17.0 + 3.0 * k, 1.2)
+        t3 = silk_text(board, line, 118.0, 17.0 + 3.0 * k, 1.2)
         t3.SetLayer(pcbnew.B_SilkS)
         t3.SetMirrored(True)
-    for k, (x, y) in enumerate(((147.0, 77.5), (147.0, 81.0))):
-        hole(board, f"H{k + 1}", x, y, 2.2)
+    # tie-down holes 3.0 mm: a common 2.5 x 1 mm cable tie passes flat (auditor 19:28: 2.2 mm was too small)
+    for k, (x, y) in enumerate(((147.0, 76.5), (147.0, 81.2))):
+        hole(board, f"H{k + 1}", x, y, 3.0)
+    # four corner mounting holes for M2 nylon standoffs (2.4 mm clearance), 3.5 mm in from each corner
+    for k, (x, y) in enumerate(((3.5, 3.5), (W - 3.5, 3.5), (3.5, H - 3.5), (W - 3.5, H - 3.5))):
+        hole(board, f"MH{k + 1}", x, y, 2.4)
+    # speaker: PAM8302A bridge output, neither terminal is ground (auditor 19:28)
+    silk_text(board, "SPK+ SPK-: bridge output,", 12.5, 71.5, 0.8)
+    silk_text(board, "neither wire is GND", 12.5, 72.8, 0.8)
     # rail names next to the probe pads
     for fp in board.GetFootprints():
         if fp.GetReference().startswith("TP"):
