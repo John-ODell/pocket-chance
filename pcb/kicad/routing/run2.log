@@ -1,0 +1,88 @@
+2026-10-04 20:46:10.048 INFO   Freerouting v2.4.1 (build-date: 2026-09-03)
+WARNING: Final field userProfileSettings in class app.freerouting.settings.GlobalSettings has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @481a15ff (file:<tools>/freerouting-2.4.1.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+2026-10-04 20:46:11.441 INFO   [0899E3\B31ED4] Loading board file 'run2.dsn'...
+2026-10-04 20:46:11.492 INFO   Layer 'In1.Cu' has been automatically configured as a dedicated power plane because it contains a large conduction area covering >50% of the board.
+2026-10-04 20:46:11.492 INFO   Layer 'In2.Cu' has been automatically configured as a dedicated power plane because it contains a large conduction area covering >50% of the board.
+2026-10-04 20:46:11.499 INFO   [0899E3\B31ED4] Job '0899E3\B31ED4' started at 2026-10-05T01:46:11.498993Z.
+2026-10-04 20:46:11.609 INFO   [0899E3\B31ED4] Fanout stage started on board '69f7f107b4b613f105855f8bf1c79c48' with 458 of 488 SMD pins needing fanout (16 already connected, 14 netless).
+2026-10-04 20:46:26.376 INFO   [0899E3\B31ED4] Fanout pass #1 on board '63e21fd0e465506e24fa971516919b58' completed in 14.70 seconds with 423 SMD pins fanouted, 0 not routed, 0 insert errors, +165 extra vias (0 SMD pins still to check in pass, ripup costs=100).
+2026-10-04 20:50:40.458 WARN   BasicBoard.normalizeTraces: reached 2000 iterations for net '+3V3' — stopping to prevent hang. The board geometry for this net may be oscillating (split/combine cycle); traces are kept as-is and further normalization for this net is suppressed on this board candidate.
+2026-10-04 20:50:41.199 INFO   [0899E3\B31ED4] Fanout pass #2 on board 'db289c76568135b2cc8a817d87bf5c92' completed in 254.81 seconds with 93 SMD pins fanouted, 1 not routed, 0 insert errors, +24 extra vias (0 SMD pins still to check in pass, ripup costs=200).
+2026-10-04 20:50:44.770 INFO   [0899E3\B31ED4] Fanout pass #3 on board '286b15fec152c0bf11cdbe64a2e37f4d' completed in 3.56 seconds with 59 SMD pins fanouted, 3 not routed, 0 insert errors, +8 extra vias (0 SMD pins still to check in pass, ripup costs=300).
+2026-10-04 20:50:47.983 INFO   [0899E3\B31ED4] Fanout pass #4 on board '945c5b254b46cf3a094eefd4f708e49b' completed in 3.20 seconds with 51 SMD pins fanouted, 2 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=400).
+2026-10-04 20:50:50.437 INFO   [0899E3\B31ED4] Fanout pass #5 on board '19a5a4cadeb88a5c25e82b1bd17af0d3' completed in 2.44 seconds with 53 SMD pins fanouted, 0 not routed, 0 insert errors, +3 extra vias (0 SMD pins still to check in pass, ripup costs=500).
+2026-10-04 20:50:53.042 INFO   [0899E3\B31ED4] Fanout pass #6 on board '22e2b5bc245c7c864c7f3b4ef5515e2c' completed in 2.59 seconds with 52 SMD pins fanouted, 2 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=600).
+2026-10-04 20:50:55.438 INFO   [0899E3\B31ED4] Fanout pass #7 on board 'ca55a4ee2b7ce84d0c950a148d745b70' completed in 2.38 seconds with 49 SMD pins fanouted, 2 not routed, 0 insert errors, +3 extra vias (0 SMD pins still to check in pass, ripup costs=700).
+2026-10-04 20:50:57.909 INFO   [0899E3\B31ED4] Fanout pass #8 on board '249af27fff6407a6bb71f69650f95d56' completed in 2.46 seconds with 46 SMD pins fanouted, 3 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=800).
+2026-10-04 20:51:00.404 INFO   [0899E3\B31ED4] Fanout pass #9 on board 'fd014e2fb6a2e6dab970fba38e029cda' completed in 2.48 seconds with 49 SMD pins fanouted, 2 not routed, 0 insert errors, +3 extra vias (0 SMD pins still to check in pass, ripup costs=900).
+2026-10-04 20:51:03.022 INFO   [0899E3\B31ED4] Fanout pass #10 on board '3d4beea9e6c82f0dbe979ac9ea4ec7ec' completed in 2.60 seconds with 45 SMD pins fanouted, 3 not routed, 0 insert errors, +1 extra via (0 SMD pins still to check in pass, ripup costs=1000).
+2026-10-04 20:51:05.029 INFO   [0899E3\B31ED4] Fanout pass #11 on board '8562265b852d092d1102f522b4c6e0e5' completed in 1.99 seconds with 42 SMD pins fanouted, 2 not routed, 0 insert errors, +5 extra vias (0 SMD pins still to check in pass, ripup costs=1100).
+2026-10-04 20:51:07.199 INFO   [0899E3\B31ED4] Fanout pass #12 on board '379dc204b6680571318147c95d96b6c4' completed in 2.15 seconds with 30 SMD pins fanouted, 3 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=1200).
+2026-10-04 20:51:08.962 INFO   [0899E3\B31ED4] Fanout pass #13 on board 'd4347bd8e7f4e5039d718b3b53ea00fb' completed in 1.75 seconds with 32 SMD pins fanouted, 1 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=1300).
+2026-10-04 20:51:11.048 INFO   [0899E3\B31ED4] Fanout pass #14 on board '09cbe7ecd70dcce4f47ef0f51347e196' completed in 2.07 seconds with 42 SMD pins fanouted, 0 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=1400).
+2026-10-04 20:51:12.951 INFO   [0899E3\B31ED4] Fanout pass #15 on board '64403dba68f4e91aa63124796581cb2f' completed in 1.89 seconds with 32 SMD pins fanouted, 6 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=1500).
+2026-10-04 20:51:15.501 WARN   BasicBoard.normalizeTraces: reached 2000 iterations for net '1V1' — stopping to prevent hang. The board geometry for this net may be oscillating (split/combine cycle); traces are kept as-is and further normalization for this net is suppressed on this board candidate.
+2026-10-04 20:51:16.768 INFO   [0899E3\B31ED4] Fanout pass #16 on board 'ec28cf3dd7b8c6773933aceadd5d932e' completed in 3.80 seconds with 36 SMD pins fanouted, 3 not routed, 0 insert errors, +1 extra via (0 SMD pins still to check in pass, ripup costs=1600).
+2026-10-04 20:51:18.715 INFO   [0899E3\B31ED4] Fanout pass #17 on board 'e9651f7c631ae7493acba4fa443c055c' completed in 1.93 seconds with 36 SMD pins fanouted, 2 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=1700).
+2026-10-04 20:51:20.880 INFO   [0899E3\B31ED4] Fanout pass #18 on board '03d6c39d3c82a681338f0c58afb55540' completed in 2.15 seconds with 40 SMD pins fanouted, 1 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=1800).
+2026-10-04 20:51:22.885 INFO   [0899E3\B31ED4] Fanout pass #19 on board 'ddacf219f7e1750bbdec3911f1775135' completed in 1.99 seconds with 37 SMD pins fanouted, 2 not routed, 0 insert errors, +1 extra via (0 SMD pins still to check in pass, ripup costs=1900).
+2026-10-04 20:51:25.208 INFO   [0899E3\B31ED4] Fanout pass #20 on board '62a3cde6949661b3c358c6e3265ae6ff' completed in 2.31 seconds with 25 SMD pins fanouted, 7 not routed, 0 insert errors, +2 extra vias (0 SMD pins still to check in pass, ripup costs=2000).
+2026-10-04 20:51:25.590 INFO   [0899E3\B31ED4] Fanout stage completed: started with 474 total SMD pins, completed in 313.93 seconds, escaped pins: 440/474 (92.8%), using 309.94 total CPU seconds, 6020.86 GB total allocated, and 2041.8 MB peak heap usage.
+2026-10-04 20:51:25.610 INFO   [0899E3\B31ED4] Auto-routing stage started on board '62a3cde6949661b3c358c6e3265ae6ff' for 115 unrouted items.
+2026-10-04 20:52:27.978 INFO   [0899E3\B31ED4] Auto-routing pass #1 on board '62a3cde6949661b3c358c6e3265ae6ff' was completed in 61.50 seconds with score 918.22 (29 unrouted and 21 violations), using 370.60 CPU seconds and the job allocated 6663.49 GB of memory so far.
+2026-10-04 20:52:31.090 WARN   ShapeSearchTree.overlaps_with_clearance: shape is not bounded
+2026-10-04 20:53:02.306 INFO   [0899E3\B31ED4] Auto-routing pass #2 on board '18072dcc288780e2c83e44cf01dd0c2e' was completed in 33.47 seconds with score 940.38 (20 unrouted and 21 violations), using 404.27 CPU seconds and the job allocated 6990.37 GB of memory so far.
+2026-10-04 20:53:16.814 INFO   [0899E3\B31ED4] Auto-routing pass #3 on board '1a2545c1077623358b24ed614f5ae1f2' was completed in 13.62 seconds with score 947.28 (17 unrouted and 22 violations), using 419.15 CPU seconds and the job allocated 7163.64 GB of memory so far.
+2026-10-04 20:53:35.663 INFO   [0899E3\B31ED4] Auto-routing pass #4 on board '36d3c0ede06ed9f7a7a6c918f2b0ee98' was completed in 17.97 seconds with score 949.74 (16 unrouted and 22 violations), using 437.01 CPU seconds and the job allocated 7350.58 GB of memory so far.
+2026-10-04 20:53:56.652 INFO   [0899E3\B31ED4] Auto-routing pass #5 on board 'fcf5b67a30c794cf33550584d624999f' was completed in 20.11 seconds with score 952.21 (15 unrouted and 22 violations), using 457.81 CPU seconds and the job allocated 7572.88 GB of memory so far.
+2026-10-04 20:54:08.970 INFO   [0899E3\B31ED4] Auto-routing pass #6 on board 'd8fe77e261303b49d4a20e124f36a253' was completed in 11.45 seconds with score 957.13 (13 unrouted and 22 violations), using 469.72 CPU seconds and the job allocated 7703.24 GB of memory so far.
+2026-10-04 20:54:22.491 INFO   [0899E3\B31ED4] Auto-routing pass #7 on board 'd2fe21a9af8560316d011df9e08730c8' was completed in 12.65 seconds with score 962.06 (11 unrouted and 22 violations), using 483.63 CPU seconds and the job allocated 7852.92 GB of memory so far.
+2026-10-04 20:54:37.465 INFO   [0899E3\B31ED4] Auto-routing pass #8 on board 'b78b6154b51cd1e1e9ae20f597988602' was completed in 14.07 seconds with score 962.06 (11 unrouted and 22 violations), using 498.49 CPU seconds and the job allocated 8009.35 GB of memory so far.
+2026-10-04 20:54:47.383 WARN   BasicBoard.normalizeTraces: reached 2000 iterations for net '1V1' — stopping to prevent hang. The board geometry for this net may be oscillating (split/combine cycle); traces are kept as-is and further normalization for this net is suppressed on this board candidate.
+2026-10-04 20:59:36.582 WARN   BasicBoard.normalizeTraces: reached 2000 iterations for net '+3V3' — stopping to prevent hang. The board geometry for this net may be oscillating (split/combine cycle); traces are kept as-is and further normalization for this net is suppressed on this board candidate.
+2026-10-04 20:59:44.562 INFO   [0899E3\B31ED4] Auto-routing pass #9 on board 'b78b6154b51cd1e1e9ae20f597988602' was completed in 306.63 seconds with score 964.52 (10 unrouted and 22 violations), using 801.65 CPU seconds and the job allocated 13874.41 GB of memory so far.
+2026-10-04 21:00:02.035 INFO   [0899E3\B31ED4] Auto-routing pass #10 on board '1c1eeee050783584311b1c546bd0beff' was completed in 16.68 seconds with score 962.06 (11 unrouted and 22 violations), using 818.48 CPU seconds and the job allocated 14037.72 GB of memory so far.
+2026-10-04 21:00:19.272 INFO   [0899E3\B31ED4] Auto-routing pass #11 on board 'd98a8f1e42c5245e36533aab177bb8e8' was completed in 16.42 seconds with score 966.98 (9 unrouted and 22 violations), using 835.33 CPU seconds and the job allocated 14215.28 GB of memory so far.
+2026-10-04 21:00:33.409 INFO   [0899E3\B31ED4] Auto-routing pass #12 on board '3b8cc821a2b781d020a66452b0f85302' was completed in 13.33 seconds with score 966.98 (9 unrouted and 22 violations), using 849.14 CPU seconds and the job allocated 14362.92 GB of memory so far.
+2026-10-04 21:00:49.263 INFO   [0899E3\B31ED4] Auto-routing pass #13 on board '3b8cc821a2b781d020a66452b0f85302' was completed in 15.43 seconds with score 964.03 (10 unrouted and 23 violations), using 864.94 CPU seconds and the job allocated 14523.95 GB of memory so far.
+2026-10-04 21:01:02.863 INFO   [0899E3\B31ED4] Auto-routing pass #14 on board '5ef9ff7c7c3b5d0d15284de43ff6d2b8' was completed in 12.77 seconds with score 959.60 (12 unrouted and 22 violations), using 877.85 CPU seconds and the job allocated 14660.90 GB of memory so far.
+2026-10-04 21:01:28.759 INFO   [0899E3\B31ED4] Auto-routing pass #15 on board '53d1f9861ec14fd1cb99087bba0227de' was completed in 24.64 seconds with score 962.06 (11 unrouted and 22 violations), using 903.61 CPU seconds and the job allocated 14922.57 GB of memory so far.
+2026-10-04 21:01:41.020 INFO   [0899E3\B31ED4] Auto-routing pass #16 on board '3b8cc821a2b781d020a66452b0f85302' was completed in 0.00 seconds with score 966.98 (9 unrouted and 22 violations), using 915.51 CPU seconds and the job allocated 15059.67 GB of memory so far.
+2026-10-04 21:01:57.688 INFO   [0899E3\B31ED4] Auto-routing pass #17 on board '3b8cc821a2b781d020a66452b0f85302' was completed in 16.25 seconds with score 964.03 (10 unrouted and 23 violations), using 932.31 CPU seconds and the job allocated 15230.85 GB of memory so far.
+2026-10-04 21:02:12.191 INFO   [0899E3\B31ED4] Auto-routing pass #18 on board 'f8f9c724bb1f05928cd246f8d44e7887' was completed in 13.65 seconds with score 959.60 (12 unrouted and 22 violations), using 946.19 CPU seconds and the job allocated 15376.70 GB of memory so far.
+2026-10-04 21:02:38.570 INFO   [0899E3\B31ED4] Auto-routing pass #19 on board 'f8da17d37c72e2b404355e4b5d1043a3' was completed in 25.54 seconds with score 962.06 (11 unrouted and 22 violations), using 971.94 CPU seconds and the job allocated 15627.70 GB of memory so far.
+2026-10-04 21:02:53.653 INFO   [0899E3\B31ED4] Auto-routing pass #20 on board '3b8cc821a2b781d020a66452b0f85302' was completed in 0.00 seconds with score 966.98 (9 unrouted and 22 violations), using 986.81 CPU seconds and the job allocated 15790.64 GB of memory so far.
+2026-10-04 21:03:11.560 INFO   [0899E3\B31ED4] Auto-routing pass #21 on board '3b8cc821a2b781d020a66452b0f85302' was completed in 17.48 seconds with score 964.03 (10 unrouted and 23 violations), using 1004.62 CPU seconds and the job allocated 15962.29 GB of memory so far.
+2026-10-04 21:03:11.583 INFO   [0899E3\B31ED4] The router's best score (966.98) has not improved by more than 0.5 points since pass #11. Stopping the auto-router after 21 passes (9 items still unconnected).
+The following connections could not be routed -- please review your design (e.g. check pad clearances, trace width rules, and available routing space):
+  Net '+3V3' (1 unrouted connection):
+    - U1-49  ->  U1-53
+  Net '1V1' (1 unrouted connection):
+    - U1-39  ->  U1-23
+  Net 'QSPI_SS' (1 unrouted connection):
+    - U2-1  ->  U1-60
+  Net 'JOY_PRESS' (1 unrouted connection):
+    - U1-5  ->  SW12-1@1
+  Net 'IMU_INT' (1 unrouted connection):
+    - U1-18  ->  U10-4
+  Net 'XOUT' (1 unrouted connection):
+    - R3-1  ->  U1-22
+  Net 'BTN_B' (1 unrouted connection):
+    - SW5-1  ->  U1-28
+  Net 'VBAT_SENSE' (1 unrouted connection):
+    - U1-42  ->  J8-6
+  Net 'QSPI_SCLK' (1 unrouted connection):
+    - U1-56  ->  U2-6
+  Net 'QSPI_SD0' (1 unrouted connection):
+    - U2-5  ->  U1-57
+2026-10-04 21:03:13.246 INFO   [0899E3\B31ED4] Auto-routing stage completed: started with 359 unrouted nets, completed in 1021.30 seconds, final score: 966.98 (9 unrouted and 22 violations), using 1006.61 total CPU seconds, 16000.03 GB total allocated, and 2133.5 MB peak heap usage.
+2026-10-04 21:03:13.702 INFO   [0899E3\B31ED4] Optimization stage started on board '43651088c10f6da810dde8bd0e6b7dd0' with score 962.06 (11 unrouted and 22 violations).
+2026-10-04 21:04:08.541 INFO   [0899E3\B31ED4] Stopping optimization pass #1 early after 50 consecutive items could not be improved.
+2026-10-04 21:04:08.994 INFO   [0899E3\B31ED4] Optimizer pass #1 on board '1f46aaabfe23058ce1b69c57df217df7' was completed in 53.93 seconds with the score of 962.06 (11 unrouted and 22 violations).
+2026-10-04 21:04:09.432 INFO   [0899E3\B31ED4] Stopping optimizer because the improvement in this pass (0.0000%) is below the threshold (1.00%).
+2026-10-04 21:04:09.880 INFO   [0899E3\B31ED4] Optimization stage completed: started with score 962.06 (11 unrouted and 22 violations), completed in 55.73 seconds, final score: 962.06 (11 unrouted and 22 violations), using 55.13 total CPU seconds, 983.60 GB total allocated, and 1834.2 MB peak heap usage.
+2026-10-04 21:04:09.892 INFO   [0899E3\B31ED4] Job '0899E3\B31ED4' finished with state: COMPLETED (elapsed: 17 minutes 58.39 seconds, finished at UTC: 2026-10-05T02:04:09.892348Z).
+2026-10-04 21:04:10.048 INFO   Saving output file '<path> (SES)...
+2026-10-04 21:04:10.051 INFO   Successfully saved output file '<path> (120430 bytes).
