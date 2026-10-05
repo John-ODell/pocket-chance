@@ -21,6 +21,11 @@ RP2350A, 16 MB flash, 8 MB PSRAM; 1.54" 240 x 240 ST7789 module on a header; joy
 | 9 | PCBWay instant quote (no sign-in, no payment) | not started | the quote, read line by line against the checklist |
 | 10 | Pre-order checklist | not started | the checklist, every box ticked, then John orders |
 
+## Routing method (John, 2026-10-04)
+Pipeline: `gen_pcb.py` (placement) -> `route_critical.py` (hand-routed critical copper, LOCKED) -> `route_prep.py` (In1 GND and In2 +3V3 planes, Specctra export) -> Freerouting 2.4.1 (headless, non-critical nets around the locked copper) -> `ses_import.py` (back into KiCad; KiCad's own SES import returned False on these files) -> DRC and hand review.
+Freerouting is a standing assist tool, not a one-off: rerun it whenever the layout is chopped up or stuck. Each run is its own labelled commit (input commit, Freerouting version, passes, routed/unrouted counts) so runs can be compared. Critical nets (RP2350 core supply, crystal, QSPI, USB, buck-boost, radio) are always hand-routed and locked.
+- Run 1 (branch route-draft 3bc9330, NOT FOR FAB): all nets, 25 passes, 8 unrouted, all at U1's power pins -> stage 1 of route_critical.py (decoupling escapes, cap ground vias, exposed-pad vias).
+
 ## Routing checklist (from the auditor's layout checklist, team file 2026-10-04 19:16)
 1. Record John's layer count and PCBWay's actual stackup (copper weights, dielectric, tolerances) before calculating any impedance. Use one confirmed process, not every headline minimum at once; four-layer inner hole-to-copper 0.178 mm, copper-to-edge 0.25 mm.
 2. RM2: the 35.5 x 18.5 mm exclusion clear of copper on all four layers, and of vias, parts, the cell, cables and enclosure metal; ground and stitching under the module body (six ground pads 1, 4, 7, 11, 15, 21), outside the exclusion. Checked in the generated Gerbers, not only in KiCad.
@@ -36,7 +41,7 @@ RP2350A, 16 MB flash, 8 MB PSRAM; 1.54" 240 x 240 ST7789 module on a header; joy
 1. **One frozen commit.** Routing, planes and DRC done; connector polarity, parts and standoff clearances checked; every file below made from that one commit, which is recorded with the package.
 2. **Fabrication ZIP:** four copper Gerbers, top/bottom mask, silk and paste, a closed outline, separate plated and non-plated Excellon drills, slot notes. Outline 150 x 100 mm checked.
 3. **Assembly files:** BOM (CSV) with references, quantity per board, manufacturer, full MPN, package, fitted/DNP and "no substitution without re-qualification"; centroid in mm (reference, X, Y, rotation, side); an assembly drawing showing pin 1, LED polarity, the L1 dot on the 1V1 pad, connector entry directions and the through-hole parts (USB-C, coin-cell holder, header). Test pads, solder jumper and the off-board cell, screen and speaker are not purchasable lines.
-4. **Options for John to confirm:** 4 layers, 1.6 mm FR-4, copper weight, stackup, finish (ENIG to discuss), front-side SMD plus listed through-hole, board and assembly quantities.
+4. **Options for John to confirm:** 4 layers, 1.6 mm FR-4, copper weight, stackup, finish (ENIG to discuss), front-side SMD plus listed through-hole, board and assembly quantities. Decided: 4 layers; J9 fitted by PCBWay on the assembled boards, with extra bare boards in the same order for soldering practice (John, option 1).
 5. **Factory questions:** answered with reviewed evidence; any cost or design change goes to John; no silent part substitution.
 6. **Their preview, checked line by line:** commit, outline, exactly four layers, drills and plating, no copper in the RF keep-out on any layer, core LX clearance, placements, rotations, pin 1, QFN paste, connector entries, "+ RED"/"- BLK" marks, mounting holes clear of copper and antenna.
 7. **Release record kept:** files, commit, BOM version, substitutions, stackup, preview and answers. Bring-up still follows the current-limited plan.
