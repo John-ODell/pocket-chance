@@ -220,7 +220,7 @@ class AssetsTests(unittest.TestCase):
         a = Assets(self.dir)
         self.assertIsNone(a.sheet('cards'))
         self.assertIsNone(a.sheet('not_a_sheet'))
-        write_565(os.path.join(self.dir, 'icons.565'), 48, 48 * 3, (1, 2, 3))
+        write_565(os.path.join(self.dir, 'icons.565'), 48, 48 * 4, (1, 2, 3))
         self.assertIsNotNone(a.sheet('icons'))
 
     def test_wrong_size_background_rejected(self):
@@ -377,6 +377,9 @@ class Entry(unittest.TestCase):
             self.assertEqual(lcd.pixel(ns['ROW_X'] + 28, ns['ROW_Y'][0] + 24), ns['CREAM'])      # spade body
             self.assertEqual(lcd.pixel(ns['ROW_X'] + 28, ns['ROW_Y'][1] + 24), ns['SUIT_RED'])   # diamond
             self.assertEqual(lcd.pixel(ns['ROW_X'] + 28, ns['ROW_Y'][2] + 24 - 7), ns['CREAM'])  # club top leaf
+            ns['draw_menu'](ctx, 3, 1)                                         # Baccarat selected, third row
+            self.assertEqual(lcd.pixel(120, ns['ROW_Y'][2] + 2), ns['GAME_COLOUR']['baccarat'][0])
+            self.assertEqual(lcd.pixel(ns['ROW_X'] + 28, ns['ROW_Y'][2] + 24), ns['SUIT_RED'])   # heart
             # with John's background: the photo shows in the margin and inside unselected rows,
             # the plates and the selected row cover it under the text
             write_565(os.path.join(adir, 'menu_background.565'), 240, 240, (200, 40, 80))

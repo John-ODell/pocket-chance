@@ -10,6 +10,7 @@ SAVE_PATH = '/save.json'
 CAR_SEATS = 4            # other players at the Caribbean table, 0 to 4 (DR-069)
 UTH_SEATS = 4            # other players at the Ultimate table, 0 to 4 (DR-044)
 UTH_HINT = True          # river dealer-outs count on the Ultimate prompt (DR-042 addendum)
+BAC_SEATS = 5            # other players at the baccarat table, 0 to 5 (DR-055)
 
 import sys
 import gc
@@ -49,6 +50,7 @@ GREY = rgb(140, 140, 140)
 MENU = (('Blackjack', 'blackjack', 'icon_blackjack'),
         ('Ultimate', 'holdem', 'icon_holdem'),       # DR-061: Ultimate Texas Hold'em
         ('Caribbean', 'caribbean', 'icon_stud'),     # DR-062: the flop game John described; Stud is archived
+        ('Baccarat', 'baccarat', 'icon_baccarat'),   # DR-057; John asked to test it on the board
         ('Off', 'off', None))                        # slots was dropped (D-009)
 VISIBLE = 3                                  # rows on screen (DR-022: scrolling list)
 
@@ -94,6 +96,7 @@ PILL_R = 23
 GAME_COLOUR = {'blackjack': (rgb(0, 95, 42), rgb(0, 60, 26)),      # (selected, unselected) pill colours
                'holdem': (rgb(20, 40, 110), rgb(12, 25, 70)),
                'caribbean': (rgb(110, 20, 30), rgb(70, 12, 18)),
+               'baccarat': (rgb(0, 80, 80), rgb(0, 50, 50)),          # DR-065 teal
                'off': (rgb(70, 70, 70), rgb(45, 45, 45))}
 SUIT_RED = rgb(230, 70, 70)
 
@@ -198,7 +201,7 @@ def pill(x, y, w, h, col, outline=None):
 
 def suit_sign(mod, cx, cy):
     """Code-drawn stand-in for a menu icon: spade (Blackjack), diamond (Ultimate), club (Caribbean),
-    power sign (Off), about 32 px tall, centred on (cx, cy)."""
+    heart (Baccarat), power sign (Off), about 32 px tall, centred on (cx, cy)."""
     if mod == 'blackjack':
         for i in range(14):                                   # the spade's point: a triangle of hlines
             lcd.hline(cx - i, cy - 15 + i, 2 * i + 1, CREAM)
@@ -217,6 +220,12 @@ def suit_sign(mod, cx, cy):
         lcd.ellipse(cx + 8, cy + 3, 7, 7, CREAM, True)
         lcd.fill_rect(cx - 2, cy + 2, 4, 12, CREAM)
         lcd.fill_rect(cx - 7, cy + 13, 14, 2, CREAM)
+    elif mod == 'baccarat':
+        lcd.ellipse(cx - 6, cy - 6, 7, 7, SUIT_RED, True)      # a heart: two lobes and a point
+        lcd.ellipse(cx + 6, cy - 6, 7, 7, SUIT_RED, True)
+        for i in range(15):
+            w = 13 - (13 * i) // 14
+            lcd.hline(cx - w, cy - 3 + i, 2 * w + 1, SUIT_RED)
     else:
         lcd.ellipse(cx, cy, 12, 12, CREAM, False)
         lcd.ellipse(cx, cy, 11, 11, CREAM, False)
@@ -343,6 +352,7 @@ def main():
     ctx.car_seats = CAR_SEATS
     ctx.uth_seats = UTH_SEATS
     ctx.uth_hint = UTH_HINT
+    ctx.bac_seats = BAC_SEATS
     try:
         random.seed()           # hardware RNG on rp2
     except Exception:
