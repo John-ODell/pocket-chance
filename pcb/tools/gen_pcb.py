@@ -78,6 +78,7 @@ row(["R4", "R5"], 84, 56.5, dx=2.4)      # flash CS pull-up and BOOT resistor
 at("R6", 99, 56.5)                       # PSRAM CS pull-up
 at("C18", 88, 67.5)                      # flash bypass
 at("C19", 96, 67.5)                      # PSRAM bypass
+at("C44", 93.5, 56.6, 0)                 # PSRAM 1 uF (rev 0.13), beside U3 pin 8 (VDD, at 94.1, 59.5)
 # core regulator (RP2350 guide 2.1, pp.7-8): LX pin 48 (75.45, 72.0) -> L1 pad 1 -> 1V1; VREG_VIN pin 49 (71.6)
 at("L1", 78.2, 73.6, 0)                  # pad 1 = VREG_LX at x 77.45, nearest pin 48; the part's DOT goes on pad 2 = 1V1 (RP2350 Figs 26/28)
 at("C13", 77.4, 71.8, 0)                 # VREG_VIN 4.7 uF, beside pin 49
@@ -330,7 +331,7 @@ def main():
     t.SetTextSize(pcbnew.VECTOR2I(pcbnew.FromMM(1.2), pcbnew.FromMM(1.2)))
     board.Add(t)
     t2 = pcbnew.PCB_TEXT(board)
-    t2.SetText("Pocket Chance spin 1  rev 0.12 layout in progress")
+    t2.SetText("Pocket Chance spin 1  rev 0.13 layout in progress")
     t2.SetLayer(pcbnew.F_SilkS)
     t2.SetPosition(mm(75, 1.8))
     t2.SetTextSize(pcbnew.VECTOR2I(pcbnew.FromMM(1.0), pcbnew.FromMM(1.0)))
