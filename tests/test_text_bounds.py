@@ -215,6 +215,48 @@ class TextBounds(unittest.TestCase):
                 self.bounds.verify('caribbean help')
         self.check()
 
+    def test_baccarat_screens(self):
+        import baccarat
+        from baccarat_rules import PLAYER, BANKER, TIE
+        from baccarat_table import BROKE as B_BROKE
+        for seats in (5, 0):
+            for balance in (15, 1000, 999999):
+                ctx = self.ctx(balance)
+                ctx.bac_seats = seats
+                s = baccarat.Screen(ctx)
+                self.bounds.reset()
+                s.draw_all()
+                self.bounds.verify('baccarat idle %d seats %d' % (balance, seats))
+                if s.table.state == B_BROKE:
+                    continue
+                s.table.adjust_stake(1000)
+                for side in (PLAYER, TIE, BANKER):
+                    s.table.side = side
+                    for _ in range(14):                                # fills the history strip
+                        self.bounds.reset()
+                        s.deal()
+                        self.bounds.verify('baccarat coup side %s seats %d' % (side, seats))
+                        s.table.next_coup()
+                        if s.table.state == B_BROKE:
+                            break
+                    if s.table.state == B_BROKE:
+                        break
+                self.bounds.reset()
+                s.shuffling()
+                self.bounds.verify('baccarat shuffling')
+                s.table.state = B_BROKE
+                self.bounds.reset()
+                s.draw_all()
+                self.bounds.verify('baccarat broke')
+                self.bounds.reset()
+                real_wait, real_draw = s.buttons.wait_any, s.draw_all
+                s.buttons.wait_any = lambda: 'A'
+                s.draw_all = lambda: None
+                s.paytable()
+                s.buttons.wait_any, s.draw_all = real_wait, real_draw
+                self.bounds.verify('baccarat help')
+        self.check()
+
     def test_holdem_screens(self):
         import holdem
         from holdem_rules import WIN, LOSE, PUSH, FOLD, PREFLOP, FLOP, RIVER

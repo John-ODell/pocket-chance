@@ -16,11 +16,11 @@ SHEETS = {
     'cards': (40, 56, 53),         # index = cards.py card int (suit * 13 + rank); 52 = c_back
     'chips': (24, 24, 5),          # chip_1, chip_5, chip_25, chip_100, chip_500
     'banners': (160, 32, 6),       # banner_win, lose, push, bust, blackjack, noqualify (DR-032)
-    'icons': (48, 48, 3),          # icon_blackjack, stud, holdem
+    'icons': (48, 48, 4),          # icon_blackjack, stud, holdem, baccarat (DR-057)
 }
 _CHIPS = ('1', '5', '25', '100', '500')
 _BANNERS = ('win', 'lose', 'push', 'bust', 'blackjack', 'noqualify')
-_ICONS = ('blackjack', 'stud', 'holdem')
+_ICONS = ('blackjack', 'stud', 'holdem', 'baccarat')
 
 
 def member(name):

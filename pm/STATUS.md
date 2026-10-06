@@ -4,6 +4,18 @@ _Updated by the senior dev at the end of each session. Written for John._
 
 **Last updated:** 2026-10-06 (final for the games)
 
+## Baccarat is ready for you to test (branch `baccarat`, upload step 1q)
+You asked to try baccarat on the board. It is the game ruled in DR-051 to DR-060, brought up to date with today's menu: it is the fourth row, a teal pill with a red heart, under Caribbean. The upload is seven files, in `UPLOAD.md` step 1q, after the expert benches it. Two small fixes on the way: one line of the help screen ran off the right edge and is now split, and the help screen now says that the Banker bet costs more at a stake of 5. Because the 5% commission is rounded to whole chips, the house keeps about 7.9 of every 100 chips there, against 1.1 at stakes of 20 and up (DR-059).
+
+## Which new-board extras first (your question)
+You are right that this waits for the board. The first job is not an extra at all: getting the three games running on the new chip (its own firmware, the screen, the buttons, a fresh memory check). After that, my order:
+1. **Battery reading.** The new board runs on a battery, so the game should show how much is left, warn when it is low and save your chips before it dies. It is a small job.
+2. **Sound.** Card flips and win chimes are the biggest change you would notice while playing. It is a medium job, and it must start silent so the speaker does not click at power-on.
+3. **Motion sensor**, for something like "shake to deal". It is fun but optional.
+4. **Clock chip.** It keeps the time with the power off, but the games have little use for it.
+5. **microSD card.** It only matters once there are lots of pictures; the built-in storage is still almost empty.
+6. **Wireless**, last. It is the biggest job, and the project rules say no networking, so it would need its own decision first.
+
 ## The games are finished (2026-10-06)
 You said everything is good on the new build, so the games are done and there is no more game design. What is on your board now (upload step 1o, installed and checked file by file by the expert):
 
@@ -17,16 +29,15 @@ You said everything is good on the new build, so the games are done and there is
 **The rulings are written down.** The decision files for DR-061 to DR-072 are drafted for the PM. Some details you never ruled on one by one. These were built as I recommended, and you accepted them by playing: Caribbean's screen layout, its buttons, four other players and how they play, saving once per hand, and the help screen. One more is flagged: the x3 only arms when everyone beats a dealer who has a hand, because with no dealer hand every bet is returned. The PM will check any of these with you if needed.
 
 ## Parked, not scheduled
-- **Baccarat** is finished code waiting on its own branch (`baccarat`). It is not on the board and not planned. If you ever want it, it needs one upload step and a refresh against today's menu.
 - **Caribbean Stud** is kept in `archive/stud/` with instructions to bring it back.
 - **The error screen** (branch `game-error-screen`) is a safety net. If a game ever hits an error, it saves your chips, writes the error to a file and goes back to the menu, instead of leaving a still picture. It is not merged or installed, and it only goes on the board if you ask.
 
-## The one open question: the Caribbean freeze
-Once, Caribbean stopped responding after a HIGH call. The expert caught the board while it was stuck: the game was still running and checking the buttons, with plenty of memory, so it did not crash. Either your A press never reached it, or the screen stopped showing new pictures. It has not happened since. If it happens again, leave the cable plugged in and tell the PM your chip count before and after, and the last button you pressed. The saved chip count tells the two causes apart.
+## The Caribbean freeze: closed
+You found it was the way the game was being played, not a fault. The game works. The expert's check agreed that the board was running normally the whole time.
 
 ## Not tested, honestly
 - The x3 payout is checked by tests and the simulator, but the expert's scripted bench never happened to trigger it (it comes about once in 25 hands), so its board timing is unmeasured.
-- The freeze above is unexplained.
+- Baccarat has passed every test on the Mac, but it has not been measured on the board yet.
 
 ## Earlier notes
 The sections below are the history of how the games got here. They are kept for the record, and some of them describe plans that later changed.
