@@ -1,0 +1,73 @@
+2026-10-05 20:15:10.493 INFO   Freerouting v2.4.1 (build-date: 2026-09-03)
+WARNING: Final field userProfileSettings in class app.freerouting.settings.GlobalSettings has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @481a15ff (file:<tools>/freerouting-2.4.1.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+2026-10-05 20:15:11.865 INFO   [AFF50E\0FB625] Loading board file 'run3.dsn'...
+2026-10-05 20:15:11.911 INFO   Layer 'In1.Cu' has been automatically configured as a dedicated power plane because it contains a large conduction area covering >50% of the board.
+2026-10-05 20:15:11.911 INFO   Layer 'In2.Cu' has been automatically configured as a dedicated power plane because it contains a large conduction area covering >50% of the board.
+2026-10-05 20:15:11.918 INFO   [AFF50E\0FB625] Job 'AFF50E\0FB625' started at 2026-10-06T01:15:11.918602Z.
+2026-10-05 20:15:11.966 INFO   New version available: v2.5.0
+2026-10-05 20:15:12.041 INFO   [AFF50E\0FB625] Fanout stage started on board '410918418f35c0ab996a3fa557ee7932' with 458 of 488 SMD pins needing fanout (16 already connected, 14 netless).
+2026-10-05 20:15:30.687 INFO   [AFF50E\0FB625] Fanout pass #1 on board 'c77d47ad38f5905c54eb6b5f52f1b26c' completed in 18.58 seconds with 424 SMD pins fanouted, 0 not routed, 0 insert errors, +174 extra vias (0 SMD pins still to check in pass, ripup costs=100).
+2026-10-05 20:15:36.049 INFO   [AFF50E\0FB625] Fanout pass #2 on board '52fce35b801d49d29f40822ddbe8cac4' completed in 5.34 seconds with 86 SMD pins fanouted, 4 not routed, 0 insert errors, +29 extra vias (0 SMD pins still to check in pass, ripup costs=200).
+2026-10-05 20:15:40.254 INFO   [AFF50E\0FB625] Fanout pass #3 on board '26e7d67f8da164e3be5f8e9b355701dc' completed in 4.19 seconds with 58 SMD pins fanouted, 0 not routed, 0 insert errors, +3 extra vias (0 SMD pins still to check in pass, ripup costs=300).
+2026-10-05 20:15:43.799 INFO   [AFF50E\0FB625] Fanout pass #4 on board 'e8cd24fde26651ca92e5d5a2a65527b4' completed in 3.53 seconds with 48 SMD pins fanouted, 0 not routed, 0 insert errors, +5 extra vias (0 SMD pins still to check in pass, ripup costs=400).
+2026-10-05 20:15:46.755 INFO   [AFF50E\0FB625] Fanout pass #5 on board '570d3392506acf7ca5308e8a7891380f' completed in 2.94 seconds with 50 SMD pins fanouted, 0 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=500).
+2026-10-05 20:15:48.651 INFO   [AFF50E\0FB625] Fanout pass #6 on board 'd0eab74f96a8d12df8f19293e586e613' completed in 1.88 seconds with 41 SMD pins fanouted, 1 not routed, 0 insert errors, +1 extra via (0 SMD pins still to check in pass, ripup costs=600).
+2026-10-05 20:15:51.224 INFO   [AFF50E\0FB625] Fanout pass #7 on board '052eae6ee5df2f6e7258b30d2f4c4589' completed in 2.56 seconds with 40 SMD pins fanouted, 1 not routed, 0 insert errors, +1 extra via (0 SMD pins still to check in pass, ripup costs=700).
+2026-10-05 20:15:53.257 INFO   [AFF50E\0FB625] Fanout pass #8 on board '45b77c4de20454606ded1d8995468edc' completed in 2.02 seconds with 34 SMD pins fanouted, 1 not routed, 0 insert errors, +2 extra vias (0 SMD pins still to check in pass, ripup costs=800).
+2026-10-05 20:15:55.215 INFO   [AFF50E\0FB625] Fanout pass #9 on board '17148500330d7af53d7d28895652932b' completed in 1.94 seconds with 29 SMD pins fanouted, 2 not routed, 0 insert errors, +3 extra vias (0 SMD pins still to check in pass, ripup costs=900).
+2026-10-05 20:15:56.975 INFO   [AFF50E\0FB625] Fanout pass #10 on board '4958174a721b02ab70c1d67975478ecc' completed in 1.74 seconds with 23 SMD pins fanouted, 3 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=1000).
+2026-10-05 20:15:58.737 INFO   [AFF50E\0FB625] Fanout pass #11 on board '56ee582c6827737522a0c018435ecf2e' completed in 1.75 seconds with 23 SMD pins fanouted, 3 not routed, 0 insert errors, +1 extra via (0 SMD pins still to check in pass, ripup costs=1100).
+2026-10-05 20:16:00.508 INFO   [AFF50E\0FB625] Fanout pass #12 on board '1eb1cbb8e6b182ec868cf6dbbaa17803' completed in 1.76 seconds with 21 SMD pins fanouted, 4 not routed, 0 insert errors, +3 extra vias (0 SMD pins still to check in pass, ripup costs=1200).
+2026-10-05 20:16:02.249 INFO   [AFF50E\0FB625] Fanout pass #13 on board 'd9295c7a8497aefcefe47f0acaa87f45' completed in 1.73 seconds with 19 SMD pins fanouted, 4 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=1300).
+2026-10-05 20:16:03.968 INFO   [AFF50E\0FB625] Fanout pass #14 on board '7e9488e0b60167573d0c17bdbe05b590' completed in 1.70 seconds with 20 SMD pins fanouted, 4 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=1400).
+2026-10-05 20:16:05.954 INFO   [AFF50E\0FB625] Fanout pass #15 on board 'd90b7fa850c4fbd294953a85690ae54e' completed in 1.97 seconds with 19 SMD pins fanouted, 5 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=1500).
+2026-10-05 20:16:07.991 INFO   [AFF50E\0FB625] Fanout pass #16 on board '6232171d6b08b99a0a27c388f9c2b246' completed in 2.02 seconds with 19 SMD pins fanouted, 5 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=1600).
+2026-10-05 20:16:09.705 INFO   [AFF50E\0FB625] Fanout pass #17 on board '1ea8c7754cfeb6ceae97ee4e858ba9fa' completed in 1.70 seconds with 18 SMD pins fanouted, 5 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=1700).
+2026-10-05 20:16:11.397 INFO   [AFF50E\0FB625] Fanout pass #18 on board '5510aa1445aaa759e525002a668d04a7' completed in 1.68 seconds with 18 SMD pins fanouted, 5 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=1800).
+2026-10-05 20:16:13.090 INFO   [AFF50E\0FB625] Fanout pass #19 on board 'd2cecda28d8eda2b3c1d2ddbc25c42bd' completed in 1.68 seconds with 18 SMD pins fanouted, 5 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=1900).
+2026-10-05 20:16:14.797 INFO   [AFF50E\0FB625] Fanout pass #20 on board '7a29977de7422ec9e7c47873b510bc18' completed in 1.69 seconds with 18 SMD pins fanouted, 5 not routed, 0 insert errors, +0 extra vias (0 SMD pins still to check in pass, ripup costs=2000).
+2026-10-05 20:16:14.797 INFO   Fanout stopped after 20 passes: no progress for 3 consecutive passes.
+2026-10-05 20:16:15.191 INFO   [AFF50E\0FB625] Fanout stage completed: started with 474 total SMD pins, completed in 63.10 seconds, escaped pins: 443/474 (93.5%), using 62.40 total CPU seconds, 1138.51 GB total allocated, and 2297.6 MB peak heap usage.
+2026-10-05 20:16:15.204 INFO   [AFF50E\0FB625] Auto-routing stage started on board '7a29977de7422ec9e7c47873b510bc18' for 118 unrouted items.
+2026-10-05 20:16:55.354 INFO   [AFF50E\0FB625] Auto-routing pass #1 on board '7a29977de7422ec9e7c47873b510bc18' was completed in 39.30 seconds with score 947.77 (17 unrouted and 21 violations), using 101.02 CPU seconds and the job allocated 1610.97 GB of memory so far.
+2026-10-05 20:17:14.447 INFO   [AFF50E\0FB625] Auto-routing pass #2 on board '3b4a607c17df976bc1b9aaf2130ce1e4' was completed in 18.19 seconds with score 955.16 (14 unrouted and 21 violations), using 120.76 CPU seconds and the job allocated 1823.91 GB of memory so far.
+2026-10-05 20:17:26.810 INFO   [AFF50E\0FB625] Auto-routing pass #3 on board '06e8f6c27d150c60f1a118f970b1342a' was completed in 11.47 seconds with score 962.55 (11 unrouted and 21 violations), using 132.64 CPU seconds and the job allocated 1959.48 GB of memory so far.
+2026-10-05 20:17:35.913 INFO   [AFF50E\0FB625] Auto-routing pass #4 on board '4a99ab55e5f43e85cb66d09c2bfaa97d' was completed in 8.20 seconds with score 957.63 (13 unrouted and 21 violations), using 141.53 CPU seconds and the job allocated 2067.31 GB of memory so far.
+2026-10-05 20:17:54.828 INFO   [AFF50E\0FB625] Auto-routing pass #5 on board '53056139b5b0d489d1a794d0b43931bf' was completed in 17.82 seconds with score 965.01 (10 unrouted and 21 violations), using 160.27 CPU seconds and the job allocated 2247.14 GB of memory so far.
+2026-10-05 20:18:05.060 INFO   [AFF50E\0FB625] Auto-routing pass #6 on board '5eab78eecca53c3ee58db0467b1854cb' was completed in 9.28 seconds with score 969.94 (8 unrouted and 21 violations), using 170.15 CPU seconds and the job allocated 2353.79 GB of memory so far.
+2026-10-05 20:18:17.966 INFO   [AFF50E\0FB625] Auto-routing pass #7 on board 'b40fb3759c3893c2f47f5d1c75912ee5' was completed in 11.93 seconds with score 972.40 (7 unrouted and 21 violations), using 183.00 CPU seconds and the job allocated 2486.33 GB of memory so far.
+2026-10-05 20:18:27.481 INFO   [AFF50E\0FB625] Auto-routing pass #8 on board '4d5d600c594cd4666de543a4b640b083' was completed in 8.58 seconds with score 977.33 (5 unrouted and 21 violations), using 191.91 CPU seconds and the job allocated 2582.07 GB of memory so far.
+2026-10-05 20:18:35.477 INFO   [AFF50E\0FB625] Auto-routing pass #9 on board '0bcb46cbdcd538252a4b72242f1494ab' was completed in 6.98 seconds with score 977.33 (5 unrouted and 21 violations), using 199.83 CPU seconds and the job allocated 2674.34 GB of memory so far.
+2026-10-05 20:18:44.079 INFO   [AFF50E\0FB625] Auto-routing pass #10 on board 'f198d0aafedcb4b95f38ffa202f85908' was completed in 7.67 seconds with score 977.33 (5 unrouted and 21 violations), using 208.73 CPU seconds and the job allocated 2773.55 GB of memory so far.
+2026-10-05 20:18:53.714 INFO   [AFF50E\0FB625] Auto-routing pass #11 on board '96c62b5bc0cbbb231af5f1a7f3d7a79d' was completed in 8.57 seconds with score 974.87 (6 unrouted and 21 violations), using 217.61 CPU seconds and the job allocated 2866.98 GB of memory so far.
+2026-10-05 20:19:07.516 INFO   [AFF50E\0FB625] Auto-routing pass #12 on board '96c62b5bc0cbbb231af5f1a7f3d7a79d' was completed in 0.00 seconds with score 977.33 (5 unrouted and 21 violations), using 231.39 CPU seconds and the job allocated 3010.56 GB of memory so far.
+2026-10-05 20:19:17.925 INFO   [AFF50E\0FB625] Auto-routing pass #13 on board '96c62b5bc0cbbb231af5f1a7f3d7a79d' was completed in 9.95 seconds with score 974.37 (6 unrouted and 22 violations), using 241.26 CPU seconds and the job allocated 3113.78 GB of memory so far.
+2026-10-05 20:19:25.266 INFO   [AFF50E\0FB625] Auto-routing pass #14 on board '767d2f4cddbbabda7e81d74c7145b1ad' was completed in 6.46 seconds with score 974.37 (6 unrouted and 22 violations), using 249.17 CPU seconds and the job allocated 3217.88 GB of memory so far.
+2026-10-05 20:19:35.274 INFO   [AFF50E\0FB625] Auto-routing pass #15 on board '73fe5dbda2a5047c6e9408f90cc39739' was completed in 9.13 seconds with score 974.37 (6 unrouted and 22 violations), using 259.03 CPU seconds and the job allocated 3326.08 GB of memory so far.
+2026-10-05 20:19:45.771 INFO   [AFF50E\0FB625] Auto-routing pass #16 on board '96c62b5bc0cbbb231af5f1a7f3d7a79d' was completed in 0.00 seconds with score 977.33 (5 unrouted and 21 violations), using 268.94 CPU seconds and the job allocated 3436.94 GB of memory so far.
+2026-10-05 20:19:57.671 INFO   [AFF50E\0FB625] Auto-routing pass #17 on board '96c62b5bc0cbbb231af5f1a7f3d7a79d' was completed in 11.45 seconds with score 974.37 (6 unrouted and 22 violations), using 280.79 CPU seconds and the job allocated 3560.17 GB of memory so far.
+2026-10-05 20:20:05.695 INFO   [AFF50E\0FB625] Auto-routing pass #18 on board '19babc9d354fedcaf2f8e77851670f7a' was completed in 7.15 seconds with score 974.37 (6 unrouted and 22 violations), using 288.70 CPU seconds and the job allocated 3656.48 GB of memory so far.
+2026-10-05 20:20:05.719 INFO   [AFF50E\0FB625] The router's best score (977.33) has not improved by more than 0.5 points since pass #8. Stopping the auto-router after 18 passes (5 items still unconnected).
+The following connections could not be routed -- please review your design (e.g. check pad clearances, trace width rules, and available routing space):
+  Net 'IMU_INT' (1 unrouted connection):
+    - U10-4  ->  U1-18
+  Net 'JOY_PRESS' (1 unrouted connection):
+    - SW12-1@1  ->  U1-5
+  Net '1V1' (2 unrouted connections):
+    - U1-50  ->  U1-39
+    - U1-39  ->  U1-23
+  Net 'BTN_B' (1 unrouted connection):
+    - SW5-1  ->  U1-28
+  Net 'WL_REG_ON' (1 unrouted connection):
+    - U11-12  ->  U1-35
+2026-10-05 20:20:07.529 INFO   [AFF50E\0FB625] Auto-routing stage completed: started with 359 unrouted nets, completed in 295.11 seconds, final score: 977.33 (5 unrouted and 21 violations), using 290.68 total CPU seconds, 3692.48 GB total allocated, and 2193.9 MB peak heap usage.
+2026-10-05 20:20:08.110 INFO   [AFF50E\0FB625] Optimization stage started on board '5f20d9ab67276f7347fcf42804adb229' with score 974.87 (6 unrouted and 21 violations).
+2026-10-05 20:20:57.407 INFO   [AFF50E\0FB625] Stopping optimization pass #1 early after 50 consecutive items could not be improved.
+2026-10-05 20:20:57.966 INFO   [AFF50E\0FB625] Optimizer pass #1 on board '74b2c4a5408d9415235195c85948a352' was completed in 48.22 seconds with the score of 974.87 (6 unrouted and 21 violations).
+2026-10-05 20:20:58.520 INFO   [AFF50E\0FB625] Stopping optimizer because the improvement in this pass (0.0000%) is below the threshold (1.00%).
+2026-10-05 20:20:59.094 INFO   [AFF50E\0FB625] Optimization stage completed: started with score 974.87 (6 unrouted and 21 violations), completed in 50.41 seconds, final score: 974.87 (6 unrouted and 21 violations), using 49.73 total CPU seconds, 846.52 GB total allocated, and 1635.8 MB peak heap usage.
+2026-10-05 20:20:59.108 INFO   [AFF50E\0FB625] Job 'AFF50E\0FB625' finished with state: COMPLETED (elapsed: 5 minutes 47.19 seconds, finished at UTC: 2026-10-06T01:20:59.108113Z).
+2026-10-05 20:20:59.482 INFO   Saving output file '<path> (SES)...
+2026-10-05 20:20:59.485 INFO   Successfully saved output file '<path> (121603 bytes).
