@@ -2,7 +2,7 @@
 
 _Kept current by the senior dev. Upload in the order shown using Viper IDE, then run the test line._
 
-**Last updated:** 2026-10-06
+**Last updated:** 2026-10-05
 
 ## Board state right now
 The board runs the three-game menu (Blackjack / Ultimate / Caribbean) from step 1o. `/main.py` is a copy of `/pocket.py`, so the game starts at boot; every later step that changes `pocket.py` uploads it to both names. The old program is kept as `main_monolith.py` in this repo and `backups/2026-10-03/main.py`.
@@ -214,6 +214,21 @@ Seven files and five deletions. The menu becomes Blackjack / Ultimate / Caribbea
 
 **Test line:** start `/pocket.py`: without your photo file the menu is a shaded green felt with a double gold border, "Pocket Chance" with a shadow, your chips on a cream plaque, and the rows as coloured pills (green, blue, burgundy, grey) with a spade, diamond, club and power sign; the chosen pill has a gold outline and a small gold chip beside it. Rows: Blackjack / Ultimate / Caribbean / Off (four rows, three visible). With `menu_background.565` on the board the photo menu shows as before. Ultimate plays as before on a blue felt. Caribbean (burgundy felt): A deals, your two cards show, a third of a second later the first three table cards turn and the prompt reads "A high 20  Y low 10  B fold" (at Ante 5); A or Y: the last two table cards turn, then the dealer's cards one by one, then "WIN +n" / "LOSE -n" / "PUSH, no dealer hand" / "FOLD -n", "you pair / dlr high card", and the four side stacks get green or red marks; when every stack and you win against a dealer hand the bottom line says "x3 NEXT HAND". X shows the pays and the strategy. Copy all `RESULT` lines to the PM.
 
+## Step 1q: Baccarat for John to test (DR-051 to DR-060), 2026-10-05
+Seven files, no deletions. Baccarat joins the menu as a fourth game: Blackjack / Ultimate / Caribbean / Baccarat / Off. (Step 1p is the parked error-screen branch, `game-error-screen`; it is not part of this step.) Standard punto banco as ruled: eight decks, bet Player, Banker or Tie, Player pays 1:1, Banker 1:1 less 5% commission rounded up to whole chips, Tie 8:1, stakes 5 to 100; five chip-stack seats with their own betting habits (`BAC_SEATS` in `pocket.py`, 0 to 5); a row of the last twelve results. **The expert benches this from the mount first** (HR-052, HR-055 and HR-060 measured the design; the built game has not been benched).
+
+| # | From this repo | To the board |
+|---|---|---|
+| 1 | `games/baccarat_rules.py` | `/games/baccarat_rules.py` (new) |
+| 2 | `games/baccarat_seats.py` | `/games/baccarat_seats.py` (new) |
+| 3 | `games/baccarat_table.py` | `/games/baccarat_table.py` (new) |
+| 4 | `games/baccarat_pay.py` | `/games/baccarat_pay.py` (new) |
+| 5 | `games/baccarat.py` | `/games/baccarat.py` (new) |
+| 6 | `lib/sheets.py` | `/lib/sheets.py` (the icons sheet gains a fourth slot, `icon_baccarat`) |
+| 7 | `pocket.py` | `/pocket.py` **and** `/main.py` (the boot copy): Baccarat row, `BAC_SEATS`, a teal pill and a red heart in the menu |
+
+**Test line:** start the board. The menu is the style-A felt with five rows, three on screen at a time: Blackjack (green pill, spade), Ultimate (blue, diamond), Caribbean (burgundy, club), then scroll down for Baccarat (teal pill, red heart) and Off (grey, power sign). With your `menu_background.565` on the board the photo menu shows instead, as before. Choose Baccarat: a teal table. Joystick left/right picks Player, Tie or Banker, up/down the stake; A deals. The cards come one at a time, about a third of a second apart, then the result, your chips and the side stacks' green or red marks; A deals again with the same bet. X shows the pays; B returns to the menu. Every so often the shoe is reshuffled and the screen says "Shuffling...". Copy all `RESULT` lines to the PM.
+
 ## Step 2: art (any time after step 1o)
 On the Mac, from the repo folder:
 
@@ -268,7 +283,7 @@ _The record of what the board holds. `tools/check_upload.py` reads it: every mod
 Also on the board: `/assets/menu_background.565` (step 1d), `/save.json` and `/save.bak` (written by the game). `/main.py` is a copy of `/pocket.py` and starts the game at boot (since step 1n; re-copied at step 1o). The five `/games/stud*.py` files are deleted at step 1o (their code is in `archive/stud/`). The three `/games/slots*.py` files are deleted at step 1i (their code is in `archive/slots/`); `/lib/clocks.py` is deleted at step 1l.
 
 ## Not on the board yet
-Nothing: the board matches main as of step 1o.
+Step 1q: `games/baccarat_rules.py`, `games/baccarat_seats.py`, `games/baccarat_table.py`, `games/baccarat_pay.py`, `games/baccarat.py` (new), `lib/sheets.py` and `pocket.py` (changed).
 
 ## Restore the old version
 Upload `main_monolith.py` and name it `/main.py` on the board.
