@@ -7,6 +7,8 @@ _Updated by the senior dev at the end of each session. Written for John._
 ## Baccarat is ready for you to test (branch `baccarat`, upload step 1q)
 You asked to try baccarat on the board. It is the game ruled in DR-051 to DR-060, brought up to date with today's menu: it is the fourth row, a teal pill with a red heart, under Caribbean. The upload is seven files, in `UPLOAD.md` step 1q, after the expert benches it. Two small fixes on the way: one line of the help screen ran off the right edge and is now split, and the help screen now says that the Banker bet costs more at a stake of 5. Because the 5% commission is rounded to whole chips, the house keeps about 7.9 of every 100 chips there, against 1.1 at stakes of 20 and up (DR-059).
 
+**A memory fix goes on with it (HR-074).** The expert found that leaving a game kept part of it in memory. That is true on your board today too. After going round all the games, a second round could run out of memory and stop with the screen still showing. Leaving a game now clears all of it, and the expert measured memory staying level after every game. The fix is inside `pocket.py`, which step 1q already uploads.
+
 ## Which new-board extras first (your question)
 You are right that this waits for the board. The first job is not an extra at all: getting the three games running on the new chip (its own firmware, the screen, the buttons, a fresh memory check). After that, my order:
 1. **Battery reading.** The new board runs on a battery, so the game should show how much is left, warn when it is low and save your chips before it dies. It is a small job.
