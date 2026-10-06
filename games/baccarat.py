@@ -111,8 +111,10 @@ class Screen:
         lcd = self.lcd
         self.felt(0, TOP_H)
         balance, stake = self.table.stakes(self.revealing())
-        font.text(lcd, '$%d' % balance, 6, 4, GOLD, 2)                    # the one size-2 string
-        self.chip(stake, 120, 0)
+        s = '$%d' % balance
+        font.text(lcd, s, 6, 4, GOLD, 2)
+        if 6 + font.width(s, 2) < 118:                                      # a balance of a million
+            self.chip(stake, 120, 0)                                        # or more needs the room
         font.text_right(lcd, '%s %d' % (SIDE_NAMES[self.table.side], stake), 234, 8, WHITE, 1)
 
     def hand_band(self, side):

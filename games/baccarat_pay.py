@@ -6,9 +6,9 @@ import font
 # at most 29 characters per line (size-1 text from x = 4 must end by x = 236)
 LINES = (
     'Player 1:1   Tie 8:1',
-    'Banker 1:1 less 5%: 19 for 20,',
-    'rounded down. Tie: Player',
-    'and Banker bets push.',
+    'Banker 1:1 less 5% (pays 19',
+    'per 20, rounded down). Tie:',
+    'Player and Banker bets push.',
     '',
     'CARDS: A=1, 2-9 face value,',
     '10 J Q K = 0. Only the last',
@@ -32,8 +32,8 @@ def show(lcd, buttons, bg, gold, white, grey):
             col = gold if text.startswith(('CARDS', 'PLAYER', 'BANKER')) else white
             font.text(lcd, text, 4, y, col, 1)
         y += 11
-    font.text_centred(lcd, 'Edge: Banker 1.1% Player 1.2%', 120, y + 2, grey, 1)
-    font.text_centred(lcd, 'Tie 14.4%', 120, y + 13, grey, 1)
+    font.text_centred(lcd, 'Edge: Player 1.2%  Tie 14.4%', 120, y + 2, grey, 1)
+    font.text_centred(lcd, 'Banker 1.1% (stake 5: 7.9%)', 120, y + 13, grey, 1)   # DR-059 rounding
     font.text_centred(lcd, 'any key: back', 120, 228, grey, 1)
     lcd.show()
     buttons.wait_any()
