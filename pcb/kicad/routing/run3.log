@@ -1,5 +1,5 @@
 2026-10-05 20:15:10.493 INFO   Freerouting v2.4.1 (build-date: 2026-09-03)
-WARNING: Final field userProfileSettings in class app.freerouting.settings.GlobalSettings has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @481a15ff (file:/Users/johnodell/Tools/freerouting/freerouting-2.4.1.jar)
+WARNING: Final field userProfileSettings in class app.freerouting.settings.GlobalSettings has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @481a15ff (file:<tools>/freerouting-2.4.1.jar)
 WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
 WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
 2026-10-05 20:15:11.865 INFO   [AFF50E\0FB625] Loading board file 'run3.dsn'...
@@ -64,3 +64,10 @@ The following connections could not be routed -- please review your design (e.g.
     - U11-12  ->  U1-35
 2026-10-05 20:20:07.529 INFO   [AFF50E\0FB625] Auto-routing stage completed: started with 359 unrouted nets, completed in 295.11 seconds, final score: 977.33 (5 unrouted and 21 violations), using 290.68 total CPU seconds, 3692.48 GB total allocated, and 2193.9 MB peak heap usage.
 2026-10-05 20:20:08.110 INFO   [AFF50E\0FB625] Optimization stage started on board '5f20d9ab67276f7347fcf42804adb229' with score 974.87 (6 unrouted and 21 violations).
+2026-10-05 20:20:57.407 INFO   [AFF50E\0FB625] Stopping optimization pass #1 early after 50 consecutive items could not be improved.
+2026-10-05 20:20:57.966 INFO   [AFF50E\0FB625] Optimizer pass #1 on board '74b2c4a5408d9415235195c85948a352' was completed in 48.22 seconds with the score of 974.87 (6 unrouted and 21 violations).
+2026-10-05 20:20:58.520 INFO   [AFF50E\0FB625] Stopping optimizer because the improvement in this pass (0.0000%) is below the threshold (1.00%).
+2026-10-05 20:20:59.094 INFO   [AFF50E\0FB625] Optimization stage completed: started with score 974.87 (6 unrouted and 21 violations), completed in 50.41 seconds, final score: 974.87 (6 unrouted and 21 violations), using 49.73 total CPU seconds, 846.52 GB total allocated, and 1635.8 MB peak heap usage.
+2026-10-05 20:20:59.108 INFO   [AFF50E\0FB625] Job 'AFF50E\0FB625' finished with state: COMPLETED (elapsed: 5 minutes 47.19 seconds, finished at UTC: 2026-10-06T01:20:59.108113Z).
+2026-10-05 20:20:59.482 INFO   Saving output file '<path> (SES)...
+2026-10-05 20:20:59.485 INFO   Successfully saved output file '<path> (121603 bytes).
