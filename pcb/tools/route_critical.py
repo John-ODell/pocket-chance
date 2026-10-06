@@ -64,8 +64,10 @@ def outward(px, py):
 
 
 # ---- stage 1: decoupling (cap -> its U1 supply pin), cap ground vias, exposed-pad vias
-DECOUPLE = {"C1": "1", "C8": "6", "C2": "11", "C3": "20", "C9": "23", "C40": "23", "C4": "30", "C5": "38",
-            "C10": "39", "C6": "45", "C43": "44", "C13": "49", "C7": "54"}
+# Caps sitting in their own pin's escape lane (2026-10-05 re-placement, ring at about 3.5 mm): straight stub along the
+# lane. The bottom-row caps (C5, C10, C6) and C9 (shared 1V1) are left to the autorouter: adjacent supply pins there
+# are 0.4 mm apart with signal lanes between them.
+DECOUPLE = {"C1": "1", "C8": "6", "C2": "11", "C3": "20", "C40": "23", "C4": "30", "C43": "44", "C13": "49", "C7": "54"}
 for cap, pin in DECOUPLE.items():
     up = pad("U1", pin)
     net = up.GetNetname()
@@ -90,6 +92,20 @@ for cap, pin in DECOUPLE.items():
     vx, vy = gx + ux / n * 0.75, gy + uy / n * 0.75
     track((gx, gy), (vx, vy), "GND", 0.3)
     via((vx, vy), "GND")
+
+# ---- +3V3 plane vias beside each in-lane +3V3 cap's supply pad (expert condition 2), on the side with free room
+def side_via(cap, net, dx, dy, d=0.5, drill=0.2):
+    sx, sy = mm(pad(cap, net=net).GetPosition())
+    vx, vy = sx + dx, sy + dy
+    track((sx, sy), (vx, vy), net, 0.3)
+    via((vx, vy), net, d, drill)
+
+for cap, dx, dy in (("C1", 0.85, 0), ("C2", -0.85, 0), ("C3", 0, -0.85), ("C4", 0, 0.85)):
+    side_via(cap, "+3V3", dx, dy)
+# pin 53 joins pin 54 at C7 (C7's pad spans both lanes)
+p53 = mm(pad("U1", "53").GetPosition())
+c7 = mm(pad("C7", net="+3V3").GetPosition())
+track(p53, (c7[0], p53[1]), "+3V3")
 
 ep = pad("U1", "61")
 ex0, ey0 = mm(ep.GetPosition())
