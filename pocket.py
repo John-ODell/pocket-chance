@@ -327,8 +327,9 @@ def play(ctx, modname):
         mod.run(ctx)
     finally:
         del mod
-        if modname in sys.modules:
-            del sys.modules[modname]
+        for m in list(sys.modules):                   # HR-074: the game's _rules, _table, _seats too,
+            if m == modname or m.startswith(modname + '_'):   # or the menu loses RAM per game visited
+                del sys.modules[m]
         ctx.assets.release_sheets()
         gc.collect()
         print('RESULT after %s mem_free=%d' % (modname, gc.mem_free()))

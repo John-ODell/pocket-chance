@@ -9,6 +9,7 @@ import shutil
 import struct
 import sys
 import tempfile
+import types
 import unittest
 
 import tests.context  # noqa: F401
@@ -346,6 +347,50 @@ class BlackjackScreen(unittest.TestCase):
 
 
 class Entry(unittest.TestCase):
+    def test_play_unloads_every_game_module(self):
+        # HR-074: leaving a game must drop its _rules/_table/_seats modules too, or the menu's free
+        # RAM falls with every game visited and a second lap can fail to import. Visit all four
+        # games twice through pocket.play() (B leaves each at once) and check what stays loaded.
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(root, 'pocket.py')) as f:
+            src = f.read().replace('\nmain()\n', '\n')
+        ns = {'__name__': 'pocket_test'}
+        exec(compile(src, 'pocket.py', 'exec'), ns)
+        ns['gc'] = types.SimpleNamespace(collect=lambda: None, mem_free=lambda: 0)   # MicroPython's gc
+
+        class LeaveAtOnce:
+            def poll(self):
+                return ['B']
+
+            def wait_any(self):
+                return 'B'
+        tmp = tempfile.mkdtemp()
+        try:
+            ctx = ns['Ctx']()
+            ctx.lcd = ns['lcd']
+            ctx.assets = Assets(tmp)
+            ctx.store = Store(os.path.join(tmp, 'save.json'))
+            ctx.bankroll = Bankroll()
+            ctx.buttons = LeaveAtOnce()
+            ctx.rng = random.Random(1)
+            ctx.car_seats = ctx.uth_seats = ctx.bac_seats = 4
+            ctx.uth_hint = True
+            games = [mod for label, mod, icon in ns['MENU'] if mod not in (None, 'off')]
+            self.assertEqual(games, ['blackjack', 'holdem', 'caribbean', 'baccarat'])
+            libs = ('cards', 'font', 'lcd', 'art', 'save', 'bankroll', 'sheets', 'pixfmt', 'buttons')
+            for g in games:                                            # start with none of them loaded
+                for m in [m for m in sys.modules if m == g or m.startswith(g + '_')]:
+                    del sys.modules[m]
+            for lap in range(2):
+                for g in games:
+                    ns['play'](ctx, g)
+                    left = sorted(m for m in sys.modules for h in games if m == h or m.startswith(h + '_'))
+                    self.assertEqual(left, [], (lap, g))
+                    for m in libs:
+                        self.assertIn(m, sys.modules, (lap, g, m))     # the shared libraries stay
+        finally:
+            shutil.rmtree(tmp)
+
     def test_pocket_compiles_and_menu_draws(self):
         # pocket.py runs main() when executed; import it with main guarded by a fake __name__
         root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
