@@ -77,8 +77,8 @@ at("U3", 96, 62, 90)         # PSRAM next to the flash (shares clock and data)
 row(["R4", "R5"], 84, 56.5, dx=2.4)      # flash CS pull-up and BOOT resistor
 at("R6", 99, 56.5)                       # PSRAM CS pull-up
 at("C18", 88, 67.5)                      # flash bypass
-at("C19", 96, 67.5)                      # PSRAM bypass
-at("C44", 93.5, 56.6, 0)                 # PSRAM 1 uF (rev 0.13), beside U3 pin 8 (VDD, at 94.1, 59.5)
+at("C19", 93.2, 56.9, 0)                # PSRAM 100 nF, nearest U3 pin 8 (VDD at 94.1, 59.5): fastest edges (expert 2026-10-05)
+at("C44", 93.6, 54.6, 0)                 # PSRAM 1 uF (rev 0.13), just behind C19
 # core regulator (RP2350 guide 2.1, pp.7-8): LX pin 48 (75.45, 72.0) -> L1 pad 1 -> 1V1; VREG_VIN pin 49 (71.6)
 at("L1", 78.2, 73.6, 0)                  # pad 1 = VREG_LX at x 77.45, nearest pin 48; the part's DOT goes on pad 2 = 1V1 (RP2350 Figs 26/28)
 at("C13", 77.4, 71.8, 0)                 # VREG_VIN 4.7 uF, beside pin 49
@@ -86,20 +86,20 @@ at("C14", 80.8, 73.6, 90)                # 1V1 4.7 uF at L1 pad 2
 at("C15", 77.6, 75.8, 0)                 # VREG_AVDD 4.7 uF (pin 46) with R2
 at("R2", 79.8, 75.8, 0)
 # decoupling: one cap per supply pin, at that pin, its supply pad facing the pin (placement review 19:02; routing prep)
-at("C1", 74.8, 64.3, 90)                 # IOVDD pin 1
-at("C8", 72.8, 64.3, 90)                 # DVDD pin 6
-at("C2", 70.8, 64.3, 90)                 # IOVDD pin 11
-at("C3", 66.3, 67.4, 180)                  # IOVDD pin 20
-at("C9", 66.3, 69.4, 180)                  # DVDD pin 23
-at("C40", 66.3, 70.9, 180)                 # DVDD pin 23 bulk 4.7 uF (guide: one per DVDD side)
-at("C4", 66.3, 72.9, 180)                  # IOVDD pin 30
-at("C5", 71.6, 75.6, 270)                # IOVDD pin 38
-at("C10", 72.8, 75.6, 270)               # DVDD pin 39
-at("C6", 75.2, 75.6, 270)                # IOVDD pin 45
-at("C12", 74.0, 79.6, 270)                # ADC_AVDD 2.2 uF, behind C43
-at("C43", 74.0, 75.6, 270)                # ADC_AVDD 100 nF right at pin 44 (rev 0.11, RP2350 ds p.402; auditor 20:38)
-at("R1", 75.6, 79.0, 90)
-at("C7", 77.4, 65.6, 0)                  # USB/QSPI IOVDD pins 53/54
+at("C1", 74.8, 62.8, 90)                 # IOVDD pin 1, in its own lane, 3.5 mm out (expert 2026-10-05: ring at 3.5-4 mm + plane vias)
+at("C8", 72.8, 62.8, 90)                 # DVDD pin 6, own lane
+at("C2", 70.8, 62.8, 90)                 # IOVDD pin 11, own lane
+at("C3", 64.8, 68.8, 180)                # IOVDD pin 20, own lane
+at("C9", 82.4, 74.0, 90)                 # DVDD 100 nF, shared on the 1V1 net beside C14 (expert: shared cap is an accepted fallback)
+at("C40", 65.4, 70.0, 180)               # DVDD pin 23 bulk 4.7 uF, in pin 23's own lane (expert: C40 at pin 23)
+at("C4", 64.8, 72.8, 180)                # IOVDD pin 30, own lane
+at("C5", 71.0, 78.2, 270)                # IOVDD pin 38, below the busy bottom row; autorouted
+at("C10", 72.6, 78.2, 270)               # DVDD pin 39, below the bottom row; autorouted
+at("C6", 76.1, 77.4, 270)                # IOVDD pin 45, bottom-right corner; autorouted
+at("C12", 74.4, 79.6, 270)               # ADC_AVDD 2.2 uF, behind C43
+at("C43", 74.4, 76.4, 270)               # ADC_AVDD 100 nF in pin 44's own lane (rev 0.11; expert: stays at its pin)
+at("R1", 72.6, 80.4, 90)
+at("C7", 79.0, 69.8, 0)                  # IOVDD pins 53/54, straddling both lanes, supply pad toward U1
 # crystal (left side, pins 21/22)
 at("Y1", 61, 72, 90)
 row(["C16", "C17"], 57.5, 70.3, dy=3.4)
