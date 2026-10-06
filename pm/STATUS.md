@@ -4,7 +4,9 @@ _Updated by the senior dev at the end of each session. Written for John._
 
 **Last updated:** 2026-10-06 (final for the games)
 
-## Baccarat is ready for you to test (branch `baccarat`, upload step 1q)
+## Baccarat is on your board (upload step 1q, installed 2026-10-05)
+The expert installed it with the memory fix below and checked every file against the repo. Your chips (891) are unchanged. The board started normally, with more free memory than before. Try it from the menu: it is the row under Caribbean.
+
 You asked to try baccarat on the board. It is the game ruled in DR-051 to DR-060, brought up to date with today's menu: it is the fourth row, a teal pill with a red heart, under Caribbean. The upload is seven files, in `UPLOAD.md` step 1q, after the expert benches it. Two small fixes on the way: one line of the help screen ran off the right edge and is now split, and the help screen now says that the Banker bet costs more at a stake of 5. Because the 5% commission is rounded to whole chips, the house keeps about 7.9 of every 100 chips there, against 1.1 at stakes of 20 and up (DR-059).
 
 **A memory fix goes on with it (HR-074).** The expert found that leaving a game kept part of it in memory. That is true on your board today too. After going round all the games, a second round could run out of memory and stop with the screen still showing. Leaving a game now clears all of it, and the expert measured memory staying level after every game. The fix is inside `pocket.py`, which step 1q already uploads.
