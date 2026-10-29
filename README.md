@@ -80,7 +80,6 @@ pcb/               workspace for designing your own board from this hardware (fi
 pm/                decision requests, rulings, decision log, hand-off notes
 SETUP.md           follow-along install guide
 UPLOAD.md          exact file list for the board, checked by tools/check_upload.py
-CLAUDE.md          rules for the AI developer session (Claude Code loads it)
 main_monolith.py   the original single-file program this project replaced (read-only)
 ```
 
